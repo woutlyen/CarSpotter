@@ -1,4 +1,7 @@
 # Java application assignment: *CarSpotter*
+Made by:
+* Wout Lyen
+* Jonathan Valgaeren
 ## Inspiration
 This application would a form of wikipedia, but all about cars. 
 The main goal of the app would be if you spot a car on the street, you should be able to lookup what car this is.
