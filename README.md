@@ -7,7 +7,7 @@ The main goal of the app would be if you spot a car on the street, you should be
     - Allow the users to create new pages for cars that haven't been listed
 * Being able to create events (car meets) with location and time (for which people can enlist)
 
-## Expandebility
+## Expandability
 * Login (username/email and password)
 * (Image sharing)
     - Implement upvotes and/or comments for posts
