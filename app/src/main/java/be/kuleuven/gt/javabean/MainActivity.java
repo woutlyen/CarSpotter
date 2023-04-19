@@ -4,9 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import be.kuleuven.gt.javabean.model.CoffeeOrder;
+
 public class MainActivity extends AppCompatActivity {
     private Button btnPlus;
     private Button btnMinus;
@@ -40,8 +45,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onBtnSubmit_Clicked(View Caller) {
+        // create CoffeeOrder from UI data
+        EditText txtName = (EditText) findViewById(R.id.txtName);
+        Spinner spCoffee = (Spinner) findViewById(R.id.spCoffee);
+        CheckBox cbSugar = (CheckBox) findViewById(R.id.cbSugar);
+        CheckBox cbWhipCream = (CheckBox) findViewById(R.id.cbWhipCream);
+        CoffeeOrder order = new CoffeeOrder(
+                txtName.getText().toString(),
+                spCoffee.getSelectedItem().toString(),
+                cbSugar.isChecked(),
+                cbWhipCream.isChecked(),
+                Integer.parseInt(lblQty.getText().toString())
+        );
         Intent intent = new Intent(this, OrderConfirmationActivity.class);
+        intent.putExtra("Order", order);
         startActivity(intent);
     }
-
 }
