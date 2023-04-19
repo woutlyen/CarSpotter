@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">JavaBean</string>
+    <string name="app_name">Java Bean</string>
+    <string-array name="menu_items">
+        <item>Espresso</item>
+        <item>Cappuccino</item>
+        <item>Latte</item>
+    </string-array>
 </resources>
