@@ -35,24 +35,28 @@
 
     <Button
         android:id="@+id/btnWiki"
-        android:layout_width="174dp"
-        android:layout_height="61dp"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
         android:text="Spotter"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnEvents"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="432dp" />
+        app:layout_constraintTop_toBottomOf="@+id/textMain"
+        app:layout_constraintVertical_bias="0.3" />
 
     <Button
         android:id="@+id/btnEvents"
-        android:layout_width="174dp"
-        android:layout_height="61dp"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
         android:layout_marginEnd="8dp"
         android:text="Events"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnWiki"
-        tools:layout_editor_absoluteY="432dp" />
+        app:layout_constraintTop_toBottomOf="@+id/textMain"
+        app:layout_constraintVertical_bias="0.3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
