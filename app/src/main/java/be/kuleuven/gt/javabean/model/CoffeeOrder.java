@@ -101,6 +101,10 @@ public class CoffeeOrder implements Parcelable {
         return quantity;
     }
 
+    public String getDescription(){
+        return coffee+getToppingsURL();
+    }
+
     public Map<String, String> getPostParameters() {
         Map<String, String> params = new HashMap<>();
         params.put("customer", name);

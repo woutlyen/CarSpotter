@@ -1,6 +1,8 @@
 package be.kuleuven.gt.javabean;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,11 +28,16 @@ import be.kuleuven.gt.javabean.model.CoffeeOrder;
 public class ShowQueueActivity extends AppCompatActivity {
 
     private List<CoffeeOrder> orders = new ArrayList<>();
+    private RecyclerView orderQueueView;
     private static final String QUEUE_URL = "https://studev.groept.be/api/ptdemo/queue";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_queue);
+        orderQueueView = findViewById( R.id.orderQueueView );
+        CoffeeOrderAdapter adapter = new CoffeeOrderAdapter( orders );
+        orderQueueView.setAdapter( adapter );
+        orderQueueView.setLayoutManager( new LinearLayoutManager( this ));
         requestCoffeeOrderqueue();
     }
     private void requestCoffeeOrderqueue() {
@@ -42,10 +49,9 @@ public class ShowQueueActivity extends AppCompatActivity {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        // iteration 2
+                        // iteration 3
                         processJSONResponse(response);
-                        TextView txtView = (TextView) findViewById(R.id.txtQueue);
-                        txtView.setText(Integer.toString(orders.size()));
+                        orderQueueView.getAdapter().notifyDataSetChanged();
                     }
                 },
                 new Response.ErrorListener() {
