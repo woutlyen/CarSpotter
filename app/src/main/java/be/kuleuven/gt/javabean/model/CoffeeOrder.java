@@ -2,12 +2,19 @@ package be.kuleuven.gt.javabean.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class CoffeeOrder implements Parcelable {
     private String name;
     private String coffee;
     private boolean sugar;
     private boolean whipCream;
     private int quantity;
+    private String dateDue;
     public static final Parcelable.Creator<CoffeeOrder> CREATOR = new Creator<CoffeeOrder>() {
         @Override
         public CoffeeOrder createFromParcel(Parcel in) {
@@ -27,6 +34,20 @@ public class CoffeeOrder implements Parcelable {
         this.sugar = sugar;
         this.whipCream = whipCream;
         this.quantity = quantity;
+    }
+
+    public CoffeeOrder(JSONObject o) {
+        try {
+            name = o.getString("customer");
+            coffee = o.getString("coffee");
+            String toppings = o.getString("toppings");
+            sugar = toppings.contains("sugar");
+            whipCream = toppings.contains("cream");
+            quantity = o.getInt("quantity");
+            dateDue = o.getString("date_due"); // yyyy-mm-dd hh:mm
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public CoffeeOrder(Parcel in) {
@@ -78,5 +99,21 @@ public class CoffeeOrder implements Parcelable {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public Map<String, String> getPostParameters() {
+        Map<String, String> params = new HashMap<>();
+        params.put("customer", name);
+        params.put("coffee", coffee);
+        params.put("toppings", getToppingsURL());
+        params.put("quantity", String.valueOf(quantity));
+        return params;
+    }
+    private String getToppingsURL() {
+        if (sugar || whipCream) {
+            return (sugar ? "+sugar" : "") + (whipCream ? "+cream" : "");
+        } else {
+            return "-";
+        }
     }
 }
