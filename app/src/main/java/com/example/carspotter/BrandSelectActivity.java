@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.carspotter.model.Car;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
@@ -34,6 +36,7 @@ public class BrandSelectActivity extends AppCompatActivity {
     private List<Car> cars = new ArrayList<>();
     private RecyclerView carView;
     private TextView noCarsTxt;
+    private CircularProgressIndicator circularProgressIndicatorCarView;
     String[] item = {"Audi","Volkswagen","Volvo","Mazda","Porsche","Seat","BMW","Mercedes","Subaru","Bentley","Tesla","Citroën","Peugeot","Opel","Renault","Skoda","Ford"};
 
     AutoCompleteTextView autoCompleteTextView;
@@ -45,6 +48,7 @@ public class BrandSelectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_brand_select);
         noCarsTxt = (TextView) findViewById(R.id.noCarsTxt);
+        circularProgressIndicatorCarView = (CircularProgressIndicator) findViewById(R.id.progressIndicatorCarView);
 
         Arrays.sort(item);
         autoCompleteTextView = findViewById(R.id.auto_complete_txt);
@@ -60,6 +64,10 @@ public class BrandSelectActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String item = adapterView.getItemAtPosition(i).toString();
+                cars.clear();
+                carView.getAdapter().notifyDataSetChanged();
+                circularProgressIndicatorCarView.setVisibility(View.VISIBLE);
+                noCarsTxt.setText("");
                 requestCarsFromBrand(item);
 //                Toast.makeText(BrandSelectActivity.this, "Item: " + item, Toast.LENGTH_SHORT).show();
             }
@@ -84,6 +92,7 @@ public class BrandSelectActivity extends AppCompatActivity {
                             noCarsTxt.setText("No cars from " + item +" added yet!");
                         }
                         carView.getAdapter().notifyDataSetChanged();
+                        circularProgressIndicatorCarView.setVisibility(View.INVISIBLE);
                     }
                 },
                 new Response.ErrorListener() {

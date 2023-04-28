@@ -3,6 +3,7 @@ package com.example.carspotter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,8 +30,8 @@ public class CarAdapter extends RecyclerView.Adapter<CarAdapter.ViewHolder> {
                 .setText(car.getModel());
         ((TextView) holder.carView.findViewById(R.id.buildyear))
                 .setText(car.getStart_build()+" - "+car.getEnd_build());
-        ((TextView) holder.carView.findViewById(R.id.id_db))
-                .setText(Integer.toString(car.getId()));
+        ((ImageView) holder.carView.findViewById(R.id.image))
+                .setImageBitmap(car.getDecodedImage());
     }
     @Override
     public int getItemCount() {

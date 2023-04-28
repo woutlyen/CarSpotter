@@ -1,9 +1,13 @@
 package com.example.carspotter.model;
 
-import androidx.annotation.NonNull;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 public class Car {
 
@@ -17,6 +21,8 @@ public class Car {
     private String end_build;
     private String seats;
     private String image;
+    private Bitmap decodedImage;
+
 
     public Car(JSONObject o) throws JSONException {
         try{
@@ -30,6 +36,10 @@ public class Car {
             end_build = o.getString("end_build");
             seats = o.getString("seats");
             image = o.getString("image");
+
+            byte[] byteImage = Base64.decode(image, Base64.DEFAULT);
+            decodedImage = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+
         } catch (JSONException e){
             e.printStackTrace();
         }
@@ -73,6 +83,10 @@ public class Car {
 
     public String getImage() {
         return image;
+    }
+
+    public Bitmap getDecodedImage() {
+        return decodedImage;
     }
 
     @Override

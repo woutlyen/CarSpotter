@@ -8,7 +8,7 @@
 
     <ImageView
         android:id="@+id/imageMain"
-        android:layout_width="178dp"
+        android:layout_width="250dp"
         android:layout_height="135dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="128dp"
@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_delete" />
+        app:srcCompat="@drawable/car_spotter_logo" />
 
     <TextView
         android:id="@+id/textMain"
