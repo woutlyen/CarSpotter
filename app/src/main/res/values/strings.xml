@@ -1,16 +1,6 @@
 <resources>
     <string name="app_name">CarSpotter</string>
-    <string-array name="brands">
-        <item>Audi</item>
-        <item>Porsche</item>
-        <item>Volkswagen</item>
-        <item>Seat</item>
-        <item>Škoda</item>
-        <item>Lamborghini</item>
-        <item>Mazda</item>
-        <item>Nissan</item>
-        <item>Mercedes</item>
-        <item>BMW</item>
-        <item>Volvo</item>
-    </string-array>
+    <string name="select_brand">Select Brand</string>
+    <string name="extended_fab_label">ADD WIKI</string>
+    <string name="extended_fab_content_desc">2</string>
 </resources>
