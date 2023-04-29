@@ -84,10 +84,13 @@ public class BrandSelectActivity extends AppCompatActivity {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0){
+                if (dy > 10 & extendedFloatingActionButton.isShown()){
                     extendedFloatingActionButton.hide();
                 }
-                else {
+                if (dy < -10 && !extendedFloatingActionButton.isShown()) {
+                    extendedFloatingActionButton.show();
+                }
+                if (!recyclerView.canScrollVertically(-1)) {
                     extendedFloatingActionButton.show();
                 }
             }
