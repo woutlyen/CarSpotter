@@ -31,6 +31,7 @@ public class ModelViewActivity extends AppCompatActivity {
     private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetImageFromCarId";
     private TextView textBrand;
     private TextView textModel;
+    private TextView textEdition;
     private TextView textType;
     private TextView textEngineType;
     private TextView textMSRP;
@@ -50,16 +51,18 @@ public class ModelViewActivity extends AppCompatActivity {
         textBrand.setText(car.getBrand());
         textModel = (TextView) findViewById(R.id.textModel);
         textModel.setText(car.getModel());
+        textModel = (TextView) findViewById(R.id.textEdition);
+        textModel.setText(car.getEdition());
         textType = (TextView) findViewById(R.id.textType);
-        textType.setText(car.getType());
+        textType.setText("Car type: " + car.getType());
         textEngineType = (TextView) findViewById(R.id.textEngineType);
-        textEngineType.setText(car.getEnginetype());
+        textEngineType.setText("Enginge type: " + car.getEnginetype());
         textMSRP = (TextView) findViewById(R.id.textMSRP);
-        textMSRP.setText(Integer.toString(car.getMsrp()));
+        textMSRP.setText("MSRP: " + Integer.toString(car.getMsrp()));
         textBuildYears = (TextView) findViewById(R.id.textBuildYears);
-        textBuildYears.setText(car.getStart_build() +" - "+ car.getEnd_build());
+        textBuildYears.setText("Production: " + car.getStart_build() +" - "+ car.getEnd_build());
         textSeats = (TextView) findViewById(R.id.textSeats);
-        textSeats.setText(car.getSeats());
+        textSeats.setText("Seats: "+ car.getSeats());
 
         modelImageView = (ImageView) findViewById(R.id.modelImageView);
         linearProgressIndicator = (LinearProgressIndicator) findViewById(R.id.linearProgressIndicatorModelView);

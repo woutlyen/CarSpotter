@@ -18,6 +18,7 @@ public class Car implements Parcelable {
     private int id;
     private String brand;
     private String model;
+    private String edition;
     private String type;
     private String enginetype;
     private int msrp;
@@ -44,6 +45,7 @@ public class Car implements Parcelable {
             id = o.getInt("id");
             brand = o.getString("brand");
             model = o.getString("model");
+            edition = o.getString("edition");
             type = o.getString("type");
             enginetype = o.getString("enginetype");
             msrp = o.getInt("msrp");
@@ -65,6 +67,7 @@ public class Car implements Parcelable {
         this.id = in.readInt();
         this.brand = in.readString();
         this.model = in.readString();
+        this.edition = in.readString();
         this.type = in.readString();
         this.enginetype = in.readString();
         this.msrp = in.readInt();
@@ -85,6 +88,7 @@ public class Car implements Parcelable {
     public String getModel() {
         return model;
     }
+    public String getEdition(){ return edition; }
 
     public String getType() {
         return type;
@@ -120,7 +124,7 @@ public class Car implements Parcelable {
 
     @Override
     public String toString() {
-        return id+brand+model+type+enginetype+msrp+start_build+end_build+seats+image;
+        return id+brand+model+edition+type+enginetype+msrp+start_build+end_build+seats+image;
     }
 
     @Override
@@ -133,6 +137,7 @@ public class Car implements Parcelable {
         parcel.writeInt(id);
         parcel.writeString(brand);
         parcel.writeString(model);
+        parcel.writeString(edition);
         parcel.writeString(type);
         parcel.writeString(enginetype);
         parcel.writeInt(msrp);

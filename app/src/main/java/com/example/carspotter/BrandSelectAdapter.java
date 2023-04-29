@@ -30,6 +30,8 @@ public class BrandSelectAdapter extends RecyclerView.Adapter<BrandSelectAdapter.
         Car car = carList.get(position);
         ((TextView) holder.carView.findViewById(R.id.model))
                 .setText(car.getModel());
+        ((TextView) holder.carView.findViewById(R.id.edition))
+                .setText(car.getEdition());
         ((TextView) holder.carView.findViewById(R.id.buildyear))
                 .setText(car.getStart_build()+" - "+car.getEnd_build());
         ((ImageView) holder.carView.findViewById(R.id.image))
