@@ -38,7 +38,6 @@ public class BrandSelectActivity extends AppCompatActivity {
     private RecyclerView carView;
     private TextView infoTxt;
     private CircularProgressIndicator circularProgressIndicatorCarView;
-    private RecyclerView recyclerView;
     private ExtendedFloatingActionButton extendedFloatingActionButton;
     String[] item = {"Audi","Volkswagen","Volvo","Mazda","Porsche","Seat","BMW","Mercedes","Subaru","Bentley","Tesla","Citroën","Peugeot","Opel","Renault","Skoda","Ford"};
 
@@ -53,7 +52,6 @@ public class BrandSelectActivity extends AppCompatActivity {
         infoTxt = (TextView) findViewById(R.id.noCarsTxt);
         infoTxt.setText("No brand selected!");
         circularProgressIndicatorCarView = (CircularProgressIndicator) findViewById(R.id.progressIndicatorCarView);
-        recyclerView = (RecyclerView) findViewById(R.id.carView);
         extendedFloatingActionButton = (ExtendedFloatingActionButton) findViewById(R.id.extended_fab);
 
         Arrays.sort(item);
@@ -80,9 +78,9 @@ public class BrandSelectActivity extends AppCompatActivity {
 
         });
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        carView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (dy > 10 & extendedFloatingActionButton.isShown()){
                     extendedFloatingActionButton.hide();
