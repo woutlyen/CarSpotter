@@ -1,5 +1,6 @@
 package com.example.carspotter;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,7 +10,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,14 +20,15 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.carspotter.model.Car;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
-import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class BrandSelectActivity extends AppCompatActivity {
@@ -35,8 +36,10 @@ public class BrandSelectActivity extends AppCompatActivity {
     private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetCarsFromBrand";
     private List<Car> cars = new ArrayList<>();
     private RecyclerView carView;
-    private TextView noCarsTxt;
+    private TextView infoTxt;
     private CircularProgressIndicator circularProgressIndicatorCarView;
+    private RecyclerView recyclerView;
+    private ExtendedFloatingActionButton extendedFloatingActionButton;
     String[] item = {"Audi","Volkswagen","Volvo","Mazda","Porsche","Seat","BMW","Mercedes","Subaru","Bentley","Tesla","Citroën","Peugeot","Opel","Renault","Skoda","Ford"};
 
     AutoCompleteTextView autoCompleteTextView;
@@ -47,8 +50,11 @@ public class BrandSelectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_brand_select);
-        noCarsTxt = (TextView) findViewById(R.id.noCarsTxt);
+        infoTxt = (TextView) findViewById(R.id.noCarsTxt);
+        infoTxt.setText("No brand selected!");
         circularProgressIndicatorCarView = (CircularProgressIndicator) findViewById(R.id.progressIndicatorCarView);
+        recyclerView = (RecyclerView) findViewById(R.id.carView);
+        extendedFloatingActionButton = (ExtendedFloatingActionButton) findViewById(R.id.extended_fab);
 
         Arrays.sort(item);
         autoCompleteTextView = findViewById(R.id.auto_complete_txt);
@@ -67,11 +73,24 @@ public class BrandSelectActivity extends AppCompatActivity {
                 cars.clear();
                 carView.getAdapter().notifyDataSetChanged();
                 circularProgressIndicatorCarView.setVisibility(View.VISIBLE);
-                noCarsTxt.setText("");
+                infoTxt.setText("");
                 requestCarsFromBrand(item);
 //                Toast.makeText(BrandSelectActivity.this, "Item: " + item, Toast.LENGTH_SHORT).show();
             }
 
+        });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0){
+                    extendedFloatingActionButton.hide();
+                }
+                else {
+                    extendedFloatingActionButton.show();
+                }
+            }
         });
     }
 
@@ -86,10 +105,10 @@ public class BrandSelectActivity extends AppCompatActivity {
                     public void onResponse(JSONArray response) {
                         processJSONResponse(response);
                         if (cars.size() != 0){
-                            noCarsTxt.setText("");
+                            infoTxt.setText("");
                         }
                         else{
-                            noCarsTxt.setText("No cars from " + item +" added yet!");
+                            infoTxt.setText("No cars from " + item +" added yet!");
                         }
                         carView.getAdapter().notifyDataSetChanged();
                         circularProgressIndicatorCarView.setVisibility(View.INVISIBLE);
@@ -117,5 +136,7 @@ public class BrandSelectActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        Collections.sort(cars, (o1, o2) -> o1.getModel().compareTo(o2.getModel()));
+//        cars.add(cars.get(0));
     }
 }
