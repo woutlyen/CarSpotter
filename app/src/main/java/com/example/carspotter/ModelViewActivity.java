@@ -2,11 +2,13 @@ package com.example.carspotter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +42,7 @@ public class ModelViewActivity extends AppCompatActivity {
     private ImageView modelImageView;
     private Bitmap decodedImage;
     private LinearProgressIndicator linearProgressIndicator;
+    private Button btnSpotted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,5 +109,9 @@ public class ModelViewActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
+    }
+    public void onBtnSpotted_Clicked(View caller){
+        Intent intent =new Intent(this, SpottedCar.class);
+        startActivity(intent);
     }
 }
