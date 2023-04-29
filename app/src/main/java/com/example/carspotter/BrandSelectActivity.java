@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,6 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.carspotter.model.Car;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
@@ -31,7 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class BrandSelectActivity extends AppCompatActivity {
+public class BrandSelectActivity extends AppCompatActivity implements RecyclerViewInterface {
 
     private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetCarsFromBrand";
     private List<Car> cars = new ArrayList<>();
@@ -39,6 +41,8 @@ public class BrandSelectActivity extends AppCompatActivity {
     private TextView infoTxt;
     private CircularProgressIndicator circularProgressIndicatorCarView;
     private ExtendedFloatingActionButton extendedFloatingActionButton;
+
+    private BottomNavigationView bottomNavigationView;
     String[] item = {"Audi","Volkswagen","Volvo","Mazda","Porsche","Seat","BMW","Mercedes","Subaru","Bentley","Tesla","Citroën","Peugeot","Opel","Renault","Skoda","Ford"};
 
     AutoCompleteTextView autoCompleteTextView;
@@ -53,6 +57,8 @@ public class BrandSelectActivity extends AppCompatActivity {
         infoTxt.setText("No brand selected!");
         circularProgressIndicatorCarView = (CircularProgressIndicator) findViewById(R.id.progressIndicatorCarView);
         extendedFloatingActionButton = (ExtendedFloatingActionButton) findViewById(R.id.extended_fab);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.item_2);
 
         Arrays.sort(item);
         autoCompleteTextView = findViewById(R.id.auto_complete_txt);
@@ -60,7 +66,7 @@ public class BrandSelectActivity extends AppCompatActivity {
         autoCompleteTextView.setAdapter(adapterItems);
 
         carView = findViewById( R.id.carView );
-        CarAdapter adapter = new CarAdapter( cars );
+        BrandSelectAdapter adapter = new BrandSelectAdapter( cars, this );
         carView.setAdapter( adapter );
         carView.setLayoutManager( new LinearLayoutManager( this ));
 
@@ -139,5 +145,12 @@ public class BrandSelectActivity extends AppCompatActivity {
         }
         Collections.sort(cars, (o1, o2) -> o1.getModel().compareTo(o2.getModel()));
 //        cars.add(cars.get(0));
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Intent intent = new Intent(this, ModelViewActivity.class);
+        intent.putExtra("Car", cars.get(position));
+        startActivity(intent);
     }
 }

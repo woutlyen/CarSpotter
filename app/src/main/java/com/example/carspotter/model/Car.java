@@ -3,13 +3,17 @@ package com.example.carspotter.model;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Base64;
+
+import androidx.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class Car {
+public class Car implements Parcelable {
 
     private int id;
     private String brand;
@@ -23,6 +27,17 @@ public class Car {
     private String image;
     private Bitmap decodedImage;
 
+    public static final Creator<Car> CREATOR = new Creator<Car>() {
+        @Override
+        public Car createFromParcel(Parcel in) {
+            return new Car(in);
+        }
+
+        @Override
+        public Car[] newArray(int size) {
+            return new Car[size];
+        }
+    };
 
     public Car(JSONObject o) throws JSONException {
         try{
@@ -43,6 +58,20 @@ public class Car {
         } catch (JSONException e){
             e.printStackTrace();
         }
+    }
+
+    public Car(Parcel in){
+
+        this.id = in.readInt();
+        this.brand = in.readString();
+        this.model = in.readString();
+        this.type = in.readString();
+        this.enginetype = in.readString();
+        this.msrp = in.readInt();
+        this.start_build = in.readString();
+        this.end_build = in.readString();
+        this.seats = in.readString();
+
     }
 
     public int getId() {
@@ -92,5 +121,23 @@ public class Car {
     @Override
     public String toString() {
         return id+brand+model+type+enginetype+msrp+start_build+end_build+seats+image;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(brand);
+        parcel.writeString(model);
+        parcel.writeString(type);
+        parcel.writeString(enginetype);
+        parcel.writeInt(msrp);
+        parcel.writeString(start_build);
+        parcel.writeString(end_build);
+        parcel.writeString(seats);
     }
 }

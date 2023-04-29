@@ -3,9 +3,15 @@
         android:id="@+id/item_1"
         android:enabled="true"
         android:icon="@drawable/home_24"
-        android:title="@string/text_label_1"/>
+        android:title="Home"
+        />
     <item
         android:id="@+id/item_2"
+        android:enabled="true"
+        android:icon="@drawable/spotter_24"
+        android:title="@string/text_label_1"/>
+    <item
+        android:id="@+id/item_3"
         android:enabled="true"
         android:icon="@drawable/event_24"
         android:title="@string/text_label_2"/>

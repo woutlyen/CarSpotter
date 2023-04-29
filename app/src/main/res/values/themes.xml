@@ -33,9 +33,16 @@
 
     <style name="Theme.CarSpotter" parent="Base.Theme.CarSpotter" />
 
-    <style name="roundImageView" parent="">
+    <style name="roundImageViewSmall" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">8dp</item>
         <item name="color">@color/white</item>
     </style>
+
+    <style name="roundImageViewLarge" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
+        <item name="color">@color/white</item>
+    </style>
+
 </resources>
