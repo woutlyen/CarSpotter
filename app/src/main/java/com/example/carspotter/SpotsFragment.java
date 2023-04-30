@@ -2,6 +2,7 @@ package com.example.carspotter;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +22,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.carspotter.model.Car;
 import com.example.carspotter.model.Spot;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import org.json.JSONArray;
@@ -37,6 +40,7 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
     private TextView spotInfo;
     private TextView spotCar;
     private CircularProgressIndicator circularProgressIndicatorCarView;
+    private ExtendedFloatingActionButton extendedFloatingActionButton;
 
     View view;
     Car car;
@@ -53,14 +57,17 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
         view = inflater.inflate(R.layout.fragment_spots, container, false);
         circularProgressIndicatorCarView = (CircularProgressIndicator) view.findViewById(R.id.progressIndicatorSpotView);
         circularProgressIndicatorCarView.setVisibility(View.VISIBLE);
+        extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.add_spot_fab);
 
         Bundle bundle = this.getArguments();
         car = bundle.getParcelable("Car");
 
+        //Text fields on fragment_spots.xml
         spotInfo = (TextView) view.findViewById(R.id.spotInfo);
         spotCar = (TextView) view.findViewById(R.id.spotCar);
         spotCar.setText(car.getBrand() + " " + car.getModel() + " " + car.getEdition());
 
+        //Recyclerview on fragment_spots.xml
         spotView = view.findViewById( R.id.spotView);
         SpotsAdapter adapter = new SpotsAdapter( spots, this );
         spotView.setAdapter( adapter );
@@ -68,12 +75,33 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
 
         spots.clear();
         spotView.getAdapter().notifyDataSetChanged();
+        System.out.println(Integer.toString(car.getId()));
         requestSpotsFromCarId(Integer.toString(car.getId()));
+
+        spotView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 10 & extendedFloatingActionButton.isShown()){
+                    extendedFloatingActionButton.hide();
+                }
+                if (dy < -10 && !extendedFloatingActionButton.isShown()) {
+                    extendedFloatingActionButton.show();
+                }
+                if (!recyclerView.canScrollVertically(-1)) {
+                    extendedFloatingActionButton.show();
+                }
+                else if (!recyclerView.canScrollVertically(1)) {
+                    extendedFloatingActionButton.hide();
+                }
+            }
+        });
 
         return view;
     }
 
     private void requestSpotsFromCarId(String item) {
+        // Retrieve spots from database with Volley
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         JsonArrayRequest queueRequest = new JsonArrayRequest(
                 Request.Method.GET,
@@ -111,6 +139,7 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
     }
 
     private void processJSONResponse(JSONArray response) {
+        //Add spots from database into local list for recyclerview
         spots.clear();
         for (int i = 0; i < response.length(); i++) {
             try {

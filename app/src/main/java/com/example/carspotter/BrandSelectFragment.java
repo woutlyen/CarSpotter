@@ -79,6 +79,7 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //Code for dropdown menu
                 item_dropdown = adapterView.getItemAtPosition(i).toString();
                 cars.clear();
                 carView.getAdapter().notifyDataSetChanged();
@@ -93,6 +94,7 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
         carView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                //Make action button invisible when scrolling
                 super.onScrolled(recyclerView, dx, dy);
                 if (dy > 10 & extendedFloatingActionButton.isShown()){
                     extendedFloatingActionButton.hide();

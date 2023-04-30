@@ -34,8 +34,8 @@ public class Spot implements Parcelable {
             try{
                 spot_id = o.getInt("spot_id");
                 car_id = o.getInt("car_id");
-                location = o.getString("where");
                 date = o.getString("when");
+                location = o.getString("where");
                 image = o.getString("image");
 
                 byte[] byteImage = Base64.decode(image, Base64.DEFAULT);
@@ -50,8 +50,8 @@ public class Spot implements Parcelable {
 
             this.spot_id = in.readInt();
             this.car_id = in.readInt();
-            this.location = in.readString();
             this.date = in.readString();
+            this.location = in.readString();
 
         }
 
@@ -73,7 +73,7 @@ public class Spot implements Parcelable {
 
         @Override
         public String toString() {
-            return spot_id+car_id+location+date+image;
+            return spot_id+car_id+date+location+image;
         }
 
         @Override
@@ -85,7 +85,7 @@ public class Spot implements Parcelable {
         public void writeToParcel(Parcel parcel, int i) {
             parcel.writeInt(spot_id);
             parcel.writeInt(car_id);
-            parcel.writeString(location);
             parcel.writeString(date);
+            parcel.writeString(location);
         }
     }
