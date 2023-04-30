@@ -2,8 +2,12 @@ package com.example.carspotter;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableContainer;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -43,6 +47,7 @@ public class ModelViewFragment extends Fragment {
     private TextView textBuildYears;
     private TextView textSeats;
     private ImageView modelImageView;
+    private ImageView brandIconView;
     private Bitmap decodedImage;
     private LinearProgressIndicator linearProgressIndicator;
     private ExtendedFloatingActionButton extendedFloatingActionButton;
@@ -81,6 +86,15 @@ public class ModelViewFragment extends Fragment {
         textBuildYears.setText("Production: " + car.getStart_build() +" - "+ car.getEnd_build());
         textSeats = (TextView) view.findViewById(R.id.textSeats);
         textSeats.setText("Seats: " + car.getSeats());
+        brandIconView = (ImageView) view.findViewById(R.id.brandIcon);
+
+        Uri uri = Uri.parse("android.resource://com.example.carspotter/drawable/"+car.getBrand().toLowerCase());
+
+        brandIconView.setImageURI(uri);
+
+        if(car.getEdition().equals("")){
+            textEdition.setHeight(0);
+        }
 
         extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.spots_fab);
         modelImageView = (ImageView) view.findViewById(R.id.modelImageView);

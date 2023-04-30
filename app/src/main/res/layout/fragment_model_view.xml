@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,159 +11,216 @@
         android:id="@+id/modelImageView"
         android:layout_width="0dp"
         android:layout_height="200dp"
-        android:layout_marginHorizontal="8dp"
         android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="8dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/car_spotter_image_placeholder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearanceOverlay="@style/roundImageViewLarge" />
+        android:src="@drawable/car_spotter_image_placeholder"
+        app:shapeAppearanceOverlay="@style/roundImageViewLarge"
+        android:scaleType="centerCrop"
+        />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/linearProgressIndicatorModelView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
-        android:indeterminate="true"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@id/modelImageView"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/modelImageView"
+        app:layout_constraintBottom_toBottomOf="@id/modelImageView"
         app:layout_constraintVertical_bias="0.6"
         app:trackCornerRadius="10dp"
-        app:trackThickness="7dp" />
+        app:trackThickness="7dp"
+        android:indeterminate="true"
+        android:visibility="visible" />
 
-    <TextView
-        android:id="@+id/textBrand"
-        android:layout_width="wrap_content"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cw1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        android:text="Brand"
-        android:textSize="34sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/modelImageView" />
-
-    <TextView
-        android:id="@+id/textSpecifications"
-        android:layout_width="0dp"
-        android:layout_height="26dp"
+        android:padding="4dp"
+        android:layout_marginTop="16dp"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="10dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="8dp"
-        android:text="Specifications:"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:cardCornerRadius="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textModel" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/spots_fab"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textSpecifications">
+        app:layout_constraintTop_toBottomOf="@id/modelImageView">
 
-        <TextView
-            android:id="@+id/textType"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Type" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/textEngineType"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Engine Type" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textMSRP"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="MSRP" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textBuildYears"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Build Year" />
+                    <TextView
+                        android:id="@+id/textBrand"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="14dp"
+                        android:text="Brand"
+                        android:textSize="34sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
 
-        <TextView
-            android:id="@+id/textSeats"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Seats" />
+                    <TextView
+                        android:id="@+id/textModel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:text="Model"
+                        android:textAlignment="viewStart"
+                        android:textSize="24sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textBrand" />
 
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/textEdition"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Edition"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textModel"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <!--    <Button-->
-    <!--        android:id="@+id/btnSpotted"-->
-    <!--        android:layout_width="250dp"-->
-    <!--        android:layout_height="49dp"-->
-    <!--        android:layout_marginBottom="8dp"-->
-    <!--        android:onClick="onBtnSpotted_Clicked"-->
-    <!--        android:text="Spots"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent" />-->
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/brandIcon"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginVertical="12dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/audi"/>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+
+
+<!--    <Button-->
+<!--        android:id="@+id/btnSpotted"-->
+<!--        android:layout_width="250dp"-->
+<!--        android:layout_height="49dp"-->
+<!--        android:layout_marginBottom="8dp"-->
+<!--        android:onClick="onBtnSpotted_Clicked"-->
+<!--        android:text="Spots"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent" />-->
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/spots_fab"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        android:layout_marginHorizontal="32dp"
         android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="32dp"
         android:contentDescription="@string/extended_fab_content_desc"
         android:text="@string/spots_fab_label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/textModel"
-        android:layout_width="wrap_content"
-        android:layout_height="34dp"
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:layout_marginTop="16dp"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="4dp"
-        android:layout_marginStart="8dp"
-        android:text="Model"
-        android:textAlignment="viewStart"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@+id/textEdition"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintHorizontal_chainStyle="packed"
+        app:cardCornerRadius="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textBrand" />
-
-    <TextView
-        android:id="@+id/textEdition"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="4dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="8dp"
-        android:text="Edition"
-        app:layout_constraintBottom_toBottomOf="@+id/textModel"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textModel" />
+        app:layout_constraintTop_toBottomOf="@id/cw1">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textSpecifications"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="10dp"
+                android:text="Specifications:"
+                android:textSize="20sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="8dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textSpecifications">
+
+                <TextView
+                    android:id="@+id/textType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Type" />
+
+                <TextView
+                    android:id="@+id/textEngineType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Engine Type" />
+
+                <TextView
+                    android:id="@+id/textMSRP"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="MSRP" />
+
+                <TextView
+                    android:id="@+id/textBuildYears"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Build Year" />
+
+                <TextView
+                    android:id="@+id/textSeats"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Seats" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.cardview.widget.CardView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

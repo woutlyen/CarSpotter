@@ -64,12 +64,12 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
 
         Bundle bundle = this.getArguments();
         car = bundle.getParcelable("Car");
-
+//
         //Text fields on fragment_spots.xml
         spotInfo = (TextView) view.findViewById(R.id.spotInfo);
         spotCar = (TextView) view.findViewById(R.id.spotCar);
         spotCar.setText(car.getBrand() + " " + car.getModel() + " " + car.getEdition());
-
+//
         //Recyclerview on fragment_spots.xml
         spotView = view.findViewById( R.id.spotView);
         SpotsAdapter adapter = new SpotsAdapter( spots, this );
@@ -132,10 +132,10 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
                         }
                         else{
                             if (car.getEdition().equals("")){
-                                spotInfo.setText("No spots from " + car.getBrand() + " " + car.getModel() + " added yet!");
+                                spotInfo.setText("No spots of " + car.getBrand() + " " + car.getModel() + " added yet!");
                             }
                             else {
-                                spotInfo.setText("No spots from " + car.getBrand() + " " + car.getModel() + " " + car.getEdition() + " added yet!");
+                                spotInfo.setText("No spots of " + car.getBrand() + " " + car.getModel() + " " + car.getEdition() + " added yet!");
                             }
                         }
                         spotView.getAdapter().notifyDataSetChanged();

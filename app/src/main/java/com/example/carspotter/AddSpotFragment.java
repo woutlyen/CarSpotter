@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.carspotter.model.Car;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import org.w3c.dom.Text;
 
@@ -21,6 +22,8 @@ public class AddSpotFragment extends Fragment {
     private TextView latData;
     private TextView longData;
     private TextView addSpotInfo;
+
+    private ExtendedFloatingActionButton extendedFloatingActionButton;
     View view;
 
     public AddSpotFragment() {
@@ -45,6 +48,9 @@ public class AddSpotFragment extends Fragment {
 
         addSpotInfo = (TextView) view.findViewById(R.id.addSpotInfo);
         addSpotInfo.setText(car.getBrand() + ": " + car.getModel() + " " + car.getEdition());
+
+        extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.submit_fab);
+        extendedFloatingActionButton.hide();
 
         return view;
     }
