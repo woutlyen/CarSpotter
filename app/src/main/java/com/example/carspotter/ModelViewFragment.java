@@ -72,15 +72,15 @@ public class ModelViewFragment extends Fragment {
         textEdition = (TextView) view.findViewById(R.id.textEdition);
         textEdition.setText(car.getEdition());
         textType = (TextView) view.findViewById(R.id.textType);
-        textType.setText(car.getType());
+        textType.setText("Car type: " + car.getType());
         textEngineType = (TextView) view.findViewById(R.id.textEngineType);
-        textEngineType.setText(car.getEnginetype());
+        textEngineType.setText("Engine type: " + car.getEnginetype());
         textMSRP = (TextView) view.findViewById(R.id.textMSRP);
-        textMSRP.setText(Integer.toString(car.getMsrp()));
+        textMSRP.setText("MSRP: €" + Integer.toString(car.getMsrp()));
         textBuildYears = (TextView) view.findViewById(R.id.textBuildYears);
-        textBuildYears.setText(car.getStart_build() +" - "+ car.getEnd_build());
+        textBuildYears.setText("Production: " + car.getStart_build() +" - "+ car.getEnd_build());
         textSeats = (TextView) view.findViewById(R.id.textSeats);
-        textSeats.setText(car.getSeats());
+        textSeats.setText("Seats: " + car.getSeats());
 
         extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.spots_fab);
         modelImageView = (ImageView) view.findViewById(R.id.modelImageView);
