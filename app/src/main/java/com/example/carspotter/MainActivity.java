@@ -17,9 +17,11 @@ public class MainActivity extends AppCompatActivity
         .OnItemSelectedListener {
 
     BottomNavigationView bottomNavigationView;
-
     private Button btnWiki;
     private int navbarId;
+
+    // TO DO: add code for the 2 recyclerviews to showcase latest submissions
+    // newSpot & newEvent
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -115,6 +117,4 @@ public class MainActivity extends AppCompatActivity
 
         outState.putInt("navbarId", navbarId);
     }
-
-
 }
