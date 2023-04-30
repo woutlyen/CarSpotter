@@ -165,6 +165,8 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
                 e.printStackTrace();
             }
         }
+        //Order cars on brandname, then edition using comparators
+        Collections.sort(cars, (o1, o2) -> o1.getEdition().compareTo(o2.getEdition()));
         Collections.sort(cars, (o1, o2) -> o1.getModel().compareTo(o2.getModel()));
 //        cars.add(cars.get(0));
     }

@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,6 +45,7 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
 
     View view;
     Car car;
+    SpotLocationFragment spotLocationFragment = new SpotLocationFragment();
 
     public SpotsFragment() {
         // Required empty public constructor
@@ -155,6 +157,13 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
 
     @Override
     public void onItemClick(int position) {
-
+        //Send information from the selected spot to the new fragment (map)
+        Bundle bundle = new Bundle();
+        spotLocationFragment.setArguments(bundle);
+        bundle.putParcelable("Spot", spots.get(position));
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.flFragment, spotLocationFragment ); // give your fragment container id in first parameter
+        transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+        transaction.commit();
     }
 }
