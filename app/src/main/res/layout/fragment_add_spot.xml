@@ -6,6 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".AddSpotFragment">
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/submit_fab"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="@string/extended_fab_content_desc"
+        android:text="@string/submit_fab_label"
+        app:icon="@drawable/ic_plus_24"
+        app:iconPadding="-20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="0dp"
@@ -30,18 +45,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/addSpotSubmit"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="48dp"
-        android:text="Submit"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="120dp"
@@ -64,33 +67,58 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="19dp"
-        android:text="Longitude"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        app:layout_constraintEnd_toEndOf="@+id/addSpotLocation"
-        app:layout_constraintStart_toStartOf="@+id/addSpotLocation"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="19dp"
-        android:text="Latitude"
-        app:layout_constraintBottom_toTopOf="@+id/textView3"
-        app:layout_constraintEnd_toEndOf="@+id/textView3"
-        app:layout_constraintStart_toStartOf="@+id/textView3"
-        app:layout_constraintTop_toTopOf="@+id/imageView2" />
-
-    <TextView
         android:id="@+id/addSpotInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="Car"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+        app:layout_constraintEnd_toEndOf="@+id/addSpotLocation"
+        app:layout_constraintStart_toStartOf="@+id/addSpotLocation"
+        app:layout_constraintTop_toTopOf="@+id/imageView2">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/latInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="19dp"
+                android:text="Latitude: " />
+
+            <TextView
+                android:id="@+id/latData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="*awaiting input*" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/longInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="19dp"
+                android:text="Longitude: " />
+
+            <TextView
+                android:id="@+id/longData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="*awaiting input*" />
+        </TableRow>
+
+    </TableLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

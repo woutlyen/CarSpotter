@@ -32,6 +32,9 @@ public class SpotLocationFragment extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
+            //TO DO: maak lijst van de spots en plaats deze als markers op de map.
+            // De meest recente krijgt een andere tag (misschien best voor de andere ook de datum in de marker)
+            // Voor de tags kunt ge uit de database "lat" en "long" halen voor bepaalde car_id
             LatLng sydney = new LatLng(-34, 151);
             googleMap.addMarker(new MarkerOptions().position(sydney).title("Most recent"));
             LatLng sydney1 = new LatLng(-34, 152);
@@ -47,8 +50,6 @@ public class SpotLocationFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        //Bundle bundle = this.getArguments();
-        //Car car = bundle.getParcelable("Spot");
         return inflater.inflate(R.layout.fragment_spot_location, container, false);
     }
 

@@ -5,6 +5,7 @@
     <string name="extended_fab_content_desc">-</string>
     <string name="spots_fab_label">Spots</string>
     <string name="add_spot_fab_label">Add Spot</string>
+    <string name="submit_fab_label">Submit Spot</string>
 
     <string name="text_label_1">Spotter</string>
     <string name="text_label_2">Events</string>
