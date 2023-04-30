@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class HomeFragment extends Fragment {
 
     private View view;
-    private Button btnWiki;
+    private RecyclerView newSpot;
+    private RecyclerView newEvent;
 
     private BrandSelectFragment brandSelectFragment = new BrandSelectFragment() ;
     public HomeFragment() {
@@ -30,8 +32,10 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        btnWiki = (Button) view.findViewById(R.id.btnWiki);
+        newSpot = (RecyclerView) view.findViewById(R.id.newSpot);
+        newEvent = (RecyclerView) view.findViewById(R.id.newEvent);
 
+        /*
         btnWiki.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -41,7 +45,7 @@ public class HomeFragment extends Fragment {
                 transaction.commit();
             }
         });
-
+        */
         return view;
     }
 
