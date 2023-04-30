@@ -1,16 +1,14 @@
 package com.example.carspotter;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,8 +18,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.carspotter.model.Car;
 import com.example.carspotter.model.Spot;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import org.json.JSONArray;
@@ -30,42 +28,53 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-public class SpottedCar extends AppCompatActivity implements RecyclerViewInterface {
+
+public class SpotsFragment extends Fragment implements RecyclerViewInterface{
 
     private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetSpotsFromCarId";
     private List<Spot> spots = new ArrayList<>();
     private RecyclerView spotView;
     private TextView spotInfo;
+    private TextView spotCar;
+    private CircularProgressIndicator circularProgressIndicatorCarView;
 
+    View view;
+    Car car;
 
-    AutoCompleteTextView autoCompleteTextView;
-    ArrayAdapter<String> adapterItems;
+    public SpotsFragment() {
+        // Required empty public constructor
+    }
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_spotted_car);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        view = inflater.inflate(R.layout.fragment_spots, container, false);
+        circularProgressIndicatorCarView = (CircularProgressIndicator) view.findViewById(R.id.progressIndicatorSpotView);
+        circularProgressIndicatorCarView.setVisibility(View.VISIBLE);
 
-        spotView = findViewById( R.id.spotView);
-        SpottedCarAdapter adapter = new SpottedCarAdapter( spots, this );
+        Bundle bundle = this.getArguments();
+        car = bundle.getParcelable("Car");
+
+        spotInfo = (TextView) view.findViewById(R.id.spotInfo);
+        spotCar = (TextView) view.findViewById(R.id.spotCar);
+        spotCar.setText(car.getBrand() + " " + car.getModel() + " " + car.getEdition());
+
+        spotView = view.findViewById( R.id.spotView);
+        SpotsAdapter adapter = new SpotsAdapter( spots, this );
         spotView.setAdapter( adapter );
-        spotView.setLayoutManager( new LinearLayoutManager( this ));
+        spotView.setLayoutManager( new LinearLayoutManager( getActivity() ));
 
-        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String item = adapterView.getItemAtPosition(i).toString();
-                spots.clear();
-                spotView.getAdapter().notifyDataSetChanged();
-                requestSpotsFromCarId(item);
-//                Toast.makeText(SpottedcarActivity.this, "Item: " + item, Toast.LENGTH_SHORT).show();
-            }
+        spots.clear();
+        spotView.getAdapter().notifyDataSetChanged();
+        requestSpotsFromCarId(Integer.toString(car.getId()));
 
-        });
+        return view;
     }
+
     private void requestSpotsFromCarId(String item) {
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         JsonArrayRequest queueRequest = new JsonArrayRequest(
                 Request.Method.GET,
                 QUEUE_URL+"/"+item,
@@ -78,16 +87,22 @@ public class SpottedCar extends AppCompatActivity implements RecyclerViewInterfa
                             spotInfo.setText("");
                         }
                         else{
-                            spotInfo.setText("No spots from " + item +" added yet!");
+                            if (car.getEdition().equals("")){
+                                spotInfo.setText("No spots from " + car.getBrand() + " " + car.getModel() + " added yet!");
+                            }
+                            else {
+                                spotInfo.setText("No spots from " + car.getBrand() + " " + car.getModel() + " " + car.getEdition() + " added yet!");
+                            }
                         }
                         spotView.getAdapter().notifyDataSetChanged();
+                        circularProgressIndicatorCarView.setVisibility(View.INVISIBLE);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Toast.makeText(
-                                SpottedCar.this,
+                                getActivity(),
                                 "Unable to communicate with the server",
                                 Toast.LENGTH_LONG).show();
                     }
@@ -108,10 +123,9 @@ public class SpottedCar extends AppCompatActivity implements RecyclerViewInterfa
         Collections.sort(spots, (o1, o2) -> o1.getDate().compareTo(o2.getDate()));
 //        cars.add(cars.get(0));
     }
+
     @Override
     public void onItemClick(int position) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("Spot", spots.get(position));
-        startActivity(intent);
+
     }
 }

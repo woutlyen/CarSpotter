@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">CarSpotter</string>
     <string name="select_brand">Select Brand</string>
-    <string name="extended_fab_label">ADD WIKI</string>
-    <string name="extended_fab_content_desc">2</string>
+    <string name="add_wiki_fab_label">Add Wiki</string>
+    <string name="extended_fab_content_desc">-</string>
+    <string name="spots_fab_label">Spots</string>
+    <string name="add_spot_fab_label">Add Spot</string>
 
     <string name="text_label_1">Spotter</string>
     <string name="text_label_2">Events</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

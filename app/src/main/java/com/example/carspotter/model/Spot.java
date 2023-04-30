@@ -11,29 +11,31 @@ import org.json.JSONObject;
 
 public class Spot implements Parcelable {
 
-        private int id;
+        private int spot_id;
+        private int car_id;
         private String location;
         private String date;
         private String image;
         private Bitmap decodedImage;
 
-        public static final Creator<com.example.carspotter.model.Spot> CREATOR = new Creator<com.example.carspotter.model.Spot>() {
+        public static final Creator<Spot> CREATOR = new Creator<Spot>() {
             @Override
-            public com.example.carspotter.model.Spot createFromParcel(Parcel in) {
-                return new com.example.carspotter.model.Spot(in);
+            public Spot createFromParcel(Parcel in) {
+                return new Spot(in);
             }
 
             @Override
-            public com.example.carspotter.model.Spot[] newArray(int size) {
-                return new com.example.carspotter.model.Spot[size];
+            public Spot[] newArray(int size) {
+                return new Spot[size];
             }
         };
 
         public Spot(JSONObject o) throws JSONException {
             try{
-                id = o.getInt("id");
-                location = o.getString("location");
-                date = o.getString("date");
+                spot_id = o.getInt("spot_id");
+                car_id = o.getInt("car_id");
+                location = o.getString("where");
+                date = o.getString("when");
                 image = o.getString("image");
 
                 byte[] byteImage = Base64.decode(image, Base64.DEFAULT);
@@ -46,14 +48,19 @@ public class Spot implements Parcelable {
 
         public Spot(Parcel in){
 
-            this.id = in.readInt();
+            this.spot_id = in.readInt();
+            this.car_id = in.readInt();
             this.location = in.readString();
             this.date = in.readString();
 
         }
 
-        public int getId() {
-            return id;
+        public int getSpot_id() {
+            return spot_id;
+        }
+
+        public int getCar_id() {
+            return car_id;
         }
 
         public String getLocation(){ return location;}
@@ -66,7 +73,7 @@ public class Spot implements Parcelable {
 
         @Override
         public String toString() {
-            return id+location+date+image;
+            return spot_id+car_id+location+date+image;
         }
 
         @Override
@@ -76,7 +83,8 @@ public class Spot implements Parcelable {
 
         @Override
         public void writeToParcel(Parcel parcel, int i) {
-            parcel.writeInt(id);
+            parcel.writeInt(spot_id);
+            parcel.writeInt(car_id);
             parcel.writeString(location);
             parcel.writeString(date);
         }

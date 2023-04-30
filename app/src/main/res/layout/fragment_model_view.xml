@@ -1,47 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ModelViewActivity">
+    tools:context=".ModelViewFragment">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/modelImageView"
         android:layout_width="0dp"
         android:layout_height="200dp"
-        android:layout_margin="8dp"
-        android:layout_marginTop="468dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/car_spotter_image_placeholder"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearanceOverlay="@style/roundImageViewLarge" />
+        android:src="@drawable/car_spotter_image_placeholder"
+        app:shapeAppearanceOverlay="@style/roundImageViewLarge"
+        android:scaleType="centerCrop"
+        />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/linearProgressIndicatorModelView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
-        android:indeterminate="true"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@id/modelImageView"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/modelImageView"
+        app:layout_constraintBottom_toBottomOf="@id/modelImageView"
         app:layout_constraintVertical_bias="0.6"
         app:trackCornerRadius="10dp"
-        app:trackThickness="7dp" />
+        app:trackThickness="7dp"
+        android:indeterminate="true"
+        android:visibility="visible" />
 
     <TextView
         android:id="@+id/textBrand"
         android:layout_width="0dp"
         android:layout_height="40dp"
-        android:layout_margin="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_margin="16dp"
         android:text="Brand"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -50,31 +50,48 @@
 
     <TextView
         android:id="@+id/textModel"
-        android:layout_width="379dp"
-        android:layout_height="26dp"
-        android:layout_margin="8dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="0dp"
+        android:layout_height="34dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="4dp"
         android:text="Model"
         android:textAlignment="viewStart"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textBrand" />
+
+    <TextView
+        android:id="@+id/textEdition"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="4dp"
+        android:text="Edition"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textModel" />
+
+    <TextView
+        android:id="@+id/textSpecifications"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="10dp"
+        android:text="Specifications:"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textEdition" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="8dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/btnSpotted"
+        app:layout_constraintBottom_toTopOf="@+id/spots_fab"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textSpecifications">
@@ -111,46 +128,29 @@
 
     </LinearLayout>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_navigation_menu"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="422dp" />
+<!--    <Button-->
+<!--        android:id="@+id/btnSpotted"-->
+<!--        android:layout_width="250dp"-->
+<!--        android:layout_height="49dp"-->
+<!--        android:layout_marginBottom="8dp"-->
+<!--        android:onClick="onBtnSpotted_Clicked"-->
+<!--        android:text="Spots"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent" />-->
 
-    <TextView
-        android:id="@+id/textEdition"
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/spots_fab"
         android:layout_width="0dp"
-        android:layout_height="16dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="8dp"
-        android:text="Edition"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textModel" />
-
-    <TextView
-        android:id="@+id/textSpecifications"
-        android:layout_width="405dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
-        android:text="Specifications:"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textEdition" />
-
-    <Button
-        android:id="@+id/btnSpotted"
-        android:layout_width="250dp"
-        android:layout_height="49dp"
-        android:layout_marginBottom="8dp"
-        android:onClick="onBtnSpotted_Clicked"
-        android:text="Spots"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="32dp"
+        android:contentDescription="@string/extended_fab_content_desc"
+        android:text="@string/spots_fab_label"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

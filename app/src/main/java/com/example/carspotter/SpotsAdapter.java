@@ -11,22 +11,22 @@ import com.example.carspotter.model.Spot;
 
 import java.util.List;
 
-public class SpottedCarAdapter extends RecyclerView.Adapter<SpottedCarAdapter.ViewHolder> {
+public class SpotsAdapter extends RecyclerView.Adapter<SpotsAdapter.ViewHolder> {
     private List<Spot> spotList;
     private final RecyclerViewInterface recyclerViewInterface;
-    public SpottedCarAdapter(List<Spot> carList, RecyclerViewInterface recyclerViewInterface) {
+    public SpotsAdapter(List<Spot> spotList, RecyclerViewInterface recyclerViewInterface) {
         this.spotList = spotList;
         this.recyclerViewInterface = recyclerViewInterface;
     }
     @Override
-    public SpottedCarAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SpotsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View spotView = layoutInflater.inflate(R.layout.spot_view, parent, false);
         ViewHolder myViewHolder = new ViewHolder(spotView, recyclerViewInterface);
         return myViewHolder;
     }
     @Override
-    public void onBindViewHolder(SpottedCarAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(SpotsAdapter.ViewHolder holder, int position) {
         Spot spot = spotList.get(position);
         ((TextView) holder.spotView.findViewById(R.id.spotWhen))
                 .setText(spot.getDate());

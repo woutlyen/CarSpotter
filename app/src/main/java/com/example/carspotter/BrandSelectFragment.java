@@ -1,13 +1,16 @@
 package com.example.carspotter;
 
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -21,7 +24,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.carspotter.model.Car;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
@@ -33,7 +35,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class BrandSelectActivity extends AppCompatActivity implements RecyclerViewInterface {
+
+public class BrandSelectFragment extends Fragment implements RecyclerViewInterface {
 
     private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetCarsFromBrand";
     private List<Car> cars = new ArrayList<>();
@@ -41,44 +44,47 @@ public class BrandSelectActivity extends AppCompatActivity implements RecyclerVi
     private TextView infoTxt;
     private CircularProgressIndicator circularProgressIndicatorCarView;
     private ExtendedFloatingActionButton extendedFloatingActionButton;
-
-    private BottomNavigationView bottomNavigationView;
+    View view;
+    String item_dropdown = "";
     String[] item = {"Audi","Volkswagen","Volvo","Mazda","Porsche","Seat","BMW","Mercedes","Subaru","Bentley","Tesla","Citroën","Peugeot","Opel","Renault","Skoda","Ford"};
 
     AutoCompleteTextView autoCompleteTextView;
     ArrayAdapter<String> adapterItems;
 
+    ModelViewFragment modelViewFragment = new ModelViewFragment();
+
+    public BrandSelectFragment() {
+        // Required empty public constructor
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_brand_select);
-        infoTxt = (TextView) findViewById(R.id.noCarsTxt);
-        infoTxt.setText("No brand selected!");
-        circularProgressIndicatorCarView = (CircularProgressIndicator) findViewById(R.id.progressIndicatorCarView);
-        extendedFloatingActionButton = (ExtendedFloatingActionButton) findViewById(R.id.extended_fab);
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.item_2);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        view = inflater.inflate(R.layout.fragment_brand_select, container, false);
+        infoTxt = (TextView) view.findViewById(R.id.noCarsTxt);
+        if(item_dropdown.equals("")){
+            infoTxt.setText("No brand selected!");
+        }
+        circularProgressIndicatorCarView = (CircularProgressIndicator) view.findViewById(R.id.progressIndicatorCarView);
+        extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.add_wiki_fab);
 
         Arrays.sort(item);
-        autoCompleteTextView = findViewById(R.id.auto_complete_txt);
-        adapterItems = new ArrayAdapter<String>(this, R.layout.list_item, item);
-        autoCompleteTextView.setAdapter(adapterItems);
+        autoCompleteTextView = view.findViewById(R.id.auto_complete_txt);
 
-        carView = findViewById( R.id.carView );
+        carView = view.findViewById( R.id.carView );
         BrandSelectAdapter adapter = new BrandSelectAdapter( cars, this );
         carView.setAdapter( adapter );
-        carView.setLayoutManager( new LinearLayoutManager( this ));
-
+        carView.setLayoutManager( new LinearLayoutManager( getActivity() ));
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String item = adapterView.getItemAtPosition(i).toString();
+                item_dropdown = adapterView.getItemAtPosition(i).toString();
                 cars.clear();
                 carView.getAdapter().notifyDataSetChanged();
                 circularProgressIndicatorCarView.setVisibility(View.VISIBLE);
                 infoTxt.setText("");
-                requestCarsFromBrand(item);
+                requestCarsFromBrand(item_dropdown);
 //                Toast.makeText(BrandSelectActivity.this, "Item: " + item, Toast.LENGTH_SHORT).show();
             }
 
@@ -97,12 +103,26 @@ public class BrandSelectActivity extends AppCompatActivity implements RecyclerVi
                 if (!recyclerView.canScrollVertically(-1)) {
                     extendedFloatingActionButton.show();
                 }
+                else if (!recyclerView.canScrollVertically(1)) {
+                    extendedFloatingActionButton.hide();
+                }
             }
         });
+
+        return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        ArrayAdapter<String> adapterItems = new ArrayAdapter<String>(requireContext(), R.layout.list_item, item);
+        autoCompleteTextView.setAdapter(adapterItems);
+    }
+
+
     private void requestCarsFromBrand(String item) {
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         JsonArrayRequest queueRequest = new JsonArrayRequest(
                 Request.Method.GET,
                 QUEUE_URL+"/"+item,
@@ -125,7 +145,7 @@ public class BrandSelectActivity extends AppCompatActivity implements RecyclerVi
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Toast.makeText(
-                                BrandSelectActivity.this,
+                                getActivity(),
                                 "Unable to communicate with the server",
                                 Toast.LENGTH_LONG).show();
                     }
@@ -149,8 +169,17 @@ public class BrandSelectActivity extends AppCompatActivity implements RecyclerVi
 
     @Override
     public void onItemClick(int position) {
-        Intent intent = new Intent(this, ModelViewActivity.class);
-        intent.putExtra("Car", cars.get(position));
-        startActivity(intent);
+//        Intent intent = new Intent(BrandSelectFragment.this.getActivity(), MainActivity.class);
+//        intent.putExtra("Car", cars.get(position));
+//        getActivity().startActivity(intent);
+
+        Bundle bundle = new Bundle();
+        modelViewFragment.setArguments(bundle);
+        bundle.putParcelable("Car", cars.get(position));
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.flFragment, modelViewFragment ); // give your fragment container id in first parameter
+        transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+        transaction.commit();
     }
+
 }
