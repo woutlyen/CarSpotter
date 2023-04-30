@@ -34,8 +34,8 @@ public class Spot implements Parcelable {
             try{
                 spot_id = o.getInt("spot_id");
                 car_id = o.getInt("car_id");
-                date = o.getString("when");
-                location = o.getString("where");
+                date = o.getString("date");
+                location = o.getString("location");
                 image = o.getString("image");
 
                 byte[] byteImage = Base64.decode(image, Base64.DEFAULT);
