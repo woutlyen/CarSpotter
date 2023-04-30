@@ -42,6 +42,7 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
     private TextView spotCar;
     private CircularProgressIndicator circularProgressIndicatorCarView;
     private ExtendedFloatingActionButton extendedFloatingActionButton;
+    AddSpotFragment addSpotFragment = new AddSpotFragment();
 
     View view;
     Car car;
@@ -99,6 +100,19 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
             }
         });
 
+        //When clicking on the "+ Add spot", you will be sent to a new fragment to upload the information.
+        extendedFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                addSpotFragment.setArguments(bundle);
+                bundle.putParcelable("Car", car);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.flFragment, addSpotFragment ); // give your fragment container id in first parameter
+                transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+                transaction.commit();
+            }
+        });
         return view;
     }
 
@@ -155,6 +169,7 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
 //        cars.add(cars.get(0));
     }
 
+    //Next function is temporary (clicking on recyclerview, will be replaced by map with all spots)
     @Override
     public void onItemClick(int position) {
         //Send information from the selected spot to the new fragment (map)
