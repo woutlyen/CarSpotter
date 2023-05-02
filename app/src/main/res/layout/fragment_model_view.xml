@@ -188,14 +188,68 @@
                 android:layout_marginTop="4dp"/>
 
             <LinearLayout
-                android:id="@+id/linearLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginVertical="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textSpecifications">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Type:   "
+                        android:fontFamily="@font/rubik_regular"
+                        android:textAlignment="viewEnd"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Engine Type:   "
+                        android:fontFamily="@font/rubik_regular"
+                        android:textAlignment="viewEnd"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="MSRP:   "
+                        android:fontFamily="@font/rubik_regular"
+                        android:textAlignment="viewEnd"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Production:   "
+                        android:fontFamily="@font/rubik_regular"
+                        android:textAlignment="viewEnd"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Seats:   "
+                        android:fontFamily="@font/rubik_regular"
+                        android:textAlignment="viewEnd"                        />
+
+
+                </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textSpecifications">
 
@@ -233,6 +287,8 @@
                     android:layout_height="wrap_content"
                     android:text="Seats"
                     android:fontFamily="@font/rubik_regular"/>
+
+            </LinearLayout>
 
             </LinearLayout>
 
