@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity
     }
     BrandSelectFragment brandSelectFragment = new BrandSelectFragment();
     HomeFragment homeFragment = new HomeFragment();
-//    ThirdFragment thirdFragment = new ThirdFragment();
+    EventsFragment eventsFragment = new EventsFragment();
 
     @Override
     public boolean
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity
         else if (id == R.id.item_3){
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.flFragment, homeFragment)
+                    .replace(R.id.flFragment, eventsFragment)
                     .commit();
             return true;
         }

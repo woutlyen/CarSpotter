@@ -76,6 +76,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
     SpotLocationFragment spotLocationFragment = new SpotLocationFragment();
 
     private BottomNavigationView bottomNavigationView;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -87,7 +88,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             wikiIsRunning = savedInstanceState.getBoolean("wikiIsRunning");
             spotIsRunning = savedInstanceState.getBoolean("spotIsRunning");
         }
@@ -103,17 +104,17 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         newWiki = (RecyclerView) view.findViewById(R.id.newWiki);
 //        newEvent = (RecyclerView) view.findViewById(R.id.newEvent);
 
-        adapter = new SpotsAdapter( spots, this );
-        newSpot.setAdapter( adapter );
-        newSpot.setLayoutManager( new LinearLayoutManager( getActivity(), LinearLayoutManager.HORIZONTAL, false ));
+        adapter = new SpotsAdapter(spots, this);
+        newSpot.setAdapter(adapter);
+        newSpot.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
         PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(newSpot);
         newSpot.addItemDecoration(new PagerDecorator());
 
-        adapter2 = new BrandSelectAdapter( cars, this );
-        newWiki.setAdapter( adapter2 );
-        newWiki.setLayoutManager( new LinearLayoutManager( getActivity(), LinearLayoutManager.HORIZONTAL, false ));
+        adapter2 = new BrandSelectAdapter(cars, this);
+        newWiki.setAdapter(adapter2);
+        newWiki.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
         PagerSnapHelper snapHelper2 = new PagerSnapHelper();
         snapHelper2.attachToRecyclerView(newWiki);
@@ -167,7 +168,6 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
     }
 
 
-
     private void requestSpotsForHome() {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         JsonArrayRequest queueRequest = new JsonArrayRequest(
@@ -218,11 +218,11 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                     public void onResponse(JSONArray response) {
                         processJSONResponse2(response);
                         newWiki.getAdapter().notifyDataSetChanged();
-                        if(spotIsRunning){
+                        if (spotIsRunning) {
                             startSpotsAutoScroll();
                             spotIsRunning = false;
                         }
-                        if (wikiIsRunning){
+                        if (wikiIsRunning) {
                             startWikiAutoScroll();
                             wikiIsRunning = false;
                         }
@@ -262,20 +262,20 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         Bundle bundle = new Bundle();
         bottomNavigationView.setSelectedItemId(R.id.item_2);
 
-        if (type.equals("Car")){
+        if (type.equals("Car")) {
             modelViewFragment.setArguments(bundle);
             bundle.putParcelable("Car", cars.get(position));
             FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.flFragment, modelViewFragment ); // give your fragment container id in first parameter
+            transaction.replace(R.id.flFragment, modelViewFragment); // give your fragment container id in first parameter
             transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
             transaction.commit();
         }
 
-        if (type.equals("Spot")){
+        if (type.equals("Spot")) {
             spotLocationFragment.setArguments(bundle);
             bundle.putParcelable("Spot", spots.get(position));
             FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.flFragment, spotLocationFragment ); // give your fragment container id in first parameter
+            transaction.replace(R.id.flFragment, spotLocationFragment); // give your fragment container id in first parameter
             transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
             transaction.commit();
         }
@@ -312,15 +312,15 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         spotHandler.postDelayed(spotRunnable, DELAY_MS);
     }
 
-    private void stopWikiAutoScroll(){
+    private void stopWikiAutoScroll() {
         wikiHandler.removeCallbacks(wikiRunnable);
     }
 
-    private void stopSpotsAutoScroll(){
+    private void stopSpotsAutoScroll() {
         spotHandler.removeCallbacks(spotRunnable);
     }
 
-    public void onSaveInstanceState(Bundle outState){
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("wikiIsRunning", wikiIsRunning);
