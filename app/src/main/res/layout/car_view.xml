@@ -18,7 +18,7 @@
         <TextView
             android:id="@+id/model"
             android:layout_width="0dp"
-            android:layout_height="42dp"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
             android:layout_marginTop="4dp"
             android:textSize="30sp"
@@ -26,7 +26,9 @@
             app:layout_constraintEnd_toStartOf="@+id/image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent=".5"/>
+            app:layout_constraintWidth_percent=".5"
+            android:text="Taycan"
+            android:fontFamily="@font/rubik_medium"/>
 
         <!--        <TextView-->
         <!--            android:id="@+id/id_db"-->
@@ -54,7 +56,9 @@
             app:layout_constraintEnd_toStartOf="@+id/image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edition"
-            app:layout_constraintWidth_percent=".5"/>
+            app:layout_constraintWidth_percent=".5"
+            android:text="2019 - Now"
+            android:fontFamily="@font/rubik_regular"/>
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/image"
@@ -75,11 +79,12 @@
             android:layout_width="0dp"
             android:layout_height="19dp"
             android:layout_marginHorizontal="8dp"
-            android:layout_marginTop="2dp"
             app:layout_constraintBottom_toTopOf="@+id/buildyear"
             app:layout_constraintEnd_toStartOf="@+id/image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/model"
-            app:layout_constraintWidth_percent=".5"/>
+            app:layout_constraintWidth_percent=".5"
+            android:text="Cross Turismo"
+            android:fontFamily="@font/rubik_medium"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

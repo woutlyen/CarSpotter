@@ -77,15 +77,15 @@ public class ModelViewFragment extends Fragment {
         textEdition = (TextView) view.findViewById(R.id.textEdition);
         textEdition.setText(car.getEdition());
         textType = (TextView) view.findViewById(R.id.textType);
-        textType.setText("Car type: " + car.getType());
+        textType.setText("Car type: \t\t\t\t\t" + car.getType());
         textEngineType = (TextView) view.findViewById(R.id.textEngineType);
-        textEngineType.setText("Engine type: " + car.getEnginetype());
+        textEngineType.setText("Engine type: \t\t" + car.getEnginetype());
         textMSRP = (TextView) view.findViewById(R.id.textMSRP);
-        textMSRP.setText("MSRP: €" + Integer.toString(car.getMsrp()));
+        textMSRP.setText("MSRP: \t\t\t\t\t\t\t €" + Integer.toString(car.getMsrp()));
         textBuildYears = (TextView) view.findViewById(R.id.textBuildYears);
-        textBuildYears.setText("Production: " + car.getStart_build() +" - "+ car.getEnd_build());
+        textBuildYears.setText("Production: \t\t\t" + car.getStart_build() +" - "+ car.getEnd_build());
         textSeats = (TextView) view.findViewById(R.id.textSeats);
-        textSeats.setText("Seats: " + car.getSeats());
+        textSeats.setText("Seats: \t\t\t\t\t\t\t\t" + car.getSeats());
         brandIconView = (ImageView) view.findViewById(R.id.brandIcon);
 
         Uri uri = Uri.parse("android.resource://com.example.carspotter/drawable/"+car.getBrand().toLowerCase());

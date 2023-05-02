@@ -1,5 +1,6 @@
 package com.example.carspotter;
 
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -9,6 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +47,7 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
     private List<Car> cars = new ArrayList<>();
     private RecyclerView carView;
     private TextView infoTxt;
+    private TextView infoTxt2;
     private CircularProgressIndicator circularProgressIndicatorCarView;
     private ExtendedFloatingActionButton extendedFloatingActionButton;
     private ImageView brandLogo;
@@ -59,6 +62,8 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
 
     ModelViewFragment modelViewFragment = new ModelViewFragment();
 
+    AddWikiFragment addWikiFragment = new AddWikiFragment();
+
     public BrandSelectFragment() {
         // Required empty public constructor
     }
@@ -68,9 +73,12 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_brand_select, container, false);
+
         infoTxt = (TextView) view.findViewById(R.id.noCarsTxt);
+        infoTxt2 = (TextView) view.findViewById(R.id.noCarsTxt2);
         if(item_dropdown.equals("")){
-            infoTxt.setText("No brand selected!");
+            infoTxt.setText(R.string.help_text);
+            infoTxt2.setText(R.string.help_text_sub);
         }
         circularProgressIndicatorCarView = (CircularProgressIndicator) view.findViewById(R.id.progressIndicatorCarView);
         extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.add_wiki_fab);
@@ -78,17 +86,30 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
         Arrays.sort(item);
         autoCompleteTextView = view.findViewById(R.id.auto_complete_txt);
 
+
         brandLogo = (ImageView) view.findViewById(R.id.brandLogo);
+        brandLogo.setVisibility(View.GONE);
 
         if(savedInstanceState != null){
             brandLogoLocation = savedInstanceState.getString("brandLogoLocation");
-            Uri uri = Uri.parse(brandLogoLocation);
-            brandLogo.setImageURI(uri);
+            item_dropdown = savedInstanceState.getString("item_dropdown");
+//            if (brandLogoLocation != null) {
+//                Uri uri = Uri.parse(brandLogoLocation);
+//                brandLogo.setImageURI(uri);
+//            }
         }
 
         if (brandLogoLocation != null){
+            brandLogo.setVisibility(View.VISIBLE);
             Uri uri = Uri.parse(brandLogoLocation);
             brandLogo.setImageURI(uri);
+
+            if (cars.size() == 0) {
+                circularProgressIndicatorCarView.setVisibility(View.VISIBLE);
+                infoTxt.setText("");
+                infoTxt2.setText("");
+                requestCarsFromBrand(item_dropdown);
+            }
         }
 
         carView = view.findViewById( R.id.carView );
@@ -104,11 +125,13 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
                 carView.getAdapter().notifyDataSetChanged();
                 circularProgressIndicatorCarView.setVisibility(View.VISIBLE);
                 infoTxt.setText("");
+                infoTxt2.setText("");
 
                 brandLogoLocation = "android.resource://com.example.carspotter/drawable/"+item_dropdown.toLowerCase();
                 if (item_dropdown.equals("Citroën")){
                     brandLogoLocation = "android.resource://com.example.carspotter/drawable/citroen";
                 }
+                brandLogo.setVisibility(View.VISIBLE);
                 Uri uri = Uri.parse(brandLogoLocation);
                 brandLogo.setImageURI(uri);
 
@@ -116,6 +139,16 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
 //                Toast.makeText(BrandSelectActivity.this, "Item: " + item, Toast.LENGTH_SHORT).show();
             }
 
+        });
+
+        extendedFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.flFragment, addWikiFragment ); // give your fragment container id in first parameter
+                transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+                transaction.commit();
+            }
         });
 
         carView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -199,7 +232,7 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
     }
 
     @Override
-    public void onItemClick(int position) {
+    public void onItemClick(int position, String type) {
 //        Intent intent = new Intent(BrandSelectFragment.this.getActivity(), MainActivity.class);
 //        intent.putExtra("Car", cars.get(position));
 //        getActivity().startActivity(intent);
@@ -217,6 +250,7 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
         super.onSaveInstanceState(outState);
 
         outState.putString("brandLogoLocation", brandLogoLocation);
+        outState.putString("item_dropdown", item_dropdown);
     }
 
 }

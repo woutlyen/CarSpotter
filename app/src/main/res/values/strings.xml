@@ -6,6 +6,8 @@
     <string name="spots_fab_label">Spots</string>
     <string name="add_spot_fab_label">Add Spot</string>
     <string name="submit_fab_label">Submit Spot</string>
+    <string name="help_text">Hi there! &#9995;</string>
+    <string name="help_text_sub">Please select a brand to start your search!</string>
 
     <string name="text_label_1">Spotter</string>
     <string name="text_label_2">Events</string>

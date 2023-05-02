@@ -1,30 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".HomeFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/imageMain"
-        android:layout_width="250dp"
-        android:layout_height="135dp"
-        android:layout_marginTop="100dp"
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout3"
         app:srcCompat="@drawable/car_spotter_logo" />
+
+    <TextView
+        android:id="@+id/slogan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="The Ultimate Car Companion"
+        android:layout_marginTop="-20dp"
+        android:fontFamily="@font/rubik_medium"
+        android:gravity="center_horizontal"
+        app:layout_constraintTop_toBottomOf="@id/imageMain"/>
+
+    <TextView
+        android:id="@+id/greeting_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:text="Hello!"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageMain"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout3"
+        android:fontFamily="@font/rubik_semibold"
+        android:layout_marginLeft="16dp"/>
+
+<!--    <com.google.android.material.progressindicator.LinearProgressIndicator-->
+<!--        android:id="@+id/linearProgressIndicator1"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginHorizontal="32dp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@id/linearLayout3"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/linearLayout3"-->
+<!--        app:layout_constraintVertical_bias="0.17"-->
+<!--        app:trackCornerRadius="10dp"-->
+<!--        app:trackThickness="7dp"-->
+<!--        android:indeterminate="true"-->
+<!--        android:visibility="visible" />-->
+
+<!--    <com.google.android.material.progressindicator.LinearProgressIndicator-->
+<!--        android:id="@+id/linearProgressIndicator2"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginHorizontal="32dp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@id/linearLayout3"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/linearLayout3"-->
+<!--        app:layout_constraintVertical_bias="0.51"-->
+<!--        app:trackCornerRadius="10dp"-->
+<!--        app:trackThickness="7dp"-->
+<!--        android:indeterminate="true"-->
+<!--        android:visibility="visible" />-->
+
+    <RelativeLayout
+        android:id="@+id/loading_screen"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/greeting_text_view">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/loading_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            app:trackCornerRadius="10dp"
+            app:trackThickness="7dp"
+            app:indicatorSize="60dp"
+            android:indeterminate="true"/>
+
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="100dp"
         android:layout_marginEnd="8dp"
         android:orientation="vertical"
+        android:layout_marginTop="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,26 +114,64 @@
 
         <TextView
             android:id="@+id/mainSpot"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Latest Spot:" />
+            android:text="Latest Spots"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:fontFamily="@font/rubik_medium"
+            android:gravity="center_horizontal"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/newSpot"
             android:layout_width="match_parent"
-            android:layout_height="106dp" />
+            android:layout_height="135dp"/>
+
+        <TextView
+            android:id="@+id/mainWiki"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New Wikis"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/rubik_medium"
+            android:gravity="center_horizontal"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/newWiki"
+            android:layout_width="match_parent"
+            android:layout_height="135dp" />
 
         <TextView
             android:id="@+id/mainEvent"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Upcoming event:" />
+            android:text="Upcoming Events"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/rubik_medium"
+            android:gravity="center_horizontal"
+            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/newEvent"
             android:layout_width="match_parent"
-            android:layout_height="100dp" />
+            android:layout_height="135dp" />
+
+        <TextView
+                android:id="@+id/noEvents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No events planned at this moment! &#128531;"
+                android:layout_marginTop="-100dp"
+                android:fontFamily="@font/rubik_regular"
+                android:gravity="center_horizontal"
+                app:layout_constraintTop_toBottomOf="@id/linearLayout3"/>
+
     </LinearLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

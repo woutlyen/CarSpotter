@@ -9,6 +9,11 @@ import android.util.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class Spot implements Parcelable {
 
         private int spot_id;
@@ -37,6 +42,18 @@ public class Spot implements Parcelable {
                 location = o.getString("location");
                 date = o.getString("date");
                 image = o.getString("image");
+
+                String inputDateStr = date;
+                SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+                SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd MMMM yyyy \n'at' HH:mm", Locale.getDefault());
+                String outputDateStr = "";
+                try {
+                    Date inputDate = inputDateFormat.parse(inputDateStr);
+                    date = outputDateFormat.format(inputDate);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
 
                 byte[] byteImage = Base64.decode(image, Base64.DEFAULT);
                 decodedImage = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);

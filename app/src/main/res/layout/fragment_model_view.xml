@@ -71,11 +71,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="14dp"
-                        android:text="Brand"
+                        android:text="Volkswagen"
                         android:textSize="34sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:fontFamily="@font/rubik_semibold"/>
 
                     <TextView
                         android:id="@+id/textModel"
@@ -87,7 +88,8 @@
                         android:textSize="24sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textBrand" />
+                        app:layout_constraintTop_toBottomOf="@+id/textBrand"
+                        android:fontFamily="@font/rubik_medium"/>
 
                     <TextView
                         android:id="@+id/textEdition"
@@ -95,12 +97,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
                         android:layout_marginTop="3dp"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginBottom="4dp"
                         android:text="Edition"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textModel"
-                        app:layout_constraintBottom_toBottomOf="parent"/>
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:fontFamily="@font/rubik_regular"/>
 
                 </LinearLayout>
 
@@ -144,7 +147,8 @@
         android:text="@string/spots_fab_label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:fontFamily="@font/rubik_medium"/>
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
@@ -167,15 +171,25 @@
                 android:layout_height="24dp"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginVertical="10dp"
-                android:text="Specifications:"
+                android:text="Specifications"
                 android:textSize="20sp"
+                android:gravity="center_horizontal"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:fontFamily="@font/rubik_medium"/>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:dividerInsetStart="16dp"
+                app:dividerInsetEnd="16dp"
+                app:layout_constraintTop_toBottomOf="@id/textSpecifications"
+                android:layout_marginTop="4dp"/>
 
             <LinearLayout
                 android:id="@+id/linearLayout"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginVertical="8dp"
@@ -189,31 +203,36 @@
                     android:id="@+id/textType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Type" />
+                    android:text="Type"
+                    android:fontFamily="@font/rubik_regular"/>
 
                 <TextView
                     android:id="@+id/textEngineType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Engine Type" />
+                    android:text="Engine Type"
+                    android:fontFamily="@font/rubik_regular"/>
 
                 <TextView
                     android:id="@+id/textMSRP"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="MSRP" />
+                    android:text="MSRP"
+                    android:fontFamily="@font/rubik_regular" />
 
                 <TextView
                     android:id="@+id/textBuildYears"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Build Year" />
+                    android:text="Build Year"
+                    android:fontFamily="@font/rubik_regular" />
 
                 <TextView
                     android:id="@+id/textSeats"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Seats" />
+                    android:text="Seats"
+                    android:fontFamily="@font/rubik_regular"/>
 
             </LinearLayout>
 

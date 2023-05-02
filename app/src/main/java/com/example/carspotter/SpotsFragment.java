@@ -171,12 +171,12 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
 
     //Next function is temporary (clicking on recyclerview, will be replaced by map with all spots)
     @Override
-    public void onItemClick(int position) {
+    public void onItemClick(int position, String type) {
         //Send information from the selected spot to the new fragment (map)
         Bundle bundle = new Bundle();
         spotLocationFragment.setArguments(bundle);
         bundle.putParcelable("Spot", spots.get(position));
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.replace(R.id.flFragment, spotLocationFragment ); // give your fragment container id in first parameter
         transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
         transaction.commit();

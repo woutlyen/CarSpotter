@@ -51,7 +51,7 @@ public class SpotsAdapter extends RecyclerView.Adapter<SpotsAdapter.ViewHolder> 
                     if(recyclerViewInterface != null){
                         int pos = getAdapterPosition();
                         if(pos != RecyclerView.NO_POSITION){
-                            recyclerViewInterface.onItemClick(pos);
+                            recyclerViewInterface.onItemClick(pos, "Spot");
                         }
                     }
                 }

@@ -18,26 +18,28 @@
         <TextView
             android:id="@+id/spotWhen"
             android:layout_width="0dp"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
-            android:text="When:"
+            android:text="When: \n"
             app:layout_constraintBottom_toTopOf="@+id/spotWhere"
             app:layout_constraintEnd_toStartOf="@+id/spotImage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent=".5"/>
+            app:layout_constraintWidth_percent=".5"
+            android:fontFamily="@font/rubik_medium"/>
 
         <TextView
             android:id="@+id/spotWhere"
             android:layout_width="0dp"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
             android:text="Where: "
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/spotImage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spotWhen"
-            app:layout_constraintWidth_percent=".5"/>
+            app:layout_constraintWidth_percent=".5"
+            android:fontFamily="@font/rubik_regular"/>
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/spotImage"
