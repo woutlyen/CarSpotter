@@ -120,7 +120,7 @@ public class AddSpotFragment extends Fragment {
 
         getImage();
 
-        checkForChanges();
+        //checkForChanges();
         return view;
     }
 
@@ -185,7 +185,7 @@ public class AddSpotFragment extends Fragment {
                                                 // We will now display the results on the app.
                                                 latData.setText(latitude);
                                                 longData.setText(longitude);
-                                                locationUploaded = true;
+                                                //locationUploaded = true;
 
                                             }
                                         }
@@ -272,7 +272,7 @@ public class AddSpotFragment extends Fragment {
                 if (null != selectedImageUri) {
                     // update the preview image in the layout
                     addSpotImage.setImageURI(selectedImageUri);
-                    imageUploaded = true;
+                    //imageUploaded = true;
                 }
             }
         }
@@ -293,6 +293,7 @@ public class AddSpotFragment extends Fragment {
     /**
      * This part of the Class is for taking the given information and uploading it to the SQL-database.
      */
+    /*
     private boolean locationUploaded = false;
     private boolean imageUploaded = false;
     protected void checkForChanges(){
@@ -314,7 +315,7 @@ public class AddSpotFragment extends Fragment {
             }
         }
     }
-
+*/
 
     //TODO: rearrange location & picture so picture is larger
     //TODO: onSubmitClick stuur data naar Database en vervolgens u terug naar Home of Spotter stuurt
