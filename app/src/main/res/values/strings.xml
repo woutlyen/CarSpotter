@@ -24,4 +24,5 @@
     <string name="login_failed">"Login failed"</string>
     <string name="search">Search Event</string>
     <string name="add_event_fab_label">Add Event</string>
+    <string name="thanksTxt">Made with &#10084; from Johnny and Wout</string>
 </resources>
