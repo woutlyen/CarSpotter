@@ -24,6 +24,7 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -119,11 +120,7 @@ public class AddSpotFragment extends Fragment {
 
         getImage();
 
-        while (true){
-            if (locationUploaded && imageUploaded){
-                submitData();
-            }
-        }
+        checkForChanges();
         return view;
     }
 
@@ -298,8 +295,24 @@ public class AddSpotFragment extends Fragment {
      */
     private boolean locationUploaded = false;
     private boolean imageUploaded = false;
-    protected void submitData(){
+    protected void checkForChanges(){
+        while (true){
+            if (locationUploaded && imageUploaded){
+                extendedFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
+                        //Bundle bundle = new Bundle();
+                        //addSpotFragment.setArguments(bundle);
+                        //bundle.putParcelable("Car", car);
+                        //FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                        //transaction.replace(R.id.flFragment, addSpotFragment ); // give your fragment container id in first parameter
+                        //transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+                        //transaction.commit();
+                    }
+                });
+            }
+        }
     }
 
 
