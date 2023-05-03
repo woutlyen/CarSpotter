@@ -42,23 +42,23 @@
         android:layout_height="wrap_content"
         android:text="Add location"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/addSpotPicture"
+        app:layout_constraintEnd_toStartOf="@+id/addSpotImageBtn"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/addSpotImage"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_marginBottom="24dp"
         android:src="@android:drawable/ic_menu_add"
-        app:layout_constraintBottom_toTopOf="@+id/addSpotPicture"
-        app:layout_constraintEnd_toEndOf="@+id/addSpotPicture"
-        app:layout_constraintStart_toStartOf="@+id/addSpotPicture" />
+        app:layout_constraintBottom_toTopOf="@+id/addSpotImageBtn"
+        app:layout_constraintEnd_toEndOf="@+id/addSpotImageBtn"
+        app:layout_constraintStart_toStartOf="@+id/addSpotImageBtn" />
 
     <Button
-        android:id="@+id/addSpotPicture"
+        android:id="@+id/addSpotImageBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add picture"
@@ -82,10 +82,10 @@
     <TableLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+        app:layout_constraintBottom_toBottomOf="@+id/addSpotImage"
         app:layout_constraintEnd_toEndOf="@+id/addSpotLocation"
         app:layout_constraintStart_toStartOf="@+id/addSpotLocation"
-        app:layout_constraintTop_toTopOf="@+id/imageView2">
+        app:layout_constraintTop_toTopOf="@+id/addSpotImage">
 
         <TableRow
             android:layout_width="match_parent"
