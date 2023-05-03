@@ -1,21 +1,28 @@
 package com.example.carspotter;
 
+import static android.app.Activity.RESULT_OK;
 import static androidx.core.content.ContextCompat.getSystemService;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Looper;
+import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,9 +68,11 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import java.io.ByteArrayOutputStream;
+
 public class AddSpotFragment extends Fragment {
     private Button addSpotLocation;
-    private Button addSpotPicture;
     private TextView latData;
     private TextView latInfo;
     private TextView longData;
@@ -73,7 +82,9 @@ public class AddSpotFragment extends Fragment {
     private ExtendedFloatingActionButton extendedFloatingActionButton;
     private LocationRequest locationRequest;
     private ImageView addSpotImage;
+    private Button addSpotImageBtn;
     View view;
+    int SELECT_PICTURE = 200;
 
     public AddSpotFragment() {
         // Required empty public constructor
@@ -91,7 +102,10 @@ public class AddSpotFragment extends Fragment {
         longData = (TextView) view.findViewById(R.id.longData);
         latInfo = (TextView) view.findViewById(R.id.latInfo);
         longInfo = (TextView) view.findViewById(R.id.longInfo);
+
         addSpotImage = (ImageView) view.findViewById(R.id.addSpotImage);
+        addSpotImageBtn = (Button) view.findViewById(R.id.addSpotImageBtn);
+
 
         // Needed for requesting location
         locationRequest = LocationRequest.create();
@@ -103,6 +117,13 @@ public class AddSpotFragment extends Fragment {
         checkForLocationPermission();
         requestLocation();
 
+        getImage();
+
+        while (true){
+            if (locationUploaded && imageUploaded){
+                submitData();
+            }
+        }
         return view;
     }
 
@@ -123,7 +144,10 @@ public class AddSpotFragment extends Fragment {
 
     }
 
-    private boolean isGPSEnabled(){
+    /**
+     * This part of the Class is for uploading location information
+     */
+    protected boolean isGPSEnabled(){
         /**
          * This code will check whether the location service is enabled.
          * If it is not, it will return 'false'.
@@ -137,10 +161,12 @@ public class AddSpotFragment extends Fragment {
         isEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         return isEnabled;
     }
-    private void requestLocation() {
+    protected void requestLocation() {
         addSpotLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                latData.setText("Loading...");
+                longData.setText("Loading...");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         if (isGPSEnabled()) {
@@ -162,11 +188,13 @@ public class AddSpotFragment extends Fragment {
                                                 // We will now display the results on the app.
                                                 latData.setText(latitude);
                                                 longData.setText(longitude);
+                                                locationUploaded = true;
+
                                             }
                                         }
                                     }, Looper.getMainLooper());
                         } else {
-                            //verander de vakskes naar *PLEASE TURN ON GPS*
+                            //TODO: verander de vakskes naar *PLEASE TURN ON GPS*
                         }
                     }
                 } else {
@@ -175,7 +203,7 @@ public class AddSpotFragment extends Fragment {
             }
         });
     }
-    private void checkForLocationPermission() {
+    protected void checkForLocationPermission() {
         /**
          * Here we will check the device's location permissions.
          * If coarse location is given but precise is not, precise location will be requested.
@@ -209,6 +237,72 @@ public class AddSpotFragment extends Fragment {
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
     }
-    //TODO: functie om foto te uploaden (die vervangt ook placeholder van '+' icon)
+
+
+    /**
+     * This part of the Class is for uploading the image
+     */
+    protected void getImage(){
+        /**
+         * This code is simply for waiting for the press of the 'Add picture' button.
+         */
+        addSpotImageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageChooser();
+            }
+        });
+    }
+    protected void imageChooser() {
+        /**
+         * Here we create an instance of the intent of the type image.
+         */
+        Intent i = new Intent();
+        i.setType("image/*");
+        i.setAction(Intent.ACTION_GET_CONTENT);
+        // pass the constant to compare it with the returned requestCode (200)
+        startActivityForResult(Intent.createChooser(i, "Select Picture"), SELECT_PICTURE);
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            // compare the resultCode with the
+            // SELECT_PICTURE constant
+            if (requestCode == SELECT_PICTURE) {
+                // Get the url of the image from data
+                Uri selectedImageUri = data.getData();
+                if (null != selectedImageUri) {
+                    // update the preview image in the layout
+                    addSpotImage.setImageURI(selectedImageUri);
+                    imageUploaded = true;
+                }
+            }
+        }
+    }
+    protected String imageToString() {
+        /**
+         * To store the image in the database, we have to take the image from the ImageView and convert it to a BASE64 string.
+         */
+        addSpotImage.buildDrawingCache();
+        Bitmap bmap = addSpotImage.getDrawingCache();
+
+        ByteArrayOutputStream byteArrayOutputStream =  new ByteArrayOutputStream();
+        bmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
+        byte[] imgbytes = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(imgbytes, Base64.DEFAULT);
+    }
+
+    /**
+     * This part of the Class is for taking the given information and uploading it to the SQL-database.
+     */
+    private boolean locationUploaded = false;
+    private boolean imageUploaded = false;
+    protected void submitData(){
+
+    }
+
+
+    //TODO: rearrange location & picture so picture is larger
     //TODO: onSubmitClick stuur data naar Database en vervolgens u terug naar Home of Spotter stuurt
 }
