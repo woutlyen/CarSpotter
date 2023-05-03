@@ -92,6 +92,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
     private ConstraintLayout loadingScreen;
     private LinearProgressIndicator loadingProgressBar;
     private LinearLayout recyclerviews;
+    private boolean reset;
 
 //    private LinearProgressIndicator linearProgressIndicator1;
 //    private LinearProgressIndicator linearProgressIndicator2;
@@ -197,7 +198,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                     divider.setVisibility(View.INVISIBLE);
                 }
 
-                if(recyclerviews.getAlpha() == 1) {
+                if(recyclerviews.getAlpha() > 0) {
                     if (scrollY > 3 * logoHeight) {
                         greetingTextView.setVisibility(View.INVISIBLE);
                         scrollUpImage.setVisibility(View.INVISIBLE);
@@ -229,8 +230,8 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         startAnimation();
 
         // The device is in light mode
-//        int[] colors = {Color.TRANSPARENT, Color.rgb(141, 207, 250)};
-        int[] colors = {Color.TRANSPARENT, Color.rgb(42, 100, 134)};
+        int[] colors = {Color.TRANSPARENT, Color.rgb(177, 214, 255)};
+//        int[] colors = {Color.TRANSPARENT, Color.rgb(42, 100, 134)};
 
         // Create a gradient drawable with the start and end colors
         GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.BR_TL, colors);
@@ -239,7 +240,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         int bottom = view.getHeight();
         int top = bottom - 200;
         gradientDrawable.setBounds(0, top, view.getWidth(), bottom);
-        gradientDrawable.setAlpha(90);
+        gradientDrawable.setAlpha(60);
 
         view.setBackground(gradientDrawable);
 
@@ -257,6 +258,8 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                 return false;
             }
         });
+
+        reset = true;
 
         return view;
     }
@@ -318,10 +321,10 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                     wikiIsRunning = false;
                 }
 
-                if(wikisGenerated && spotsGenerated) {
-                    loadingScreen.setVisibility(View.GONE);
+                if(wikisGenerated && spotsGenerated && reset) {
+//                    loadingScreen.setVisibility(View.GONE);
                     recyclerviews.setVisibility(View.VISIBLE);
-                    thanksTxt.setVisibility(View.INVISIBLE);
+//                    thanksTxt.setVisibility(View.INVISIBLE);
                     thanksTxt2.setVisibility(View.VISIBLE);
                     scrollUpImage.animate()
                             .alpha(1f)
@@ -331,6 +334,15 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                             .alpha(1f)
                             .setDuration(1000)
                             .setListener(null);
+                    loadingScreen.animate()
+                            .alpha(0f)
+                            .setDuration(300)
+                            .setListener(null);
+                    thanksTxt.animate()
+                            .alpha(0f)
+                            .setDuration(300)
+                            .setListener(null);
+                    reset = false;
                 }
                 animatorSet.start();
             }
@@ -349,6 +361,12 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
+
+//                        scrollUpImage.animate()
+//                                .alpha(1f)
+//                                .setDuration(500)
+//                                .setListener(null);
+
                         processJSONResponse(response);
                         newSpot.getAdapter().notifyDataSetChanged();
                         spotsGenerated = true;

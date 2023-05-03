@@ -8,53 +8,59 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.carspotter.model.Car;
+import com.example.carspotter.model.Event;
 
 import java.util.List;
 
-public class EventsAdapter extends RecyclerView.Adapter<BrandSelectAdapter.ViewHolder> {
-    private List<Car> carList;
+public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder> {
+    private List<Event> eventList;
     private final RecyclerViewInterface recyclerViewInterface;
-    public EventsAdapter(List<Car> carList, RecyclerViewInterface recyclerViewInterface) {
-        this.carList = carList;
+
+    public EventsAdapter(List<Event> eventList, RecyclerViewInterface recyclerViewInterface) {
+        this.eventList = eventList;
         this.recyclerViewInterface = recyclerViewInterface;
     }
+
     @Override
-    public BrandSelectAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public EventsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View carView = layoutInflater.inflate(R.layout.car_view, parent, false);
-        BrandSelectAdapter.ViewHolder myViewHolder = new BrandSelectAdapter.ViewHolder(carView, recyclerViewInterface);
+        View eventView = layoutInflater.inflate(R.layout.event_view, parent, false);
+        EventsAdapter.ViewHolder myViewHolder = new EventsAdapter.ViewHolder(eventView, recyclerViewInterface);
         return myViewHolder;
     }
+
     @Override
-    public void onBindViewHolder(BrandSelectAdapter.ViewHolder holder, int position) {
-        Car car = carList.get(position);
-        ((TextView) holder.carView.findViewById(R.id.model))
-                .setText(car.getModel());
-        ((TextView) holder.carView.findViewById(R.id.edition))
-                .setText(car.getEdition());
-        ((TextView) holder.carView.findViewById(R.id.buildyear))
-                .setText(car.getStart_build()+" - "+car.getEnd_build());
-        ((ImageView) holder.carView.findViewById(R.id.image))
-                .setImageBitmap(car.getDecodedImage());
+    public void onBindViewHolder(EventsAdapter.ViewHolder holder, int position) {
+        Event event = eventList.get(position);
+        ((TextView) holder.eventView.findViewById(R.id.name))
+                .setText(event.getName());
+        ((TextView) holder.eventView.findViewById(R.id.date))
+                .setText(event.getDate());
+        ((TextView) holder.eventView.findViewById(R.id.fee))
+                .setText(Integer.toString(event.getFee()));
+        ((ImageView) holder.eventView.findViewById(R.id.image))
+                .setImageBitmap(event.getDecodedImage());
     }
+
     @Override
     public int getItemCount() {
-        return carList.size();
+        return eventList.size();
     }
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        public View carView;
-        public ViewHolder(View carView, RecyclerViewInterface recyclerViewInterface) {
-            super(carView);
-            this.carView = (View) carView;
 
-            carView.setOnClickListener(new View.OnClickListener() {
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        public View eventView;
+
+        public ViewHolder(View eventView, RecyclerViewInterface recyclerViewInterface) {
+            super(eventView);
+            this.eventView = (View) eventView;
+
+            eventView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(recyclerViewInterface != null){
+                    if (recyclerViewInterface != null) {
                         int pos = getAdapterPosition();
-                        if(pos != RecyclerView.NO_POSITION){
-                            recyclerViewInterface.onItemClick(pos, "Car");
+                        if (pos != RecyclerView.NO_POSITION) {
+                            recyclerViewInterface.onItemClick(pos, "Event");
                         }
                     }
                 }
