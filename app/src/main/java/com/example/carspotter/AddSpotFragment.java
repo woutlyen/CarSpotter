@@ -69,10 +69,10 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
 import java.io.ByteArrayOutputStream;
 
-public class AddSpotFragment extends Fragment {
+
+public class AddSpotFragment extends Fragment{
     private Button addSpotLocation;
     private TextView latData;
     private TextView latInfo;
@@ -84,6 +84,9 @@ public class AddSpotFragment extends Fragment {
     private LocationRequest locationRequest;
     private ImageView addSpotImage;
     private Button addSpotImageBtn;
+    private boolean imageSubmitted = false;
+    private boolean locationSubmitted = false;
+    private String imageString;
     View view;
     int SELECT_PICTURE = 200;
 
@@ -114,13 +117,19 @@ public class AddSpotFragment extends Fragment {
         locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(2000);
 
+        //Step 1 (loading in fragment)
         setCarInformation();
+
+        //Step 2 (Get location)
         checkForLocationPermission();
         requestLocation();
 
+        //Step 3 (Get image)
         getImage();
 
-        //checkForChanges();
+        //Step 4 (When image and location have been uploaded, upload to database
+        upload();
+
         return view;
     }
 
@@ -162,11 +171,15 @@ public class AddSpotFragment extends Fragment {
         addSpotLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                latInfo.setText("Latitude: ");
+                longInfo.setText("Longitude: ");
                 latData.setText("Loading...");
                 longData.setText("Loading...");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         if (isGPSEnabled()) {
+                            latInfo.setText("Latitude: ");
+                            longInfo.setText("Longitude: ");
                             LocationServices.getFusedLocationProviderClient(getActivity())
                                     .requestLocationUpdates(locationRequest, new LocationCallback() {
                                         @Override
@@ -185,13 +198,20 @@ public class AddSpotFragment extends Fragment {
                                                 // We will now display the results on the app.
                                                 latData.setText(latitude);
                                                 longData.setText(longitude);
-                                                //locationUploaded = true;
+
+                                                locationSubmitted = true;
+                                                if(imageSubmitted){
+                                                    extendedFloatingActionButton.setVisibility(View.VISIBLE);
+                                                }
 
                                             }
                                         }
                                     }, Looper.getMainLooper());
                         } else {
-                            //TODO: verander de vakskes naar *PLEASE TURN ON GPS*
+                            latInfo.setText("Error: ");
+                            latData.setText("Please turn on your gps.");
+                            longInfo.setText("");
+                            longData.setText("");
                         }
                     }
                 } else {
@@ -207,16 +227,18 @@ public class AddSpotFragment extends Fragment {
          * If none of the permissions are granted, both coarse and fine will be requested.
          * If both are granted, nothing will be requested.
          */
+
+        //TODO: Weigeren dat ge kunt localiseren nadat (fine) location geweigerd is.
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
                                 .RequestMultiplePermissions(), result -> {
                     Boolean fineLocationGranted = null;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         fineLocationGranted = result.getOrDefault(
                                 Manifest.permission.ACCESS_FINE_LOCATION, false);
                     }
                     Boolean coarseLocationGranted = null;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         coarseLocationGranted = result.getOrDefault(
                                         Manifest.permission.ACCESS_COARSE_LOCATION,false);
                     }
@@ -224,8 +246,18 @@ public class AddSpotFragment extends Fragment {
                                 // Precise location access granted.
                     } else if (coarseLocationGranted != null && coarseLocationGranted) {
                                 // Only approximate location access granted.
+                                latInfo.setText("Error: ");
+                                latData.setText("Please allow usage of precise location.");
+                                longInfo.setText("");
+                                longData.setText("");
+                                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                             } else {
                                 // No location access granted.
+                                latInfo.setText("Error: ");
+                                latData.setText("Please allow usage of location.");
+                                longInfo.setText("");
+                                longData.setText("");
+                                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                             }
                         }
                 );
@@ -242,11 +274,17 @@ public class AddSpotFragment extends Fragment {
     protected void getImage(){
         /**
          * This code is simply for waiting for the press of the 'Add picture' button.
+         * It will then save the selected image as a String, for sending it to the database.
          */
         addSpotImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 imageChooser();
+                imageString = imageToString();
+
+                if(locationSubmitted){
+                    extendedFloatingActionButton.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
@@ -271,8 +309,8 @@ public class AddSpotFragment extends Fragment {
                 Uri selectedImageUri = data.getData();
                 if (null != selectedImageUri) {
                     // update the preview image in the layout
+                    //TODO: crop image in juiste formaat
                     addSpotImage.setImageURI(selectedImageUri);
-                    //imageUploaded = true;
                 }
             }
         }
@@ -293,30 +331,14 @@ public class AddSpotFragment extends Fragment {
     /**
      * This part of the Class is for taking the given information and uploading it to the SQL-database.
      */
-    /*
-    private boolean locationUploaded = false;
-    private boolean imageUploaded = false;
-    protected void checkForChanges(){
-        while (true){
-            if (locationUploaded && imageUploaded){
-                extendedFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        //Bundle bundle = new Bundle();
-                        //addSpotFragment.setArguments(bundle);
-                        //bundle.putParcelable("Car", car);
-                        //FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                        //transaction.replace(R.id.flFragment, addSpotFragment ); // give your fragment container id in first parameter
-                        //transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
-                        //transaction.commit();
+    protected void upload(){
+        extendedFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+                public void onClick(View v) {
+                    //TODO: onSubmitClick stuur data naar Database
+                    // Add date!
+                    // Tot slot terug naar Home of Spotter
                     }
                 });
             }
-        }
-    }
-*/
-
-    //TODO: rearrange location & picture so picture is larger
-    //TODO: onSubmitClick stuur data naar Database en vervolgens u terug naar Home of Spotter stuurt
 }
