@@ -202,6 +202,7 @@ public class AddSpotFragment extends Fragment{
                                                 locationSubmitted = true;
                                                 if(imageSubmitted){
                                                     extendedFloatingActionButton.setVisibility(View.VISIBLE);
+                                                    //TODO: Submit doesn't show
                                                 }
 
                                             }
@@ -311,6 +312,7 @@ public class AddSpotFragment extends Fragment{
                     // update the preview image in the layout
                     //TODO: crop image in juiste formaat
                     addSpotImage.setImageURI(selectedImageUri);
+                    //TODO: submit button pops up before selecting picture
                 }
             }
         }

@@ -39,34 +39,38 @@
     <Button
         android:id="@+id/addSpotLocation"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="32dp"
         android:text="Add location"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/addSpotImageBtn"
+        app:layout_constraintBottom_toTopOf="@+id/submit_fab"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/addSpotImage"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginBottom="24dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:src="@android:drawable/ic_menu_add"
         app:layout_constraintBottom_toTopOf="@+id/addSpotImageBtn"
-        app:layout_constraintEnd_toEndOf="@+id/addSpotImageBtn"
-        app:layout_constraintStart_toStartOf="@+id/addSpotImageBtn" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addSpotInfo" />
 
     <Button
         android:id="@+id/addSpotImageBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="48dp"
         android:text="Add picture"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tableLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/addSpotLocation"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/addSpotInfo"
@@ -80,12 +84,14 @@
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <TableLayout
+        android:id="@+id/tableLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/addSpotImage"
-        app:layout_constraintEnd_toEndOf="@+id/addSpotLocation"
-        app:layout_constraintStart_toStartOf="@+id/addSpotLocation"
-        app:layout_constraintTop_toTopOf="@+id/addSpotImage">
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/addSpotLocation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TableRow
             android:layout_width="match_parent"
