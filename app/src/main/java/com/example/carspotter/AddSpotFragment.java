@@ -200,11 +200,10 @@ public class AddSpotFragment extends Fragment{
                                                 longData.setText(longitude);
 
                                                 locationSubmitted = true;
+
                                                 if(imageSubmitted){
                                                     extendedFloatingActionButton.setVisibility(View.VISIBLE);
-                                                    //TODO: Submit doesn't show
                                                 }
-
                                             }
                                         }
                                     }, Looper.getMainLooper());
@@ -281,11 +280,6 @@ public class AddSpotFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 imageChooser();
-                imageString = imageToString();
-
-                if(locationSubmitted){
-                    extendedFloatingActionButton.setVisibility(View.VISIBLE);
-                }
             }
         });
     }
@@ -312,9 +306,17 @@ public class AddSpotFragment extends Fragment{
                     // update the preview image in the layout
                     //TODO: crop image in juiste formaat
                     addSpotImage.setImageURI(selectedImageUri);
-                    //TODO: submit button pops up before selecting picture
+                    processImageUpload();
                 }
             }
+        }
+    }
+    protected void processImageUpload(){
+        imageString = imageToString();
+        System.out.println(imageString);
+        imageSubmitted = true;
+        if(locationSubmitted){
+            extendedFloatingActionButton.setVisibility(View.VISIBLE);
         }
     }
     protected String imageToString() {
