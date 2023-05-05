@@ -24,7 +24,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
     @Override
     public EventsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View eventView = layoutInflater.inflate(R.layout.event_view, parent, false);
+        View eventView = layoutInflater.inflate(R.layout.event_view_2, parent, false);
         EventsAdapter.ViewHolder myViewHolder = new EventsAdapter.ViewHolder(eventView, recyclerViewInterface);
         return myViewHolder;
     }
@@ -35,9 +35,9 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         ((TextView) holder.eventView.findViewById(R.id.name))
                 .setText(event.getName());
         ((TextView) holder.eventView.findViewById(R.id.date))
-                .setText(event.getDate());
-        ((TextView) holder.eventView.findViewById(R.id.fee))
-                .setText(Integer.toString(event.getFee()));
+                .setText(event.getOnlyDate() + " from " + event.getStart_hour() + "h till " + event.getEnd_hour() + "h");
+//        ((TextView) holder.eventView.findViewById(R.id.fee))
+//                .setText(Integer.toString(event.getFee()));
         ((ImageView) holder.eventView.findViewById(R.id.image))
                 .setImageBitmap(event.getDecodedImage());
     }

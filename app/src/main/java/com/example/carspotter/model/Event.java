@@ -9,12 +9,18 @@ import android.util.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class Event implements Parcelable {
 
     private int id;
     private String name;
     private String description;
     private String date;
+    private String onlyDate;
     private String start_hour;
     private String end_hour;
     private String type;
@@ -45,6 +51,18 @@ public class Event implements Parcelable {
             type = o.getString("type");
             fee = o.getInt("fee");
             image = o.getString("image");
+
+            String inputDateStr = date;
+            SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+            SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
+            String outputDateStr = "";
+            try {
+                Date inputDate = inputDateFormat.parse(inputDateStr);
+                onlyDate = outputDateFormat.format(inputDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
             byte[] byteImage = Base64.decode(image, Base64.DEFAULT);
             decodedImage = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
@@ -106,6 +124,10 @@ public class Event implements Parcelable {
 
     public Bitmap getDecodedImage() {
         return decodedImage;
+    }
+
+    public String getOnlyDate() {
+        return onlyDate;
     }
 
     @Override

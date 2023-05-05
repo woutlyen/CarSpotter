@@ -230,8 +230,8 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         startAnimation();
 
         // The device is in light mode
-        int[] colors = {Color.TRANSPARENT, Color.rgb(177, 214, 255)};
-//        int[] colors = {Color.TRANSPARENT, Color.rgb(42, 100, 134)};
+//        int[] colors = {Color.TRANSPARENT, Color.rgb(177, 214, 255)};
+        int[] colors = {Color.TRANSPARENT, Color.rgb(42, 100, 134)};
 
         // Create a gradient drawable with the start and end colors
         GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.BR_TL, colors);
@@ -240,8 +240,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         int bottom = view.getHeight();
         int top = bottom - 200;
         gradientDrawable.setBounds(0, top, view.getWidth(), bottom);
-        gradientDrawable.setAlpha(60);
-
+        gradientDrawable.setAlpha(80);
         view.setBackground(gradientDrawable);
 
         newWiki.setOnTouchListener(new View.OnTouchListener() {

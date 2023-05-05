@@ -2,6 +2,7 @@ package com.example.carspotter;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +23,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.carspotter.model.Event;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
@@ -51,6 +53,7 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
     private MaterialButton week;
     private MaterialButton month;
     private MaterialButton year;
+    private ExtendedFloatingActionButton add_event_fab;
 
 
     View view;
@@ -81,6 +84,8 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
 
         progressIndicatorCarView.setVisibility(View.VISIBLE);
 
+        add_event_fab = (ExtendedFloatingActionButton) view.findViewById(R.id.add_event_fab);
+
 
         requestEvents();
 
@@ -98,6 +103,28 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
                 }
             }
         });
+
+
+        eventView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                //Make action button invisible when scrolling
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 10 & add_event_fab.isShown()){
+                    add_event_fab.hide();
+                }
+                if (dy < -10 && !add_event_fab.isShown()) {
+                    add_event_fab.show();
+                }
+                if (!recyclerView.canScrollVertically(-1)) {
+                    add_event_fab.show();
+                }
+                else if (!recyclerView.canScrollVertically(1)) {
+                    add_event_fab.hide();
+                }
+            }
+        });
+
 
         return view;
     }
