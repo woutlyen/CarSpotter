@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
@@ -36,7 +34,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -48,26 +45,15 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
-import java.io.BufferedReader;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDate;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Collections;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 public class AddSpotFragment extends Fragment {
@@ -203,11 +189,7 @@ public class AddSpotFragment extends Fragment {
                                                 latData.setText(latitude);
                                                 longData.setText(longitude);
 
-                                                locationSubmitted = true;
                                                 locationTranslation();
-                                                if (imageSubmitted) {
-                                                    extendedFloatingActionButton.setVisibility(View.VISIBLE);
-                                                }
                                             }
                                         }
                                     }, Looper.getMainLooper());
@@ -390,7 +372,6 @@ public class AddSpotFragment extends Fragment {
                             @Override
                             public byte[] getBody() throws AuthFailureError {
                                 String body = null;
-
                                 try {
                                     body = "car=" + car.getId()
                                             + "&" + "date=" + LocalDate.now()
@@ -417,162 +398,6 @@ public class AddSpotFragment extends Fragment {
                 })
                 .show();
     }
-
-    /*
-    protected void sendToDatabase() {
-
-        //TODO: onSubmitClick stuur data naar Database
-        // Add date!
-        // Tot slot terug naar Home of Spotter
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,
-                QUEUE_URL,
-                response -> {
-                    // Handle the response
-                    Toast.makeText(getActivity(),"Spot Submitted", Toast.LENGTH_LONG).show();
-                    //TODO: add progress indicator
-                    //progressIndicatorAddWikiView.hide();
-                },
-                error -> {
-                    // Handle the error
-                    Toast.makeText(getActivity(),"Something Went Wrong, Please Try Again"+error, Toast.LENGTH_LONG).show();
-                    //progressIndicatorAddWikiView.hide();
-                }) {
-            @Override
-            public byte[] getBody() throws AuthFailureError {
-                String body = null;
-
-                //try {
-                    body =  "car=" + car.getId()
-                            + "&" + "date=" + LocalDate.now()
-                            + "&" + "location=" + locationTranslation()
-                            + "&" + "image=" + URLEncoder.encode(imageToString(), "UTF-8")
-                            + "&" + "lat=" + (String) latData.getText()
-                            + "&" + "lng=" + (String) longData.getText()
-                    ;
-                //} catch (UnsupportedEncodingException e) {
-                    //throw new RuntimeException(e);
-                //}
-                return body.getBytes();
-            }
-            @Override
-            public String getBodyContentType() {
-                return "application/x-www-form-urlencoded";
-            }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(stringRequest);
-    }
-
-    protected String locationTranslation() {
-        Geocoder gcd = new Geocoder(getActivity(), Locale.getDefault());
-        List<Address> addresses = null;
-        try {
-            addresses = gcd.getFromLocation(parseDouble((String) latData.getText()), parseDouble((String) longData.getText()), 1);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (addresses.size() > 0) {
-            addSpotLocation.setText(String.valueOf(addresses.get(0).getLocality()));
-            return String.valueOf(addresses.get(0).getLocality());
-        }
-        return "error loading location";
-    }
-    public String locationTranslation() {
-        String address = "Oops, something went wrong!";
-        try {
-            address = getAddress(parseDouble((String) latData.getText()), parseDouble((String) longData.getText()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return address;
-    }
-    public String getAddress(double latitude, double longitude) throws Exception {
-        GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey({$MAPS_API_KEY})
-                .build();
-
-        GeocodingResult[] results = GeocodingApi.reverseGeocode(context, new LatLng(latitude, longitude)).await();
-
-        if (results.length > 0) {
-            return results[0].formattedAddress;
-        } else {
-            return "Address not found";
-        }
-    }
-    protected String locationTranslation() {
-        Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
-        try {
-            List<Address> addresses = geocoder.getFromLocation(parseDouble((String) latData.getText()), parseDouble((String) longData.getText()), 1);
-            if (addresses.size() > 0) {
-                Address address = addresses.get(0);
-                String fullAddress = address.getAddressLine(0);
-                Toast.makeText(getActivity(), "Address: " + fullAddress, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getActivity(), "No address found", Toast.LENGTH_SHORT).show();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private static final String GEOCODING_RESOURCE = "https://geocode.search.hereapi.com/v1/geocode";
-    private static final String API_KEY = "AIzaSyBL5W5Y_tALAcsXnJOnK45CAhuOp4kIUio";
-
-    public String GeocodeSync(String query) throws IOException, InterruptedException {
-
-        HttpClient httpClient = HttpClient.newHttpClient();
-
-        String encodedQuery = URLEncoder.encode(query,"UTF-8");
-        String requestUri = GEOCODING_RESOURCE + "?apiKey=" + API_KEY + "&q=" + encodedQuery;
-
-        HttpRequest geocodingRequest = HttpRequest.newBuilder().GET().uri(URI.create(requestUri))
-                .timeout(Duration.ofMillis(2000)).build();
-
-        HttpResponse geocodingResponse = httpClient.send(geocodingRequest,
-                HttpResponse.BodyHandlers.ofString());
-
-        return geocodingResponse.body();
-    }
-    public static String getFormattedAddress(double latitude, double longitude) throws IOException {
-        String apiKey = "AIzaSyBL5W5Y_tALAcsXnJOnK45CAhuOp4kIUio";
-        String urlString = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-                latitude + "," + longitude + "&key=" + apiKey;
-
-        URL url = new URL(urlString);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-        StringBuilder result = new StringBuilder();
-        try (InputStream inputStream = connection.getInputStream();
-             InputStreamReader reader = new InputStreamReader(inputStream)) {
-            int data;
-            while ((data = reader.read()) != -1) {
-                result.append((char) data);
-            }
-        }
-
-        Gson gson = new Gson();
-        JsonObject jsonObject = gson.fromJson(result.toString(), JsonObject.class);
-        String status = jsonObject.get("status").getAsString();
-
-        if (status.equals("OK")) {
-            return jsonObject.getAsJsonArray("results")
-                    .get(0).getAsJsonObject()
-                    .get("formatted_address").getAsString();
-        } else {
-            return "Address not found";
-        }
-    }
-    protected String locationTranslation(){
-        try {
-            String address = getFormattedAddress(parseDouble((String) latData.getText()), parseDouble((String) longData.getText()));
-            return address;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "Oops, something went wrong";
-    }*/
     private void locationTranslation() {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         JsonObjectRequest queueRequest = new JsonObjectRequest(
@@ -593,7 +418,11 @@ public class AddSpotFragment extends Fragment {
                                 getActivity(),
                                 "Successfully Processed Location",
                                 Toast.LENGTH_LONG).show();
-                        addSpotImageBtn.setText(location);
+
+                        locationSubmitted = true;
+                        if (imageSubmitted) {
+                            extendedFloatingActionButton.setVisibility(View.VISIBLE);
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -601,7 +430,7 @@ public class AddSpotFragment extends Fragment {
                     public void onErrorResponse(VolleyError error) {
                         Toast.makeText(
                                 getActivity(),
-                                "Unable To Communicate With The Geocoding API",
+                                "Unable To Communicate With The Geocoding API, Please Retry",
                                 Toast.LENGTH_LONG).show();
                     }
                 });
