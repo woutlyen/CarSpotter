@@ -355,7 +355,6 @@ public class AddSpotFragment extends Fragment {
         extendedFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Uploading new spot", Toast.LENGTH_SHORT).show();
                 confirmationPopUp();
             }
         });
@@ -379,7 +378,7 @@ public class AddSpotFragment extends Fragment {
                                 QUEUE_URL,
                                 response -> {
                                     // Handle the response
-                                    Toast.makeText(getActivity(), "Wiki Submitted", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getActivity(), "New Spot Submitted", Toast.LENGTH_LONG).show();
                                     //TODO: progressbar
                                     //progressIndicatorAddWikiView.hide();
                                 },
@@ -575,7 +574,6 @@ public class AddSpotFragment extends Fragment {
         return "Oops, something went wrong";
     }*/
     private void locationTranslation() {
-        location = "oopsies, something broke";
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         JsonObjectRequest queueRequest = new JsonObjectRequest(
                 Request.Method.GET,
@@ -585,17 +583,25 @@ public class AddSpotFragment extends Fragment {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        location = "something defo kapoot";
+                        Toast.makeText(
+                                getActivity(),
+                                "Processing Location",
+                                Toast.LENGTH_LONG).show();
                         processJSONResponse(response);
+                        location = String.valueOf(addSpotLocation.getText());
+                        Toast.makeText(
+                                getActivity(),
+                                "Successfully Processed Location",
+                                Toast.LENGTH_LONG).show();
+                        addSpotImageBtn.setText(location);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        location = "error response";
                         Toast.makeText(
                                 getActivity(),
-                                "Unable to communicate with the Geocoding api",
+                                "Unable To Communicate With The Geocoding API",
                                 Toast.LENGTH_LONG).show();
                     }
                 });
@@ -603,10 +609,11 @@ public class AddSpotFragment extends Fragment {
     }
 
     private void processJSONResponse(JSONObject response) {
+        String address;
         try {
-            location = response.getJSONArray("results").getJSONObject(0).getString("formatted_address");
+            address = response.getJSONArray("results").getJSONObject(0).getString("formatted_address");
+            addSpotLocation.setText(address);
         } catch (JSONException e) {
-            location = "fokin AAAAAAAAAAAAAAAAAAAAA";
             throw new RuntimeException(e);
         }
     }
