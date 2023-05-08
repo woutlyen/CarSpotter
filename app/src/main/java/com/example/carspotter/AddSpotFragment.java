@@ -37,6 +37,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.carspotter.model.Car;
@@ -66,6 +67,7 @@ import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class AddSpotFragment extends Fragment {
@@ -575,20 +577,22 @@ public class AddSpotFragment extends Fragment {
     private void locationTranslation() {
         location = "oopsies, something broke";
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        JsonArrayRequest queueRequest = new JsonArrayRequest(
+        JsonObjectRequest queueRequest = new JsonObjectRequest(
                 Request.Method.GET,
-                "https://maps.googleapis.com/maps/api/geocode/json?latlng="+parseDouble((String) latData.getText())+","+
-                parseDouble((String) longData.getText())+"&key=AIzaSyBL5W5Y_tALAcsXnJOnK45CAhuOp4kIUio",
+                "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + parseDouble((String) latData.getText()) + "," +
+                        parseDouble((String) longData.getText()) + "&key=AIzaSyBL5W5Y_tALAcsXnJOnK45CAhuOp4kIUio",
                 null,
-                new Response.Listener<JSONArray>() {
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONArray response) {
-                        //TODO: extract formatted_address from json resposne
+                    public void onResponse(JSONObject response) {
+                        location = "something defo kapoot";
+                        processJSONResponse(response);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        location = "error response";
                         Toast.makeText(
                                 getActivity(),
                                 "Unable to communicate with the Geocoding api",
@@ -596,5 +600,14 @@ public class AddSpotFragment extends Fragment {
                     }
                 });
         requestQueue.add(queueRequest);
+    }
+
+    private void processJSONResponse(JSONObject response) {
+        try {
+            location = response.getJSONArray("results").getJSONObject(0).getString("formatted_address");
+        } catch (JSONException e) {
+            location = "fokin AAAAAAAAAAAAAAAAAAAAA";
+            throw new RuntimeException(e);
+        }
     }
 }
