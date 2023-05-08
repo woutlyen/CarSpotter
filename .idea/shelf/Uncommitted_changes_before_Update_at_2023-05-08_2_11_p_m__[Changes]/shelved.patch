@@ -1,0 +1,1934 @@
+Index: app/src/main/java/com/example/carspotter/AddSpotFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.carspotter;\r\n\r\nimport static android.app.Activity.RESULT_OK;\r\nimport static androidx.core.content.ContextCompat.getSystemService;\r\n\r\nimport android.Manifest;\r\nimport android.content.Context;\r\nimport android.content.pm.PackageManager;\r\nimport android.graphics.Bitmap;\r\nimport android.location.LocationManager;\r\nimport android.net.Uri;\r\nimport android.os.Build;\r\nimport android.os.Bundle;\r\n\r\nimport androidx.activity.result.ActivityResultLauncher;\r\nimport androidx.activity.result.PickVisualMediaRequest;\r\nimport androidx.activity.result.contract.ActivityResultContracts;\r\nimport androidx.core.app.ActivityCompat;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.fragment.app.FragmentTransaction;\r\n\r\nimport android.os.Looper;\r\nimport android.provider.MediaStore;\r\nimport android.util.Base64;\r\nimport android.util.Log;\r\nimport android.view.LayoutInflater;\r\nimport android.view.MotionEvent;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.Button;\r\nimport android.widget.ImageView;\r\nimport android.widget.TextView;\r\n\r\nimport com.example.carspotter.model.Car;\r\nimport com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;\r\n\r\nimport org.w3c.dom.Text;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.annotation.Nullable;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.core.app.ActivityCompat;\r\n\r\n\r\nimport android.Manifest;\r\nimport android.app.Activity;\r\nimport android.content.Context;\r\nimport android.content.Intent;\r\nimport android.content.IntentSender;\r\nimport android.content.pm.PackageManager;\r\nimport android.location.LocationManager;\r\nimport android.os.Build;\r\nimport android.os.Bundle;\r\n\r\nimport android.os.Looper;\r\nimport android.view.View;\r\nimport android.widget.Button;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport com.google.android.gms.common.api.ApiException;\r\nimport com.google.android.gms.common.api.ResolvableApiException;\r\nimport com.google.android.gms.location.LocationCallback;\r\nimport com.google.android.gms.location.LocationRequest;\r\nimport com.google.android.gms.location.LocationResult;\r\nimport com.google.android.gms.location.LocationServices;\r\nimport com.google.android.gms.location.LocationSettingsRequest;\r\nimport com.google.android.gms.location.LocationSettingsResponse;\r\nimport com.google.android.gms.location.LocationSettingsStatusCodes;\r\nimport com.google.android.gms.tasks.OnCompleteListener;\r\nimport com.google.android.gms.tasks.Task;\r\nimport java.io.ByteArrayOutputStream;\r\n\r\n\r\npublic class AddSpotFragment extends Fragment{\r\n    private Button addSpotLocation;\r\n    private TextView latData;\r\n    private TextView latInfo;\r\n    private TextView longData;\r\n    private TextView longInfo;\r\n    private TextView addSpotInfo;\r\n\r\n    private ExtendedFloatingActionButton extendedFloatingActionButton;\r\n    private LocationRequest locationRequest;\r\n    private ImageView addSpotImage;\r\n    private Button addSpotImageBtn;\r\n    private boolean imageSubmitted = false;\r\n    private boolean locationSubmitted = false;\r\n    private String imageString;\r\n    View view;\r\n    int SELECT_PICTURE = 200;\r\n\r\n    public AddSpotFragment() {\r\n        // Required empty public constructor\r\n    }\r\n\r\n    @Override\r\n    public View onCreateView(LayoutInflater inflater, ViewGroup container,\r\n                             Bundle savedInstanceState) {\r\n        // Inflate the layout for this fragment\r\n        view = inflater.inflate(R.layout.fragment_add_spot, container, false);\r\n\r\n        // Initialise all the Buttons and TextViews\r\n        addSpotLocation = (Button) view.findViewById(R.id.addSpotLocation);\r\n        latData = (TextView) view.findViewById(R.id.latData);\r\n        longData = (TextView) view.findViewById(R.id.longData);\r\n        latInfo = (TextView) view.findViewById(R.id.latInfo);\r\n        longInfo = (TextView) view.findViewById(R.id.longInfo);\r\n\r\n        addSpotImage = (ImageView) view.findViewById(R.id.addSpotImage);\r\n        addSpotImageBtn = (Button) view.findViewById(R.id.addSpotImageBtn);\r\n\r\n\r\n        // Needed for requesting location\r\n        locationRequest = LocationRequest.create();\r\n        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);\r\n        locationRequest.setInterval(5000);\r\n        locationRequest.setFastestInterval(2000);\r\n\r\n        //Step 1 (loading in fragment)\r\n        setCarInformation();\r\n\r\n        //Step 2 (Get location)\r\n        checkForLocationPermission();\r\n        requestLocation();\r\n\r\n        //Step 3 (Get image)\r\n        getImage();\r\n\r\n        //Step 4 (When image and location have been uploaded, upload to database\r\n        upload();\r\n\r\n        return view;\r\n    }\r\n\r\n    public void setCarInformation(){\r\n        /**\r\n         * This code will get the information from the selected car\r\n         * and write it on the top of the screen.\r\n         */\r\n        //Get info from selected car\r\n        Bundle bundle = this.getArguments();\r\n        Car car = bundle.getParcelable(\"Car\");\r\n\r\n        addSpotInfo = (TextView) view.findViewById(R.id.addSpotInfo);\r\n        addSpotInfo.setText(car.getBrand() + \": \" + car.getModel() + \" \" + car.getEdition());\r\n\r\n        extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.submit_fab);\r\n        extendedFloatingActionButton.hide();\r\n\r\n    }\r\n\r\n    /**\r\n     * This part of the Class is for uploading location information\r\n     */\r\n    protected boolean isGPSEnabled(){\r\n        /**\r\n         * This code will check whether the location service is enabled.\r\n         * If it is not, it will return 'false'.\r\n         */\r\n        LocationManager locationManager = null;\r\n        boolean isEnabled = false;\r\n\r\n        if(locationManager == null){\r\n            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);\r\n        }\r\n        isEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);\r\n        return isEnabled;\r\n    }\r\n    protected void requestLocation() {\r\n        addSpotLocation.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                latInfo.setText(\"Latitude: \");\r\n                longInfo.setText(\"Longitude: \");\r\n                latData.setText(\"Loading...\");\r\n                longData.setText(\"Loading...\");\r\n                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {\r\n                    if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {\r\n                        if (isGPSEnabled()) {\r\n                            latInfo.setText(\"Latitude: \");\r\n                            longInfo.setText(\"Longitude: \");\r\n                            LocationServices.getFusedLocationProviderClient(getActivity())\r\n                                    .requestLocationUpdates(locationRequest, new LocationCallback() {\r\n                                        @Override\r\n                                        public void onLocationResult(@NonNull LocationResult locationResult) {\r\n                                            super.onLocationResult(locationResult);\r\n                                            // This part will make sure we only get one location, instead of continuous updates.\r\n                                            LocationServices.getFusedLocationProviderClient(getActivity())\r\n                                                    .removeLocationUpdates(this);\r\n\r\n                                            if (locationResult != null && locationResult.getLocations().size() > 0) {\r\n                                                // Here we will extract the latitude and longitude from the location.\r\n                                                int index = locationResult.getLocations().size() - 1;\r\n                                                String latitude = String.valueOf(locationResult.getLocations().get(index).getLatitude());\r\n                                                String longitude = String.valueOf(locationResult.getLocations().get(index).getLongitude());\r\n\r\n                                                // We will now display the results on the app.\r\n                                                latData.setText(latitude);\r\n                                                longData.setText(longitude);\r\n\r\n                                                locationSubmitted = true;\r\n\r\n                                                if(imageSubmitted){\r\n                                                    extendedFloatingActionButton.setVisibility(View.VISIBLE);\r\n                                                }\r\n                                            }\r\n                                        }\r\n                                    }, Looper.getMainLooper());\r\n                        } else {\r\n                            latInfo.setText(\"Error: \");\r\n                            latData.setText(\"Please turn on your gps.\");\r\n                            longInfo.setText(\"\");\r\n                            longData.setText(\"\");\r\n                        }\r\n                    }\r\n                } else {\r\n                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);\r\n                }\r\n            }\r\n        });\r\n    }\r\n    protected void checkForLocationPermission() {\r\n        /**\r\n         * Here we will check the device's location permissions.\r\n         * If coarse location is given but precise is not, precise location will be requested.\r\n         * If none of the permissions are granted, both coarse and fine will be requested.\r\n         * If both are granted, nothing will be requested.\r\n         */\r\n\r\n        //TODO: Weigeren dat ge kunt localiseren nadat (fine) location geweigerd is.\r\n        ActivityResultLauncher<String[]> locationPermissionRequest =\r\n                registerForActivityResult(new ActivityResultContracts\r\n                                .RequestMultiplePermissions(), result -> {\r\n                    Boolean fineLocationGranted = null;\r\n                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {\r\n                        fineLocationGranted = result.getOrDefault(\r\n                                Manifest.permission.ACCESS_FINE_LOCATION, false);\r\n                    }\r\n                    Boolean coarseLocationGranted = null;\r\n                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {\r\n                        coarseLocationGranted = result.getOrDefault(\r\n                                        Manifest.permission.ACCESS_COARSE_LOCATION,false);\r\n                    }\r\n                    if (fineLocationGranted != null && fineLocationGranted) {\r\n                                // Precise location access granted.\r\n                    } else if (coarseLocationGranted != null && coarseLocationGranted) {\r\n                                // Only approximate location access granted.\r\n                                latInfo.setText(\"Error: \");\r\n                                latData.setText(\"Please allow usage of precise location.\");\r\n                                longInfo.setText(\"\");\r\n                                longData.setText(\"\");\r\n                                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);\r\n                            } else {\r\n                                // No location access granted.\r\n                                latInfo.setText(\"Error: \");\r\n                                latData.setText(\"Please allow usage of location.\");\r\n                                longInfo.setText(\"\");\r\n                                longData.setText(\"\");\r\n                                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);\r\n                            }\r\n                        }\r\n                );\r\n        locationPermissionRequest.launch(new String[] {\r\n                Manifest.permission.ACCESS_FINE_LOCATION,\r\n                Manifest.permission.ACCESS_COARSE_LOCATION\r\n        });\r\n    }\r\n\r\n\r\n    /**\r\n     * This part of the Class is for uploading the image\r\n     */\r\n    protected void getImage(){\r\n        /**\r\n         * This code is simply for waiting for the press of the 'Add picture' button.\r\n         * It will then save the selected image as a String, for sending it to the database.\r\n         */\r\n        addSpotImageBtn.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                imageChooser();\r\n            }\r\n        });\r\n    }\r\n    protected void imageChooser() {\r\n        /**\r\n         * Here we create an instance of the intent of the type image.\r\n         */\r\n        Intent i = new Intent();\r\n        i.setType(\"image/*\");\r\n        i.setAction(Intent.ACTION_GET_CONTENT);\r\n        // pass the constant to compare it with the returned requestCode (200)\r\n        startActivityForResult(Intent.createChooser(i, \"Select Picture\"), SELECT_PICTURE);\r\n    }\r\n    public void onActivityResult(int requestCode, int resultCode, Intent data) {\r\n        super.onActivityResult(requestCode, resultCode, data);\r\n\r\n        if (resultCode == RESULT_OK) {\r\n            // compare the resultCode with the\r\n            // SELECT_PICTURE constant\r\n            if (requestCode == SELECT_PICTURE) {\r\n                // Get the url of the image from data\r\n                Uri selectedImageUri = data.getData();\r\n                if (null != selectedImageUri) {\r\n                    // update the preview image in the layout\r\n                    //TODO: crop image in juiste formaat\r\n                    addSpotImage.setImageURI(selectedImageUri);\r\n                    processImageUpload();\r\n                }\r\n            }\r\n        }\r\n    }\r\n    protected void processImageUpload(){\r\n        imageString = imageToString();\r\n        System.out.println(imageString);\r\n        imageSubmitted = true;\r\n        if(locationSubmitted){\r\n            extendedFloatingActionButton.setVisibility(View.VISIBLE);\r\n        }\r\n    }\r\n    protected String imageToString() {\r\n        /**\r\n         * To store the image in the database, we have to take the image from the ImageView and convert it to a BASE64 string.\r\n         */\r\n        addSpotImage.buildDrawingCache();\r\n        Bitmap bmap = addSpotImage.getDrawingCache();\r\n\r\n        ByteArrayOutputStream byteArrayOutputStream =  new ByteArrayOutputStream();\r\n        bmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);\r\n        byte[] imgbytes = byteArrayOutputStream.toByteArray();\r\n        return Base64.encodeToString(imgbytes, Base64.DEFAULT);\r\n    }\r\n\r\n    /**\r\n     * This part of the Class is for taking the given information and uploading it to the SQL-database.\r\n     */\r\n    protected void upload(){\r\n        extendedFloatingActionButton.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n                public void onClick(View v) {\r\n                    //TODO: onSubmitClick stuur data naar Database\r\n                    // Add date!\r\n                    // Tot slot terug naar Home of Spotter\r\n                    }\r\n                });\r\n            }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/carspotter/AddSpotFragment.java b/app/src/main/java/com/example/carspotter/AddSpotFragment.java
+--- a/app/src/main/java/com/example/carspotter/AddSpotFragment.java	(revision 1601792f5cffaaaf80d6a9630238f894a5e28482)
++++ b/app/src/main/java/com/example/carspotter/AddSpotFragment.java	(date 1683405639712)
+@@ -3,10 +3,16 @@
+ import static android.app.Activity.RESULT_OK;
+ import static androidx.core.content.ContextCompat.getSystemService;
+ 
++import static java.lang.Double.parseDouble;
++
+ import android.Manifest;
++import android.app.Dialog;
++import android.app.ProgressDialog;
+ import android.content.Context;
+ import android.content.pm.PackageManager;
+ import android.graphics.Bitmap;
++import android.location.Address;
++import android.location.Geocoder;
+ import android.location.LocationManager;
+ import android.net.Uri;
+ import android.os.Build;
+@@ -31,6 +37,12 @@
+ import android.widget.ImageView;
+ import android.widget.TextView;
+ 
++import com.android.volley.Request;
++import com.android.volley.RequestQueue;
++import com.android.volley.Response;
++import com.android.volley.VolleyError;
++import com.android.volley.toolbox.StringRequest;
++import com.android.volley.toolbox.Volley;
+ import com.example.carspotter.model.Car;
+ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+ 
+@@ -70,6 +82,18 @@
+ import com.google.android.gms.tasks.OnCompleteListener;
+ import com.google.android.gms.tasks.Task;
+ import java.io.ByteArrayOutputStream;
++import java.io.IOException;
++import java.time.LocalDate;
++import java.util.HashMap;
++import java.util.List;
++import java.util.Locale;
++import java.util.Map;
++
++import okhttp3.Call;
++import okhttp3.Callback;
++import okhttp3.MultipartBody;
++import okhttp3.OkHttpClient;
++import okhttp3.RequestBody;
+ 
+ 
+ public class AddSpotFragment extends Fragment{
+@@ -87,8 +111,10 @@
+     private boolean imageSubmitted = false;
+     private boolean locationSubmitted = false;
+     private String imageString;
++    private static final String POST_URL = "https://studev.groept.be/api/a22pt304/AddSpot";
+     View view;
+     int SELECT_PICTURE = 200;
++    private Car car;
+ 
+     public AddSpotFragment() {
+         // Required empty public constructor
+@@ -100,6 +126,10 @@
+         // Inflate the layout for this fragment
+         view = inflater.inflate(R.layout.fragment_add_spot, container, false);
+ 
++        // Get car information
++        Bundle bundle = this.getArguments();
++        car = bundle.getParcelable("Car");
++
+         // Initialise all the Buttons and TextViews
+         addSpotLocation = (Button) view.findViewById(R.id.addSpotLocation);
+         latData = (TextView) view.findViewById(R.id.latData);
+@@ -139,9 +169,6 @@
+          * and write it on the top of the screen.
+          */
+         //Get info from selected car
+-        Bundle bundle = this.getArguments();
+-        Car car = bundle.getParcelable("Car");
+-
+         addSpotInfo = (TextView) view.findViewById(R.id.addSpotInfo);
+         addSpotInfo.setText(car.getBrand() + ": " + car.getModel() + " " + car.getEdition());
+ 
+@@ -313,7 +340,6 @@
+     }
+     protected void processImageUpload(){
+         imageString = imageToString();
+-        System.out.println(imageString);
+         imageSubmitted = true;
+         if(locationSubmitted){
+             extendedFloatingActionButton.setVisibility(View.VISIBLE);
+@@ -327,22 +353,120 @@
+         Bitmap bmap = addSpotImage.getDrawingCache();
+ 
+         ByteArrayOutputStream byteArrayOutputStream =  new ByteArrayOutputStream();
+-        bmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
++        bmap.compress(Bitmap.CompressFormat.JPEG,1,byteArrayOutputStream);
+         byte[] imgbytes = byteArrayOutputStream.toByteArray();
+-        return Base64.encodeToString(imgbytes, Base64.DEFAULT);
++        return "balls";
++                //Base64.encodeToString(imgbytes, Base64.DEFAULT);
+     }
+ 
+     /**
+      * This part of the Class is for taking the given information and uploading it to the SQL-database.
+      */
+-    protected void upload(){
++    protected void upload() {
+         extendedFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+             @Override
+-                public void onClick(View v) {
+-                    //TODO: onSubmitClick stuur data naar Database
+-                    // Add date!
+-                    // Tot slot terug naar Home of Spotter
++            public void onClick(View v) {
++                //TODO: onSubmitClick stuur data naar Database
++                // Add date!
++                // Tot slot terug naar Home of Spotter
++                ProgressDialog progressDialog = new ProgressDialog(getActivity());
++                progressDialog.setMessage("Uploading, please wait...");
++
++                // Create the request body with the image data
++                RequestBody requestBody = new MultipartBody.Builder()
++                        .setType(MultipartBody.FORM)
++                        .addFormDataPart("car", String.valueOf(car.getId()))
++                        .addFormDataPart("date", String.valueOf(LocalDate.now()))
++                        .addFormDataPart("location", locationTranslation())
++                        .addFormDataPart("image", imageToString())
++                        .addFormDataPart("lat", (String) latData.getText())
++                        .addFormDataPart("lng", (String) longData.getText())
++                        .build();
++
++                // Create the request
++                okhttp3.Request request = new okhttp3.Request.Builder()
++                        .url(POST_URL)
++                        .post(requestBody)
++                        .build();
++
++                // Create the client and send the request
++                OkHttpClient client = new OkHttpClient();
++                client.newCall(request).enqueue(new Callback() {
++                    @Override
++                    public void onResponse(@NonNull Call call, @NonNull okhttp3.Response response) throws IOException {
++                        progressDialog.dismiss();
++                        Toast.makeText(getActivity(),
++                                "Post request executed",
++                                Toast.LENGTH_SHORT).show();
+                     }
+-                });
++
++                    @Override
++                    public void onFailure(Call call, IOException e) {
++                        progressDialog.dismiss();
++                        Toast.makeText(getActivity(),
++                                "Unable to process spot",
++                                Toast.LENGTH_LONG).show();
++                    }
++                });
++            }
++        });
++                /* OLD VERSION (VOLLEY)
++                ProgressDialog progressDialog = new ProgressDialog(getActivity());
++                progressDialog.setMessage("Uploading, please wait...");
++                RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
++                StringRequest submitRequest = new StringRequest(
++                        Request.Method.POST,
++                        POST_URL,
++                        new Response.Listener<String>() {
++                            @Override
++                            public void onResponse(String response) {
++                                progressDialog.dismiss();
++                                Toast.makeText(getActivity(),
++                                        "Post request executed ",
++                                        Toast.LENGTH_SHORT).show();
++                            }
++                        },
++                        new Response.ErrorListener() {
++                            @Override
++                            public void onErrorResponse(VolleyError error) {
++                                progressDialog.dismiss();
++                                Toast.makeText(getActivity(),
++                                        "Unable to process spot " + error,
++                                        Toast.LENGTH_LONG).show();
++                            }
++                        }
++                ) { //NOTE THIS PART: here we are passing the POST parameters to the webservice
++                    public Map<String, String> getPostParameters(){
++                        Map<String, String> params = new HashMap<>();
++                        params.put("car", String.valueOf(car.getId()));
++                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
++                            params.put("date", "2023-05-05 11:11:11"); //String.valueOf(LocalDate.now()));
++                        }
++                        params.put("location", locationTranslation());
++                        params.put("image", "image" ); //imageString);
++                        params.put("lat", (String) latData.getText());
++                        params.put("lng", (String) longData.getText());
++                        return params;
++                    }
++                };
++                progressDialog.show();
++                requestQueue.add(submitRequest);
++            }
++        }); */
++            }
++
++            protected String locationTranslation() {
++                Geocoder gcd = new Geocoder(getActivity(), Locale.getDefault());
++                List<Address> addresses = null;
++                try {
++                    addresses = gcd.getFromLocation(parseDouble((String) latData.getText()), parseDouble((String) longData.getText()), 1);
++                } catch (IOException e) {
++                    throw new RuntimeException(e);
++                }
++                if (addresses.size() > 0) {
++                    addSpotLocation.setText(String.valueOf(addresses.get(0).getLocality()));
++                    return String.valueOf(addresses.get(0).getLocality());
++                }
++                return "error loading location";
+             }
+ }
+\ No newline at end of file
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\r\n    id 'com.android.application'\r\n    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'\r\n}\r\n\r\nandroid {\r\n    namespace 'com.example.carspotter'\r\n    compileSdk 33\r\n\r\n    defaultConfig {\r\n        applicationId \"com.example.carspotter\"\r\n        minSdk 26\r\n        targetSdk 33\r\n        versionCode 1\r\n        versionName \"1.0\"\r\n\r\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            minifyEnabled false\r\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility JavaVersion.VERSION_1_8\r\n        targetCompatibility JavaVersion.VERSION_1_8\r\n    }\r\n    buildFeatures {\r\n        viewBinding true\r\n    }\r\n}\r\n\r\ndependencies {\r\n\r\n    implementation 'androidx.appcompat:appcompat:1.6.1'\r\n    implementation 'com.google.android.material:material:1.8.0'\r\n    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'\r\n    implementation 'com.google.android.gms:play-services-maps:18.0.2'\r\n    implementation 'androidx.annotation:annotation:1.3.0'\r\n    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'\r\n    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'\r\n    implementation \"androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01\"\r\n    implementation 'com.google.android.gms:play-services-location:21.0.1'\r\n    testImplementation 'junit:junit:4.13.2'\r\n    androidTestImplementation 'androidx.test.ext:junit:1.1.5'\r\n    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'\r\n    implementation 'com.android.volley:volley:1.2.1'\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle b/app/build.gradle
+--- a/app/build.gradle	(revision 1601792f5cffaaaf80d6a9630238f894a5e28482)
++++ b/app/build.gradle	(date 1683404635574)
+@@ -47,4 +47,5 @@
+     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+     implementation 'com.android.volley:volley:1.2.1'
++    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+ }
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_29_04_2023_22_02__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_29_04_2023_22_02__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_29_04_2023_22_02__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_29_04_2023_22_02__Changes_.xml	(revision 1601792f5cffaaaf80d6a9630238f894a5e28482)
++++ /dev/null	(revision 1601792f5cffaaaf80d6a9630238f894a5e28482)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_29_04_2023_22_02_[Changes]" date="1682798624842" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_04_2023_22_02_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 29/04/2023 22:02 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_30_04_2023_23_39__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_30_04_2023_23_39__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_30_04_2023_23_39__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_30_04_2023_23_39__Changes_.xml	(revision 1601792f5cffaaaf80d6a9630238f894a5e28482)
++++ /dev/null	(revision 1601792f5cffaaaf80d6a9630238f894a5e28482)
+@@ -1,24 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_30_04_2023_23_39_[Changes]" date="1682890945604" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_30_04_2023_23_39_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 30/04/2023 23:39 [Changes]" />
+-  <binary>
+-    <option name="BEFORE_PATH" />
+-    <option name="AFTER_PATH" value="app/src/main/res/drawable/audi.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_30_04_2023_23_39_[Changes]/audi.png" />
+-  </binary>
+-  <binary>
+-    <option name="BEFORE_PATH" />
+-    <option name="AFTER_PATH" value="app/src/main/res/drawable-night/volkswagen.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_30_04_2023_23_39_[Changes]/volkswagen.png" />
+-  </binary>
+-  <binary>
+-    <option name="BEFORE_PATH" />
+-    <option name="AFTER_PATH" value="app/src/main/res/drawable/volkswagen.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_30_04_2023_23_39_[Changes]/volkswagen1.png" />
+-  </binary>
+-  <binary>
+-    <option name="BEFORE_PATH" />
+-    <option name="AFTER_PATH" value="app/src/main/res/drawable/porsche.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_30_04_2023_23_39_[Changes]/porsche.png" />
+-  </binary>
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_30_04_2023_23_39_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_30_04_2023_23_39_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_30_04_2023_23_39_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_30_04_2023_23_39_[Changes]/shelved.patch	(revision 1601792f5cffaaaf80d6a9630238f894a5e28482)
++++ /dev/null	(revision 1601792f5cffaaaf80d6a9630238f894a5e28482)
+@@ -1,559 +0,0 @@
+-Index: app/src/main/java/com/example/carspotter/ModelViewFragment.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.carspotter;\r\n\r\nimport android.graphics.Bitmap;\r\nimport android.graphics.BitmapFactory;\r\nimport android.os.Bundle;\r\n\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.fragment.app.FragmentTransaction;\r\n\r\nimport android.util.Base64;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.Button;\r\nimport android.widget.ImageView;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport com.android.volley.Request;\r\nimport com.android.volley.RequestQueue;\r\nimport com.android.volley.Response;\r\nimport com.android.volley.VolleyError;\r\nimport com.android.volley.toolbox.JsonArrayRequest;\r\nimport com.android.volley.toolbox.Volley;\r\nimport com.example.carspotter.model.Car;\r\nimport com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;\r\nimport com.google.android.material.progressindicator.LinearProgressIndicator;\r\n\r\nimport org.json.JSONArray;\r\nimport org.json.JSONException;\r\n\r\n\r\npublic class ModelViewFragment extends Fragment {\r\n\r\n    private static final String QUEUE_URL = \"https://studev.groept.be/api/a22pt304/GetImageFromCarId\";\r\n    private TextView textBrand;\r\n    private TextView textModel;\r\n    private TextView textEdition;\r\n    private TextView textType;\r\n\r\n    private TextView textEngineType;\r\n    private TextView textMSRP;\r\n    private TextView textBuildYears;\r\n    private TextView textSeats;\r\n    private ImageView modelImageView;\r\n    private Bitmap decodedImage;\r\n    private LinearProgressIndicator linearProgressIndicator;\r\n    private ExtendedFloatingActionButton extendedFloatingActionButton;\r\n    private SpotsFragment spotsFragment = new SpotsFragment();\r\n\r\n\r\n    View view;\r\n\r\n    public ModelViewFragment() {\r\n        // Required empty public constructor\r\n    }\r\n\r\n    @Override\r\n    public View onCreateView(LayoutInflater inflater, ViewGroup container,\r\n                             Bundle savedInstanceState) {\r\n        // Inflate the layout for this fragment\r\n        view = inflater.inflate(R.layout.fragment_model_view, container, false);\r\n\r\n//        Car car =(Car) getActivity().getIntent().getParcelableExtra(\"Car\");\r\n        Bundle bundle = this.getArguments();\r\n        Car car = bundle.getParcelable(\"Car\");\r\n\r\n        textBrand = (TextView) view.findViewById(R.id.textBrand);\r\n        textBrand.setText(car.getBrand());\r\n        textModel = (TextView) view.findViewById(R.id.textModel);\r\n        textModel.setText(car.getModel());\r\n        textEdition = (TextView) view.findViewById(R.id.textEdition);\r\n        textEdition.setText(car.getEdition());\r\n        textType = (TextView) view.findViewById(R.id.textType);\r\n        textType.setText(car.getType());\r\n        textEngineType = (TextView) view.findViewById(R.id.textEngineType);\r\n        textEngineType.setText(car.getEnginetype());\r\n        textMSRP = (TextView) view.findViewById(R.id.textMSRP);\r\n        textMSRP.setText(Integer.toString(car.getMsrp()));\r\n        textBuildYears = (TextView) view.findViewById(R.id.textBuildYears);\r\n        textBuildYears.setText(car.getStart_build() +\" - \"+ car.getEnd_build());\r\n        textSeats = (TextView) view.findViewById(R.id.textSeats);\r\n        textSeats.setText(car.getSeats());\r\n\r\n        extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.spots_fab);\r\n        modelImageView = (ImageView) view.findViewById(R.id.modelImageView);\r\n        linearProgressIndicator = (LinearProgressIndicator) view.findViewById(R.id.linearProgressIndicatorModelView);\r\n        requestImageFromCarId(Integer.toString(car.getId()));\r\n\r\n        extendedFloatingActionButton.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                Bundle bundle = new Bundle();\r\n                spotsFragment.setArguments(bundle);\r\n                bundle.putParcelable(\"Car\", car);\r\n                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();\r\n                transaction.replace(R.id.flFragment, spotsFragment ); // give your fragment container id in first parameter\r\n                transaction.addToBackStack(null);  // if written, this transaction will be added to backstack\r\n                transaction.commit();\r\n            }\r\n        });\r\n\r\n        return view;\r\n    }\r\n\r\n    private void requestImageFromCarId(String item) {\r\n        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());\r\n        JsonArrayRequest queueRequest = new JsonArrayRequest(\r\n                Request.Method.GET,\r\n                QUEUE_URL+\"/\"+item,\r\n                null,\r\n                new Response.Listener<JSONArray>() {\r\n                    @Override\r\n                    public void onResponse(JSONArray response) {\r\n                        processJSONResponse(response);\r\n                        linearProgressIndicator.setVisibility(View.INVISIBLE);\r\n                        modelImageView.setImageBitmap(decodedImage);\r\n                    }\r\n                },\r\n                new Response.ErrorListener() {\r\n                    @Override\r\n                    public void onErrorResponse(VolleyError error) {\r\n                        Toast.makeText(\r\n                                getActivity(),\r\n                                \"Unable to load the image!\",\r\n                                Toast.LENGTH_LONG).show();\r\n                    }\r\n                });\r\n        requestQueue.add(queueRequest);\r\n    }\r\n\r\n    private void processJSONResponse(JSONArray response) {\r\n        try {\r\n            byte[] byteImage = Base64.decode(response.getJSONObject(0).getString(\"image\"), Base64.DEFAULT);\r\n            decodedImage = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);\r\n\r\n        } catch (JSONException e) {\r\n            e.printStackTrace();\r\n        }\r\n\r\n    }\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/carspotter/ModelViewFragment.java b/app/src/main/java/com/example/carspotter/ModelViewFragment.java
+---- a/app/src/main/java/com/example/carspotter/ModelViewFragment.java	(revision d50ec222be20c260cb20e92f449d55aa07bdbd66)
+-+++ b/app/src/main/java/com/example/carspotter/ModelViewFragment.java	(date 1682862301073)
+-@@ -2,8 +2,12 @@
+- 
+- import android.graphics.Bitmap;
+- import android.graphics.BitmapFactory;
+-+import android.graphics.drawable.Drawable;
+-+import android.graphics.drawable.DrawableContainer;
+-+import android.net.Uri;
+- import android.os.Bundle;
+- 
+-+import androidx.core.content.ContextCompat;
+- import androidx.fragment.app.Fragment;
+- import androidx.fragment.app.FragmentTransaction;
+- 
+-@@ -43,6 +47,7 @@
+-     private TextView textBuildYears;
+-     private TextView textSeats;
+-     private ImageView modelImageView;
+-+    private ImageView brandIconView;
+-     private Bitmap decodedImage;
+-     private LinearProgressIndicator linearProgressIndicator;
+-     private ExtendedFloatingActionButton extendedFloatingActionButton;
+-@@ -81,6 +86,15 @@
+-         textBuildYears.setText(car.getStart_build() +" - "+ car.getEnd_build());
+-         textSeats = (TextView) view.findViewById(R.id.textSeats);
+-         textSeats.setText(car.getSeats());
+-+        brandIconView = (ImageView) view.findViewById(R.id.brandIcon);
+-+
+-+        Uri uri = Uri.parse("android.resource://com.example.carspotter/drawable/"+car.getBrand().toLowerCase());
+-+
+-+        brandIconView.setImageURI(uri);
+-+
+-+        if(car.getEdition().equals("")){
+-+            textEdition.setHeight(0);
+-+        }
+- 
+-         extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.spots_fab);
+-         modelImageView = (ImageView) view.findViewById(R.id.modelImageView);
+-Index: app/src/main/res/layout/fragment_model_view.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout\r\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    tools:context=\".ModelViewFragment\">\r\n\r\n    <com.google.android.material.imageview.ShapeableImageView\r\n        android:id=\"@+id/modelImageView\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"200dp\"\r\n        android:layout_marginTop=\"24dp\"\r\n        android:layout_marginHorizontal=\"8dp\"\r\n        android:layout_marginBottom=\"8dp\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        android:src=\"@drawable/car_spotter_image_placeholder\"\r\n        app:shapeAppearanceOverlay=\"@style/roundImageViewLarge\"\r\n        android:scaleType=\"centerCrop\"\r\n        />\r\n\r\n    <com.google.android.material.progressindicator.LinearProgressIndicator\r\n        android:id=\"@+id/linearProgressIndicatorModelView\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginHorizontal=\"32dp\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"@id/modelImageView\"\r\n        app:layout_constraintBottom_toBottomOf=\"@id/modelImageView\"\r\n        app:layout_constraintVertical_bias=\"0.6\"\r\n        app:trackCornerRadius=\"10dp\"\r\n        app:trackThickness=\"7dp\"\r\n        android:indeterminate=\"true\"\r\n        android:visibility=\"visible\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/textBrand\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"40dp\"\r\n        android:layout_margin=\"16dp\"\r\n        android:text=\"Brand\"\r\n        android:textSize=\"34sp\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/modelImageView\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/textModel\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"34dp\"\r\n        android:layout_marginHorizontal=\"16dp\"\r\n        android:layout_marginVertical=\"4dp\"\r\n        android:text=\"Model\"\r\n        android:textAlignment=\"viewStart\"\r\n        android:textSize=\"24sp\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/textBrand\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/textEdition\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"20dp\"\r\n        android:layout_marginHorizontal=\"16dp\"\r\n        android:layout_marginVertical=\"4dp\"\r\n        android:text=\"Edition\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/textModel\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/textSpecifications\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"24dp\"\r\n        android:layout_marginHorizontal=\"16dp\"\r\n        android:layout_marginVertical=\"10dp\"\r\n        android:text=\"Specifications:\"\r\n        android:textSize=\"20sp\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/textEdition\" />\r\n\r\n    <LinearLayout\r\n        android:id=\"@+id/linearLayout\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"0dp\"\r\n        android:layout_marginHorizontal=\"16dp\"\r\n        android:layout_marginVertical=\"8dp\"\r\n        android:orientation=\"vertical\"\r\n        app:layout_constraintBottom_toTopOf=\"@+id/spots_fab\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/textSpecifications\">\r\n\r\n        <TextView\r\n            android:id=\"@+id/textType\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:text=\"Type\" />\r\n\r\n        <TextView\r\n            android:id=\"@+id/textEngineType\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:text=\"Engine Type\" />\r\n\r\n        <TextView\r\n            android:id=\"@+id/textMSRP\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:text=\"MSRP\" />\r\n\r\n        <TextView\r\n            android:id=\"@+id/textBuildYears\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:text=\"Build Year\" />\r\n\r\n        <TextView\r\n            android:id=\"@+id/textSeats\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:text=\"Seats\" />\r\n\r\n    </LinearLayout>\r\n\r\n<!--    <Button-->\r\n<!--        android:id=\"@+id/btnSpotted\"-->\r\n<!--        android:layout_width=\"250dp\"-->\r\n<!--        android:layout_height=\"49dp\"-->\r\n<!--        android:layout_marginBottom=\"8dp\"-->\r\n<!--        android:onClick=\"onBtnSpotted_Clicked\"-->\r\n<!--        android:text=\"Spots\"-->\r\n<!--        app:layout_constraintBottom_toBottomOf=\"parent\"-->\r\n<!--        app:layout_constraintEnd_toEndOf=\"parent\"-->\r\n<!--        app:layout_constraintStart_toStartOf=\"parent\" />-->\r\n\r\n    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton\r\n        android:id=\"@+id/spots_fab\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_gravity=\"bottom|right\"\r\n        android:layout_marginBottom=\"16dp\"\r\n        android:layout_marginHorizontal=\"32dp\"\r\n        android:contentDescription=\"@string/extended_fab_content_desc\"\r\n        android:text=\"@string/spots_fab_label\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\" />\r\n\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/res/layout/fragment_model_view.xml b/app/src/main/res/layout/fragment_model_view.xml
+---- a/app/src/main/res/layout/fragment_model_view.xml	(revision d50ec222be20c260cb20e92f449d55aa07bdbd66)
+-+++ b/app/src/main/res/layout/fragment_model_view.xml	(date 1682888905476)
+-@@ -12,7 +12,7 @@
+-         android:layout_width="0dp"
+-         android:layout_height="200dp"
+-         android:layout_marginTop="24dp"
+--        android:layout_marginHorizontal="8dp"
+-+        android:layout_marginHorizontal="16dp"
+-         android:layout_marginBottom="8dp"
+-         app:layout_constraintEnd_toEndOf="parent"
+-         app:layout_constraintStart_toStartOf="parent"
+-@@ -37,120 +37,190 @@
+-         android:indeterminate="true"
+-         android:visibility="visible" />
+- 
+--    <TextView
+--        android:id="@+id/textBrand"
+--        android:layout_width="0dp"
+--        android:layout_height="40dp"
+--        android:layout_margin="16dp"
+--        android:text="Brand"
+--        android:textSize="34sp"
+--        app:layout_constraintEnd_toEndOf="parent"
+--        app:layout_constraintStart_toStartOf="parent"
+--        app:layout_constraintTop_toBottomOf="@+id/modelImageView" />
+-+    <androidx.cardview.widget.CardView
+-+        android:id="@+id/cw1"
+-+        android:layout_width="0dp"
+-+        android:layout_height="wrap_content"
+-+        android:padding="4dp"
+-+        android:layout_marginTop="16dp"
+-+        android:layout_marginHorizontal="16dp"
+-+        app:cardCornerRadius="20dp"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintTop_toBottomOf="@id/modelImageView">
+-+
+-+        <androidx.constraintlayout.widget.ConstraintLayout
+-+            android:layout_width="match_parent"
+-+            android:layout_height="wrap_content">
+-+
+-+            <LinearLayout
+-+                android:layout_width="match_parent"
+-+                android:layout_height="wrap_content"
+-+                android:orientation="horizontal"
+-+                app:layout_constraintBottom_toBottomOf="parent"
+-+                app:layout_constraintTop_toTopOf="parent">
+-+
+-+                <LinearLayout
+-+                    android:layout_width="match_parent"
+-+                    android:layout_height="wrap_content"
+-+                    android:layout_weight="0.5"
+-+                    android:orientation="vertical">
+-+
+-+                    <TextView
+-+                        android:id="@+id/textBrand"
+-+                        android:layout_width="match_parent"
+-+                        android:layout_height="wrap_content"
+-+                        android:layout_marginLeft="16dp"
+-+                        android:text="Brand"
+-+                        android:textSize="34sp"
+-+                        app:layout_constraintEnd_toEndOf="parent"
+-+                        app:layout_constraintStart_toStartOf="parent"
+-+                        app:layout_constraintTop_toTopOf="parent"/>
+- 
+--    <TextView
+--        android:id="@+id/textModel"
+--        android:layout_width="0dp"
+--        android:layout_height="34dp"
+--        android:layout_marginHorizontal="16dp"
+--        android:layout_marginVertical="4dp"
+--        android:text="Model"
+--        android:textAlignment="viewStart"
+--        android:textSize="24sp"
+--        app:layout_constraintEnd_toEndOf="parent"
+--        app:layout_constraintStart_toStartOf="parent"
+--        app:layout_constraintTop_toBottomOf="@+id/textBrand" />
+-+                    <TextView
+-+                        android:id="@+id/textModel"
+-+                        android:layout_width="match_parent"
+-+                        android:layout_height="wrap_content"
+-+                        android:layout_marginLeft="16dp"
+-+                        android:text="Model"
+-+                        android:textAlignment="viewStart"
+-+                        android:textSize="24sp"
+-+                        app:layout_constraintEnd_toEndOf="parent"
+-+                        app:layout_constraintStart_toStartOf="parent"
+-+                        app:layout_constraintTop_toBottomOf="@+id/textBrand" />
+- 
+--    <TextView
+--        android:id="@+id/textEdition"
+--        android:layout_width="0dp"
+--        android:layout_height="20dp"
+--        android:layout_marginHorizontal="16dp"
+--        android:layout_marginVertical="4dp"
+--        android:text="Edition"
+-+                    <TextView
+-+                        android:id="@+id/textEdition"
+-+                        android:layout_width="match_parent"
+-+                        android:layout_height="wrap_content"
+-+                        android:layout_marginLeft="16dp"
+-+                        android:layout_marginTop="3dp"
+-+                        android:layout_marginBottom="8dp"
+-+                        android:text="Edition"
+-+                        app:layout_constraintEnd_toEndOf="parent"
+-+                        app:layout_constraintStart_toStartOf="parent"
+-+                        app:layout_constraintTop_toBottomOf="@+id/textModel"
+-+                        app:layout_constraintBottom_toBottomOf="parent"/>
+-+
+-+                </LinearLayout>
+-+
+-+                <ImageView
+-+                    android:id="@+id/brandIcon"
+-+                    android:layout_width="100dp"
+-+                    android:layout_height="match_parent"
+-+                    android:layout_marginRight="12dp"
+-+                    android:layout_marginVertical="12dp"
+-+                    android:scaleType="fitCenter"
+-+                    android:src="@drawable/audi"/>
+-+
+-+            </LinearLayout>
+-+
+-+        </androidx.constraintlayout.widget.ConstraintLayout>
+-+
+-+
+-+    </androidx.cardview.widget.CardView>
+-+
+-+
+-+
+-+<!--    <Button-->
+-+<!--        android:id="@+id/btnSpotted"-->
+-+<!--        android:layout_width="250dp"-->
+-+<!--        android:layout_height="49dp"-->
+-+<!--        android:layout_marginBottom="8dp"-->
+-+<!--        android:onClick="onBtnSpotted_Clicked"-->
+-+<!--        android:text="Spots"-->
+-+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+-+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+-+<!--        app:layout_constraintStart_toStartOf="parent" />-->
+-+
+-+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+-+        android:id="@+id/spots_fab"
+-+        android:layout_width="0dp"
+-+        android:layout_height="wrap_content"
+-+        android:layout_gravity="bottom|right"
+-+        android:layout_marginBottom="16dp"
+-+        android:layout_marginHorizontal="32dp"
+-+        android:contentDescription="@string/extended_fab_content_desc"
+-+        android:text="@string/spots_fab_label"
+-+        app:layout_constraintBottom_toBottomOf="parent"
+-         app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintStart_toStartOf="parent" />
+-+
+-+    <androidx.cardview.widget.CardView
+-+        android:layout_width="0dp"
+-+        android:layout_height="wrap_content"
+-+        android:padding="4dp"
+-+        android:layout_marginTop="16dp"
+-+        android:layout_marginHorizontal="16dp"
+-+        app:cardCornerRadius="20dp"
+-         app:layout_constraintStart_toStartOf="parent"
+--        app:layout_constraintTop_toBottomOf="@+id/textModel" />
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintTop_toBottomOf="@id/cw1">
+-+
+-+        <androidx.constraintlayout.widget.ConstraintLayout
+-+            android:layout_width="match_parent"
+-+            android:layout_height="wrap_content">
+- 
+--    <TextView
+--        android:id="@+id/textSpecifications"
+--        android:layout_width="0dp"
+--        android:layout_height="24dp"
+--        android:layout_marginHorizontal="16dp"
+--        android:layout_marginVertical="10dp"
+--        android:text="Specifications:"
+--        android:textSize="20sp"
+--        app:layout_constraintStart_toStartOf="parent"
+--        app:layout_constraintEnd_toEndOf="parent"
+--        app:layout_constraintTop_toBottomOf="@+id/textEdition" />
+-+            <TextView
+-+                android:id="@+id/textSpecifications"
+-+                android:layout_width="0dp"
+-+                android:layout_height="24dp"
+-+                android:layout_marginHorizontal="16dp"
+-+                android:layout_marginVertical="10dp"
+-+                android:text="Specifications:"
+-+                android:textSize="20sp"
+-+                app:layout_constraintStart_toStartOf="parent"
+-+                app:layout_constraintEnd_toEndOf="parent"
+-+                app:layout_constraintTop_toTopOf="parent" />
+- 
+--    <LinearLayout
+--        android:id="@+id/linearLayout"
+--        android:layout_width="0dp"
+--        android:layout_height="0dp"
+--        android:layout_marginHorizontal="16dp"
+--        android:layout_marginVertical="8dp"
+--        android:orientation="vertical"
+--        app:layout_constraintBottom_toTopOf="@+id/spots_fab"
+--        app:layout_constraintEnd_toEndOf="parent"
+--        app:layout_constraintStart_toStartOf="parent"
+--        app:layout_constraintTop_toBottomOf="@+id/textSpecifications">
+-+            <LinearLayout
+-+                android:id="@+id/linearLayout"
+-+                android:layout_width="0dp"
+-+                android:layout_height="wrap_content"
+-+                android:layout_marginHorizontal="16dp"
+-+                android:layout_marginVertical="8dp"
+-+                android:orientation="vertical"
+-+                app:layout_constraintBottom_toBottomOf="parent"
+-+                app:layout_constraintEnd_toEndOf="parent"
+-+                app:layout_constraintStart_toStartOf="parent"
+-+                app:layout_constraintTop_toBottomOf="@+id/textSpecifications">
+- 
+--        <TextView
+--            android:id="@+id/textType"
+--            android:layout_width="match_parent"
+--            android:layout_height="wrap_content"
+--            android:text="Type" />
+-+                <TextView
+-+                    android:id="@+id/textType"
+-+                    android:layout_width="match_parent"
+-+                    android:layout_height="wrap_content"
+-+                    android:text="Type" />
+- 
+--        <TextView
+--            android:id="@+id/textEngineType"
+--            android:layout_width="match_parent"
+--            android:layout_height="wrap_content"
+--            android:text="Engine Type" />
+-+                <TextView
+-+                    android:id="@+id/textEngineType"
+-+                    android:layout_width="match_parent"
+-+                    android:layout_height="wrap_content"
+-+                    android:text="Engine Type" />
+- 
+--        <TextView
+--            android:id="@+id/textMSRP"
+--            android:layout_width="match_parent"
+--            android:layout_height="wrap_content"
+--            android:text="MSRP" />
+-+                <TextView
+-+                    android:id="@+id/textMSRP"
+-+                    android:layout_width="match_parent"
+-+                    android:layout_height="wrap_content"
+-+                    android:text="MSRP" />
+- 
+--        <TextView
+--            android:id="@+id/textBuildYears"
+--            android:layout_width="match_parent"
+--            android:layout_height="wrap_content"
+--            android:text="Build Year" />
+-+                <TextView
+-+                    android:id="@+id/textBuildYears"
+-+                    android:layout_width="match_parent"
+-+                    android:layout_height="wrap_content"
+-+                    android:text="Build Year" />
+- 
+--        <TextView
+--            android:id="@+id/textSeats"
+--            android:layout_width="match_parent"
+--            android:layout_height="wrap_content"
+--            android:text="Seats" />
+-+                <TextView
+-+                    android:id="@+id/textSeats"
+-+                    android:layout_width="match_parent"
+-+                    android:layout_height="wrap_content"
+-+                    android:text="Seats" />
+- 
+--    </LinearLayout>
+-+            </LinearLayout>
+- 
+--<!--    <Button-->
+--<!--        android:id="@+id/btnSpotted"-->
+--<!--        android:layout_width="250dp"-->
+--<!--        android:layout_height="49dp"-->
+--<!--        android:layout_marginBottom="8dp"-->
+--<!--        android:onClick="onBtnSpotted_Clicked"-->
+--<!--        android:text="Spots"-->
+--<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+--<!--        app:layout_constraintEnd_toEndOf="parent"-->
+--<!--        app:layout_constraintStart_toStartOf="parent" />-->
+-+        </androidx.constraintlayout.widget.ConstraintLayout>
+- 
+--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+--        android:id="@+id/spots_fab"
+--        android:layout_width="0dp"
+--        android:layout_height="wrap_content"
+--        android:layout_gravity="bottom|right"
+--        android:layout_marginBottom="16dp"
+--        android:layout_marginHorizontal="32dp"
+--        android:contentDescription="@string/extended_fab_content_desc"
+--        android:text="@string/spots_fab_label"
+--        app:layout_constraintBottom_toBottomOf="parent"
+--        app:layout_constraintEnd_toEndOf="parent"
+--        app:layout_constraintStart_toStartOf="parent" />
+-+
+-+    </androidx.cardview.widget.CardView>
+- 
+- 
+- </androidx.constraintlayout.widget.ConstraintLayout>
+-\ No newline at end of file
+-Index: app/src/main/java/com/example/carspotter/model/Spot.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.carspotter.model;\r\n\r\nimport android.graphics.Bitmap;\r\nimport android.graphics.BitmapFactory;\r\nimport android.os.Parcel;\r\nimport android.os.Parcelable;\r\nimport android.util.Base64;\r\n\r\nimport org.json.JSONException;\r\nimport org.json.JSONObject;\r\n\r\npublic class Spot implements Parcelable {\r\n\r\n        private int spot_id;\r\n        private int car_id;\r\n        private String location;\r\n        private String date;\r\n        private String image;\r\n        private Bitmap decodedImage;\r\n\r\n        public static final Creator<Spot> CREATOR = new Creator<Spot>() {\r\n            @Override\r\n            public Spot createFromParcel(Parcel in) {\r\n                return new Spot(in);\r\n            }\r\n\r\n            @Override\r\n            public Spot[] newArray(int size) {\r\n                return new Spot[size];\r\n            }\r\n        };\r\n\r\n        public Spot(JSONObject o) throws JSONException {\r\n            try{\r\n                spot_id = o.getInt(\"spot_id\");\r\n                car_id = o.getInt(\"car_id\");\r\n                location = o.getString(\"where\");\r\n                date = o.getString(\"when\");\r\n                image = o.getString(\"image\");\r\n\r\n                byte[] byteImage = Base64.decode(image, Base64.DEFAULT);\r\n                decodedImage = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);\r\n\r\n            } catch (JSONException e){\r\n                e.printStackTrace();\r\n            }\r\n        }\r\n\r\n        public Spot(Parcel in){\r\n\r\n            this.spot_id = in.readInt();\r\n            this.car_id = in.readInt();\r\n            this.location = in.readString();\r\n            this.date = in.readString();\r\n\r\n        }\r\n\r\n        public int getSpot_id() {\r\n            return spot_id;\r\n        }\r\n\r\n        public int getCar_id() {\r\n            return car_id;\r\n        }\r\n\r\n        public String getLocation(){ return location;}\r\n\r\n        public String getDate(){ return date; }\r\n\r\n        public String getImage() { return image; }\r\n\r\n        public Bitmap getDecodedImage() { return decodedImage; }\r\n\r\n        @Override\r\n        public String toString() {\r\n            return spot_id+car_id+location+date+image;\r\n        }\r\n\r\n        @Override\r\n        public int describeContents() {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public void writeToParcel(Parcel parcel, int i) {\r\n            parcel.writeInt(spot_id);\r\n            parcel.writeInt(car_id);\r\n            parcel.writeString(location);\r\n            parcel.writeString(date);\r\n        }\r\n    }\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/carspotter/model/Spot.java b/app/src/main/java/com/example/carspotter/model/Spot.java
+---- a/app/src/main/java/com/example/carspotter/model/Spot.java	(revision d50ec222be20c260cb20e92f449d55aa07bdbd66)
+-+++ b/app/src/main/java/com/example/carspotter/model/Spot.java	(date 1682887972529)
+-@@ -34,8 +34,8 @@
+-             try{
+-                 spot_id = o.getInt("spot_id");
+-                 car_id = o.getInt("car_id");
+--                location = o.getString("where");
+--                date = o.getString("when");
+-+                location = o.getString("location");
+-+                date = o.getString("date");
+-                 image = o.getString("image");
+- 
+-                 byte[] byteImage = Base64.decode(image, Base64.DEFAULT);
+-Index: app/src/main/res/layout/fragment_brand_select.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout\r\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    tools:context=\".HomeFragment\">\r\n\r\n    <com.google.android.material.textfield.TextInputLayout\r\n        android:id=\"@+id/textInputLayout2\"\r\n        style=\"@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginBottom=\"16dp\"\r\n        android:layout_marginTop=\"8dp\"\r\n        android:layout_marginHorizontal=\"16dp\"\r\n        android:hint=\"@string/select_brand\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        app:startIconDrawable=\"@drawable/ic_car\"\r\n        android:focusable=\"false\"\r\n        >\r\n\r\n        <AutoCompleteTextView\r\n            android:id=\"@+id/auto_complete_txt\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:inputType=\"none\" />\r\n\r\n    </com.google.android.material.textfield.TextInputLayout>\r\n\r\n    <!--    <TextView-->\r\n    <!--        android:id=\"@+id/testTextView\"-->\r\n    <!--        android:layout_width=\"0dp\"-->\r\n    <!--        android:layout_height=\"wrap_content\"-->\r\n    <!--        android:layout_marginStart=\"8dp\"-->\r\n    <!--        android:layout_marginEnd=\"8dp\"-->\r\n    <!--        android:text=\"TextView\"-->\r\n    <!--        app:layout_constraintBottom_toBottomOf=\"parent\"-->\r\n    <!--        app:layout_constraintEnd_toEndOf=\"parent\"-->\r\n    <!--        app:layout_constraintStart_toStartOf=\"parent\"-->\r\n    <!--        app:layout_constraintTop_toTopOf=\"parent\" />-->\r\n\r\n    <androidx.recyclerview.widget.RecyclerView\r\n        android:id=\"@+id/carView\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"0dp\"\r\n        android:layout_marginHorizontal=\"8dp\"\r\n        android:layout_marginTop=\"16dp\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/textInputLayout2\"\r\n        />\r\n\r\n    <com.google.android.material.progressindicator.CircularProgressIndicator\r\n        android:id=\"@+id/progressIndicatorCarView\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:indeterminate=\"true\"\r\n        app:layout_constraintBottom_toTopOf=\"@+id/add_wiki_fab\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/textInputLayout2\"\r\n        app:trackCornerRadius=\"10dp\"\r\n        app:trackThickness=\"7dp\"\r\n        app:indicatorSize=\"60dp\"\r\n        android:visibility=\"invisible\"/>\r\n\r\n    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton\r\n        android:id=\"@+id/add_wiki_fab\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_gravity=\"bottom|right\"\r\n        android:layout_marginBottom=\"16dp\"\r\n        android:layout_marginHorizontal=\"32dp\"\r\n        android:contentDescription=\"@string/extended_fab_content_desc\"\r\n        android:text=\"@string/add_wiki_fab_label\"\r\n        app:icon=\"@drawable/ic_plus_24\"\r\n        app:iconPadding=\"-20dp\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/noCarsTxt\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:text=\"\"\r\n        app:layout_constraintBottom_toTopOf=\"@+id/add_wiki_fab\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/textInputLayout2\" />\r\n\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/res/layout/fragment_brand_select.xml b/app/src/main/res/layout/fragment_brand_select.xml
+---- a/app/src/main/res/layout/fragment_brand_select.xml	(revision d50ec222be20c260cb20e92f449d55aa07bdbd66)
+-+++ b/app/src/main/res/layout/fragment_brand_select.xml	(date 1682889836412)
+-@@ -7,6 +7,17 @@
+-     android:layout_height="match_parent"
+-     tools:context=".HomeFragment">
+- 
+-+    <ImageView
+-+        android:id="@+id/brandLogo"
+-+        android:layout_width="45dp"
+-+        android:layout_height="45dp"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintEnd_toStartOf="@id/textInputLayout2"
+-+        app:layout_constraintTop_toTopOf="@id/textInputLayout2"
+-+        app:layout_constraintBottom_toBottomOf="@id/textInputLayout2"
+-+        android:layout_marginLeft="16dp"
+-+        app:layout_constraintVertical_bias="0.7"/>
+-+
+-     <com.google.android.material.textfield.TextInputLayout
+-         android:id="@+id/textInputLayout2"
+-         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+-@@ -14,12 +25,12 @@
+-         android:layout_height="wrap_content"
+-         android:layout_marginBottom="16dp"
+-         android:layout_marginTop="8dp"
+--        android:layout_marginHorizontal="16dp"
+-+        android:layout_marginRight="16dp"
+-+        android:layout_marginLeft="8dp"
+-         android:hint="@string/select_brand"
+-         app:layout_constraintEnd_toEndOf="parent"
+--        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintStart_toEndOf="@id/brandLogo"
+-         app:layout_constraintTop_toTopOf="parent"
+--        app:startIconDrawable="@drawable/ic_car"
+-         android:focusable="false"
+-         >
+- 
+-Index: app/src/main/java/com/example/carspotter/SpotsFragment.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.carspotter;\r\n\r\nimport android.os.Bundle;\r\n\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport com.android.volley.Request;\r\nimport com.android.volley.RequestQueue;\r\nimport com.android.volley.Response;\r\nimport com.android.volley.VolleyError;\r\nimport com.android.volley.toolbox.JsonArrayRequest;\r\nimport com.android.volley.toolbox.Volley;\r\nimport com.example.carspotter.model.Car;\r\nimport com.example.carspotter.model.Spot;\r\nimport com.google.android.material.progressindicator.CircularProgressIndicator;\r\n\r\nimport org.json.JSONArray;\r\nimport org.json.JSONException;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.Collections;\r\nimport java.util.List;\r\n\r\npublic class SpotsFragment extends Fragment implements RecyclerViewInterface{\r\n\r\n    private static final String QUEUE_URL = \"https://studev.groept.be/api/a22pt304/GetSpotsFromCarId\";\r\n    private List<Spot> spots = new ArrayList<>();\r\n    private RecyclerView spotView;\r\n    private TextView spotInfo;\r\n    private TextView spotCar;\r\n    private CircularProgressIndicator circularProgressIndicatorCarView;\r\n\r\n    View view;\r\n    Car car;\r\n\r\n    public SpotsFragment() {\r\n        // Required empty public constructor\r\n    }\r\n\r\n\r\n    @Override\r\n    public View onCreateView(LayoutInflater inflater, ViewGroup container,\r\n                             Bundle savedInstanceState) {\r\n        // Inflate the layout for this fragment\r\n        view = inflater.inflate(R.layout.fragment_spots, container, false);\r\n        circularProgressIndicatorCarView = (CircularProgressIndicator) view.findViewById(R.id.progressIndicatorSpotView);\r\n        circularProgressIndicatorCarView.setVisibility(View.VISIBLE);\r\n\r\n        Bundle bundle = this.getArguments();\r\n        car = bundle.getParcelable(\"Car\");\r\n\r\n        spotInfo = (TextView) view.findViewById(R.id.spotInfo);\r\n        spotCar = (TextView) view.findViewById(R.id.spotCar);\r\n        spotCar.setText(car.getBrand() + \" \" + car.getModel() + \" \" + car.getEdition());\r\n\r\n        spotView = view.findViewById( R.id.spotView);\r\n        SpotsAdapter adapter = new SpotsAdapter( spots, this );\r\n        spotView.setAdapter( adapter );\r\n        spotView.setLayoutManager( new LinearLayoutManager( getActivity() ));\r\n\r\n        spots.clear();\r\n        spotView.getAdapter().notifyDataSetChanged();\r\n        requestSpotsFromCarId(Integer.toString(car.getId()));\r\n\r\n        return view;\r\n    }\r\n\r\n    private void requestSpotsFromCarId(String item) {\r\n        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());\r\n        JsonArrayRequest queueRequest = new JsonArrayRequest(\r\n                Request.Method.GET,\r\n                QUEUE_URL+\"/\"+item,\r\n                null,\r\n                new Response.Listener<JSONArray>() {\r\n                    @Override\r\n                    public void onResponse(JSONArray response) {\r\n                        processJSONResponse(response);\r\n                        if (spots.size() != 0){\r\n                            spotInfo.setText(\"\");\r\n                        }\r\n                        else{\r\n                            if (car.getEdition().equals(\"\")){\r\n                                spotInfo.setText(\"No spots from \" + car.getBrand() + \" \" + car.getModel() + \" added yet!\");\r\n                            }\r\n                            else {\r\n                                spotInfo.setText(\"No spots from \" + car.getBrand() + \" \" + car.getModel() + \" \" + car.getEdition() + \" added yet!\");\r\n                            }\r\n                        }\r\n                        spotView.getAdapter().notifyDataSetChanged();\r\n                        circularProgressIndicatorCarView.setVisibility(View.INVISIBLE);\r\n                    }\r\n                },\r\n                new Response.ErrorListener() {\r\n                    @Override\r\n                    public void onErrorResponse(VolleyError error) {\r\n                        Toast.makeText(\r\n                                getActivity(),\r\n                                \"Unable to communicate with the server\",\r\n                                Toast.LENGTH_LONG).show();\r\n                    }\r\n                });\r\n        requestQueue.add(queueRequest);\r\n    }\r\n\r\n    private void processJSONResponse(JSONArray response) {\r\n        spots.clear();\r\n        for (int i = 0; i < response.length(); i++) {\r\n            try {\r\n                Spot spot = new Spot(response.getJSONObject(i));\r\n                spots.add(spot);\r\n            } catch (JSONException e) {\r\n                e.printStackTrace();\r\n            }\r\n        }\r\n        Collections.sort(spots, (o1, o2) -> o1.getDate().compareTo(o2.getDate()));\r\n//        cars.add(cars.get(0));\r\n    }\r\n\r\n    @Override\r\n    public void onItemClick(int position) {\r\n\r\n    }\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/carspotter/SpotsFragment.java b/app/src/main/java/com/example/carspotter/SpotsFragment.java
+---- a/app/src/main/java/com/example/carspotter/SpotsFragment.java	(revision d50ec222be20c260cb20e92f449d55aa07bdbd66)
+-+++ b/app/src/main/java/com/example/carspotter/SpotsFragment.java	(date 1682887712812)
+-@@ -56,11 +56,11 @@
+- 
+-         Bundle bundle = this.getArguments();
+-         car = bundle.getParcelable("Car");
+--
+-+//
+-         spotInfo = (TextView) view.findViewById(R.id.spotInfo);
+-         spotCar = (TextView) view.findViewById(R.id.spotCar);
+-         spotCar.setText(car.getBrand() + " " + car.getModel() + " " + car.getEdition());
+--
+-+//
+-         spotView = view.findViewById( R.id.spotView);
+-         SpotsAdapter adapter = new SpotsAdapter( spots, this );
+-         spotView.setAdapter( adapter );
+-@@ -88,10 +88,10 @@
+-                         }
+-                         else{
+-                             if (car.getEdition().equals("")){
+--                                spotInfo.setText("No spots from " + car.getBrand() + " " + car.getModel() + " added yet!");
+-+                                spotInfo.setText("No spots of " + car.getBrand() + " " + car.getModel() + " added yet!");
+-                             }
+-                             else {
+--                                spotInfo.setText("No spots from " + car.getBrand() + " " + car.getModel() + " " + car.getEdition() + " added yet!");
+-+                                spotInfo.setText("No spots of " + car.getBrand() + " " + car.getModel() + " " + car.getEdition() + " added yet!");
+-                             }
+-                         }
+-                         spotView.getAdapter().notifyDataSetChanged();
+-Index: app/src/main/java/com/example/carspotter/BrandSelectFragment.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.carspotter;\r\n\r\nimport android.os.Bundle;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.fragment.app.FragmentTransaction;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.AdapterView;\r\nimport android.widget.ArrayAdapter;\r\nimport android.widget.AutoCompleteTextView;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport com.android.volley.Request;\r\nimport com.android.volley.RequestQueue;\r\nimport com.android.volley.Response;\r\nimport com.android.volley.VolleyError;\r\nimport com.android.volley.toolbox.JsonArrayRequest;\r\nimport com.android.volley.toolbox.Volley;\r\nimport com.example.carspotter.model.Car;\r\nimport com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;\r\nimport com.google.android.material.progressindicator.CircularProgressIndicator;\r\n\r\nimport org.json.JSONArray;\r\nimport org.json.JSONException;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.Arrays;\r\nimport java.util.Collections;\r\nimport java.util.List;\r\n\r\n\r\npublic class BrandSelectFragment extends Fragment implements RecyclerViewInterface {\r\n\r\n    private static final String QUEUE_URL = \"https://studev.groept.be/api/a22pt304/GetCarsFromBrand\";\r\n    private List<Car> cars = new ArrayList<>();\r\n    private RecyclerView carView;\r\n    private TextView infoTxt;\r\n    private CircularProgressIndicator circularProgressIndicatorCarView;\r\n    private ExtendedFloatingActionButton extendedFloatingActionButton;\r\n    View view;\r\n    String item_dropdown = \"\";\r\n    String[] item = {\"Audi\",\"Volkswagen\",\"Volvo\",\"Mazda\",\"Porsche\",\"Seat\",\"BMW\",\"Mercedes\",\"Subaru\",\"Bentley\",\"Tesla\",\"Citroën\",\"Peugeot\",\"Opel\",\"Renault\",\"Skoda\",\"Ford\"};\r\n\r\n    AutoCompleteTextView autoCompleteTextView;\r\n    ArrayAdapter<String> adapterItems;\r\n\r\n    ModelViewFragment modelViewFragment = new ModelViewFragment();\r\n\r\n    public BrandSelectFragment() {\r\n        // Required empty public constructor\r\n    }\r\n\r\n    @Override\r\n    public View onCreateView(LayoutInflater inflater, ViewGroup container,\r\n                             Bundle savedInstanceState) {\r\n        // Inflate the layout for this fragment\r\n        view = inflater.inflate(R.layout.fragment_brand_select, container, false);\r\n        infoTxt = (TextView) view.findViewById(R.id.noCarsTxt);\r\n        if(item_dropdown.equals(\"\")){\r\n            infoTxt.setText(\"No brand selected!\");\r\n        }\r\n        circularProgressIndicatorCarView = (CircularProgressIndicator) view.findViewById(R.id.progressIndicatorCarView);\r\n        extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.add_wiki_fab);\r\n\r\n        Arrays.sort(item);\r\n        autoCompleteTextView = view.findViewById(R.id.auto_complete_txt);\r\n\r\n        carView = view.findViewById( R.id.carView );\r\n        BrandSelectAdapter adapter = new BrandSelectAdapter( cars, this );\r\n        carView.setAdapter( adapter );\r\n        carView.setLayoutManager( new LinearLayoutManager( getActivity() ));\r\n        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {\r\n            @Override\r\n            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {\r\n                item_dropdown = adapterView.getItemAtPosition(i).toString();\r\n                cars.clear();\r\n                carView.getAdapter().notifyDataSetChanged();\r\n                circularProgressIndicatorCarView.setVisibility(View.VISIBLE);\r\n                infoTxt.setText(\"\");\r\n                requestCarsFromBrand(item_dropdown);\r\n//                Toast.makeText(BrandSelectActivity.this, \"Item: \" + item, Toast.LENGTH_SHORT).show();\r\n            }\r\n\r\n        });\r\n\r\n        carView.addOnScrollListener(new RecyclerView.OnScrollListener() {\r\n            @Override\r\n            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {\r\n                super.onScrolled(recyclerView, dx, dy);\r\n                if (dy > 10 & extendedFloatingActionButton.isShown()){\r\n                    extendedFloatingActionButton.hide();\r\n                }\r\n                if (dy < -10 && !extendedFloatingActionButton.isShown()) {\r\n                    extendedFloatingActionButton.show();\r\n                }\r\n                if (!recyclerView.canScrollVertically(-1)) {\r\n                    extendedFloatingActionButton.show();\r\n                }\r\n                else if (!recyclerView.canScrollVertically(1)) {\r\n                    extendedFloatingActionButton.hide();\r\n                }\r\n            }\r\n        });\r\n\r\n        return view;\r\n    }\r\n\r\n    @Override\r\n    public void onResume() {\r\n        super.onResume();\r\n\r\n        ArrayAdapter<String> adapterItems = new ArrayAdapter<String>(requireContext(), R.layout.list_item, item);\r\n        autoCompleteTextView.setAdapter(adapterItems);\r\n    }\r\n\r\n\r\n    private void requestCarsFromBrand(String item) {\r\n        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());\r\n        JsonArrayRequest queueRequest = new JsonArrayRequest(\r\n                Request.Method.GET,\r\n                QUEUE_URL+\"/\"+item,\r\n                null,\r\n                new Response.Listener<JSONArray>() {\r\n                    @Override\r\n                    public void onResponse(JSONArray response) {\r\n                        processJSONResponse(response);\r\n                        if (cars.size() != 0){\r\n                            infoTxt.setText(\"\");\r\n                        }\r\n                        else{\r\n                            infoTxt.setText(\"No cars from \" + item +\" added yet!\");\r\n                        }\r\n                        carView.getAdapter().notifyDataSetChanged();\r\n                        circularProgressIndicatorCarView.setVisibility(View.INVISIBLE);\r\n                    }\r\n                },\r\n                new Response.ErrorListener() {\r\n                    @Override\r\n                    public void onErrorResponse(VolleyError error) {\r\n                        Toast.makeText(\r\n                                getActivity(),\r\n                                \"Unable to communicate with the server\",\r\n                                Toast.LENGTH_LONG).show();\r\n                    }\r\n                });\r\n        requestQueue.add(queueRequest);\r\n    }\r\n\r\n    private void processJSONResponse(JSONArray response) {\r\n        cars.clear();\r\n        for (int i = 0; i < response.length(); i++) {\r\n            try {\r\n                Car car = new Car(response.getJSONObject(i));\r\n                cars.add(car);\r\n            } catch (JSONException e) {\r\n                e.printStackTrace();\r\n            }\r\n        }\r\n        Collections.sort(cars, (o1, o2) -> o1.getModel().compareTo(o2.getModel()));\r\n//        cars.add(cars.get(0));\r\n    }\r\n\r\n    @Override\r\n    public void onItemClick(int position) {\r\n//        Intent intent = new Intent(BrandSelectFragment.this.getActivity(), MainActivity.class);\r\n//        intent.putExtra(\"Car\", cars.get(position));\r\n//        getActivity().startActivity(intent);\r\n\r\n        Bundle bundle = new Bundle();\r\n        modelViewFragment.setArguments(bundle);\r\n        bundle.putParcelable(\"Car\", cars.get(position));\r\n        FragmentTransaction transaction = getFragmentManager().beginTransaction();\r\n        transaction.replace(R.id.flFragment, modelViewFragment ); // give your fragment container id in first parameter\r\n        transaction.addToBackStack(null);  // if written, this transaction will be added to backstack\r\n        transaction.commit();\r\n    }\r\n\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/carspotter/BrandSelectFragment.java b/app/src/main/java/com/example/carspotter/BrandSelectFragment.java
+---- a/app/src/main/java/com/example/carspotter/BrandSelectFragment.java	(revision d50ec222be20c260cb20e92f449d55aa07bdbd66)
+-+++ b/app/src/main/java/com/example/carspotter/BrandSelectFragment.java	(date 1682890544750)
+-@@ -1,5 +1,6 @@
+- package com.example.carspotter;
+- 
+-+import android.net.Uri;
+- import android.os.Bundle;
+- 
+- import androidx.annotation.NonNull;
+-@@ -14,6 +15,8 @@
+- import android.widget.AdapterView;
+- import android.widget.ArrayAdapter;
+- import android.widget.AutoCompleteTextView;
+-+import android.widget.ImageButton;
+-+import android.widget.ImageView;
+- import android.widget.TextView;
+- import android.widget.Toast;
+- 
+-@@ -44,10 +47,13 @@
+-     private TextView infoTxt;
+-     private CircularProgressIndicator circularProgressIndicatorCarView;
+-     private ExtendedFloatingActionButton extendedFloatingActionButton;
+-+    private ImageView brandLogo;
+-     View view;
+-     String item_dropdown = "";
+-     String[] item = {"Audi","Volkswagen","Volvo","Mazda","Porsche","Seat","BMW","Mercedes","Subaru","Bentley","Tesla","Citroën","Peugeot","Opel","Renault","Skoda","Ford"};
+- 
+-+    String brandLogoLocation;
+-+
+-     AutoCompleteTextView autoCompleteTextView;
+-     ArrayAdapter<String> adapterItems;
+- 
+-@@ -72,6 +78,19 @@
+-         Arrays.sort(item);
+-         autoCompleteTextView = view.findViewById(R.id.auto_complete_txt);
+- 
+-+        brandLogo = (ImageView) view.findViewById(R.id.brandLogo);
+-+
+-+        if(savedInstanceState != null){
+-+            brandLogoLocation = savedInstanceState.getString("brandLogoLocation");
+-+            Uri uri = Uri.parse(brandLogoLocation);
+-+            brandLogo.setImageURI(uri);
+-+        }
+-+
+-+        if (brandLogoLocation != null){
+-+            Uri uri = Uri.parse(brandLogoLocation);
+-+            brandLogo.setImageURI(uri);
+-+        }
+-+
+-         carView = view.findViewById( R.id.carView );
+-         BrandSelectAdapter adapter = new BrandSelectAdapter( cars, this );
+-         carView.setAdapter( adapter );
+-@@ -84,6 +103,11 @@
+-                 carView.getAdapter().notifyDataSetChanged();
+-                 circularProgressIndicatorCarView.setVisibility(View.VISIBLE);
+-                 infoTxt.setText("");
+-+
+-+                brandLogoLocation = "android.resource://com.example.carspotter/drawable/"+item_dropdown.toLowerCase();
+-+                Uri uri = Uri.parse(brandLogoLocation);
+-+                brandLogo.setImageURI(uri);
+-+
+-                 requestCarsFromBrand(item_dropdown);
+- //                Toast.makeText(BrandSelectActivity.this, "Item: " + item, Toast.LENGTH_SHORT).show();
+-             }
+-@@ -182,4 +206,10 @@
+-         transaction.commit();
+-     }
+- 
+-+    public void onSaveInstanceState(Bundle outState){
+-+        super.onSaveInstanceState(outState);
+-+
+-+        outState.putString("brandLogoLocation", brandLogoLocation);
+-+    }
+-+
+- }
+-\ No newline at end of file
+-Index: app/src/main/res/drawable/car_24_grey.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/res/drawable/car_24_grey.xml b/app/src/main/res/drawable/car_24_grey.xml
+-new file mode 100644
+---- /dev/null	(date 1682889299370)
+-+++ b/app/src/main/res/drawable/car_24_grey.xml	(date 1682889299370)
+-@@ -0,0 +1,5 @@
+-+<vector android:height="24dp" android:tint="#737678"
+-+    android:viewportHeight="24" android:viewportWidth="24"
+-+    android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+-+    <path android:fillColor="@android:color/white" android:pathData="M18.92,6.01C18.72,5.42 18.16,5 17.5,5h-11c-0.66,0 -1.21,0.42 -1.42,1.01L3,12v8c0,0.55 0.45,1 1,1h1c0.55,0 1,-0.45 1,-1v-1h12v1c0,0.55 0.45,1 1,1h1c0.55,0 1,-0.45 1,-1v-8l-2.08,-5.99zM6.5,16c-0.83,0 -1.5,-0.67 -1.5,-1.5S5.67,13 6.5,13s1.5,0.67 1.5,1.5S7.33,16 6.5,16zM17.5,16c-0.83,0 -1.5,-0.67 -1.5,-1.5s0.67,-1.5 1.5,-1.5 1.5,0.67 1.5,1.5 -0.67,1.5 -1.5,1.5zM5,11l1.5,-4.5h11L19,11L5,11z"/>
+-+</vector>
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_29_04_2023_22_02_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_29_04_2023_22_02_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_29_04_2023_22_02_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_29_04_2023_22_02_[Changes]/shelved.patch	(revision 1601792f5cffaaaf80d6a9630238f894a5e28482)
++++ /dev/null	(revision 1601792f5cffaaaf80d6a9630238f894a5e28482)
+@@ -1,1071 +0,0 @@
+-Index: app/src/main/java/com/example/carspotter/MainActivity.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.carspotter;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.view.View;\r\nimport android.widget.Button;\r\n\r\nimport com.google.android.material.bottomnavigation.BottomNavigationView;\r\nimport com.google.android.material.navigation.NavigationBarView;\r\n\r\npublic class MainActivity extends AppCompatActivity {\r\n\r\n    private Button btnWiki;\r\n\r\n    private BottomNavigationView bottomNavigationView;\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_main);\r\n        btnWiki = (Button) findViewById(R.id.btnWiki);\r\n        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);\r\n        bottomNavigationView.setSelectedItemId(R.id.item_1);\r\n\r\n    }\r\n\r\n    public void onBtnWiki_Clicked(View caller){\r\n        Intent intent =new Intent(this, BrandSelectActivity.class);\r\n        startActivity(intent);\r\n    }\r\n\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/carspotter/MainActivity.java b/app/src/main/java/com/example/carspotter/MainActivity.java
+---- a/app/src/main/java/com/example/carspotter/MainActivity.java	(revision 67d44e873a3d5f38da05652c63dc2ee63eed3855)
+-+++ b/app/src/main/java/com/example/carspotter/MainActivity.java	(date 1682795450572)
+-@@ -1,33 +1,82 @@
+- package com.example.carspotter;
+- 
+--import androidx.appcompat.app.AppCompatActivity;
+--
+--import android.content.Intent;
+- import android.os.Bundle;
+-+import android.view.MenuItem;
+- import android.view.View;
+- import android.widget.Button;
+- 
+-+import androidx.annotation.NonNull;
+-+import androidx.appcompat.app.AppCompatActivity;
+-+import androidx.fragment.app.FragmentTransaction;
+-+
+- import com.google.android.material.bottomnavigation.BottomNavigationView;
+--import com.google.android.material.navigation.NavigationBarView;
+-+import java.io.*;
+- 
+--public class MainActivity extends AppCompatActivity {
+-+public class MainActivity extends AppCompatActivity
+-+        implements BottomNavigationView
+-+        .OnItemSelectedListener {
+-+
+-+    BottomNavigationView bottomNavigationView;
+- 
+-     private Button btnWiki;
+- 
+--    private BottomNavigationView bottomNavigationView;
+-     @Override
+--    protected void onCreate(Bundle savedInstanceState) {
+-+    protected void onCreate(Bundle savedInstanceState)
+-+    {
+-         super.onCreate(savedInstanceState);
+-         setContentView(R.layout.activity_main);
+--        btnWiki = (Button) findViewById(R.id.btnWiki);
+--        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+-+
+-+        bottomNavigationView
+-+                = findViewById(R.id.bottomNavigationView);
+-+
+-+        bottomNavigationView
+-+                .setOnItemSelectedListener(this);
+-         bottomNavigationView.setSelectedItemId(R.id.item_1);
+- 
+-+//        btnWiki = (Button) findViewById(R.id.btnWiki);
+-+//
+-+//        btnWiki.setOnClickListener(new View.OnClickListener() {
+-+//            @Override
+-+//            public void onClick(View v) {
+-+//                getSupportFragmentManager()
+-+//                        .beginTransaction()
+-+//                        .replace(R.id.flFragment, brandSelectFragment)
+-+//                        .commit();
+-+//            }
+-+//        });
+-+
+-     }
+-+    BrandSelectFragment brandSelectFragment = new BrandSelectFragment();
+-+    HomeFragment homeFragment = new HomeFragment();
+-+//    ThirdFragment thirdFragment = new ThirdFragment();
+- 
+--    public void onBtnWiki_Clicked(View caller){
+--        Intent intent =new Intent(this, BrandSelectActivity.class);
+--        startActivity(intent);
+-+    @Override
+-+    public boolean
+-+    onNavigationItemSelected(@NonNull MenuItem item)
+-+    {
+-+
+-+        int id = item.getItemId();
+-+        if (id == R.id.item_1){
+-+            getSupportFragmentManager()
+-+                    .beginTransaction()
+-+                    .replace(R.id.flFragment, homeFragment)
+-+                    .commit();
+-+            return true;
+-+        }
+-+        else if (id == R.id.item_2){
+-+            getSupportFragmentManager()
+-+                    .beginTransaction()
+-+                    .replace(R.id.flFragment, brandSelectFragment)
+-+                    .commit();
+-+            return true;
+-+        }
+-+        else if (id == R.id.item_3){
+-+            getSupportFragmentManager()
+-+                    .beginTransaction()
+-+                    .replace(R.id.flFragment, homeFragment)
+-+                    .commit();
+-+            return true;
+-+        }
+-+        return false;
+-     }
+--
+- }
+-\ No newline at end of file
+-Index: app/src/main/res/layout/fragment_home.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/res/layout/fragment_home.xml b/app/src/main/res/layout/fragment_home.xml
+-new file mode 100644
+---- /dev/null	(date 1682792279856)
+-+++ b/app/src/main/res/layout/fragment_home.xml	(date 1682792279856)
+-@@ -0,0 +1,44 @@
+-+<?xml version="1.0" encoding="utf-8"?>
+-+<androidx.constraintlayout.widget.ConstraintLayout
+-+    xmlns:android="http://schemas.android.com/apk/res/android"
+-+    xmlns:app="http://schemas.android.com/apk/res-auto"
+-+    xmlns:tools="http://schemas.android.com/tools"
+-+    android:layout_width="match_parent"
+-+    android:layout_height="match_parent"
+-+    tools:context=".HomeFragment">
+-+
+-+    <ImageView
+-+        android:id="@+id/imageMain"
+-+        android:layout_width="250dp"
+-+        android:layout_height="135dp"
+-+        android:layout_marginTop="128dp"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintTop_toTopOf="parent"
+-+        app:srcCompat="@drawable/car_spotter_logo" />
+-+
+-+
+-+    <Button
+-+        android:id="@+id/btnWiki"
+-+        android:layout_width="150dp"
+-+        android:layout_height="60dp"
+-+        android:onClick="onBtnWiki_Clicked"
+-+        android:text="Spotter"
+-+        app:layout_constraintBottom_toBottomOf="parent"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintEnd_toStartOf="@+id/btnEvents"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintTop_toBottomOf="@id/imageMain" />
+-+
+-+    <Button
+-+        android:id="@+id/btnEvents"
+-+        android:layout_width="150dp"
+-+        android:layout_height="60dp"
+-+        android:text="Events"
+-+        app:layout_constraintBottom_toBottomOf="parent"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintStart_toEndOf="@+id/btnWiki"
+-+        app:layout_constraintTop_toBottomOf="@id/imageMain" />
+-+
+-+
+-+</androidx.constraintlayout.widget.ConstraintLayout>
+-\ No newline at end of file
+-Index: app/src/main/res/layout/activity_main.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    tools:context=\".MainActivity\">\r\n\r\n    <ImageView\r\n        android:id=\"@+id/imageMain\"\r\n        android:layout_width=\"250dp\"\r\n        android:layout_height=\"135dp\"\r\n        android:layout_marginTop=\"128dp\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        app:srcCompat=\"@drawable/car_spotter_logo\" />\r\n\r\n<!--    <TextView-->\r\n<!--        android:id=\"@+id/textMain\"-->\r\n<!--        android:layout_width=\"213dp\"-->\r\n<!--        android:layout_height=\"37dp\"-->\r\n<!--        android:layout_marginTop=\"32dp\"-->\r\n<!--        android:fontFamily=\"casual\"-->\r\n<!--        android:text=\"CarSpotter\"-->\r\n<!--        android:textAlignment=\"center\"-->\r\n<!--        android:textColor=\"@color/design_default_color_error\"-->\r\n<!--        android:textSize=\"24sp\"-->\r\n<!--        android:textStyle=\"bold\"-->\r\n<!--        app:layout_constraintEnd_toEndOf=\"parent\"-->\r\n<!--        app:layout_constraintStart_toStartOf=\"parent\"-->\r\n<!--        app:layout_constraintTop_toBottomOf=\"@+id/imageMain\" />-->\r\n\r\n    <Button\r\n        android:id=\"@+id/btnWiki\"\r\n        android:layout_width=\"150dp\"\r\n        android:layout_height=\"60dp\"\r\n        android:onClick=\"onBtnWiki_Clicked\"\r\n        android:text=\"Spotter\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintEnd_toStartOf=\"@+id/btnEvents\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/imageMain\"\r\n        />\r\n\r\n    <Button\r\n        android:id=\"@+id/btnEvents\"\r\n        android:layout_width=\"150dp\"\r\n        android:layout_height=\"60dp\"\r\n        android:text=\"Events\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toEndOf=\"@+id/btnWiki\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/imageMain\" />\r\n\r\n    <com.google.android.material.bottomnavigation.BottomNavigationView\r\n        android:id=\"@+id/bottom_navigation\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        app:menu=\"@menu/bottom_navigation_menu\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        tools:layout_editor_absoluteX=\"8dp\"\r\n        tools:layout_editor_absoluteY=\"422dp\" />\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/res/layout/activity_main.xml b/app/src/main/res/layout/activity_main.xml
+---- a/app/src/main/res/layout/activity_main.xml	(revision 67d44e873a3d5f38da05652c63dc2ee63eed3855)
+-+++ b/app/src/main/res/layout/activity_main.xml	(date 1682779126935)
+-@@ -1,66 +1,30 @@
+- <?xml version="1.0" encoding="utf-8"?>
+--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+-+<androidx.constraintlayout.widget.ConstraintLayout
+-+    xmlns:android="http://schemas.android.com/apk/res/android"
+-     xmlns:app="http://schemas.android.com/apk/res-auto"
+-     xmlns:tools="http://schemas.android.com/tools"
+-     android:layout_width="match_parent"
+-     android:layout_height="match_parent"
+-     tools:context=".MainActivity">
+- 
+--    <ImageView
+--        android:id="@+id/imageMain"
+--        android:layout_width="250dp"
+--        android:layout_height="135dp"
+--        android:layout_marginTop="128dp"
+--        app:layout_constraintEnd_toEndOf="parent"
+--        app:layout_constraintStart_toStartOf="parent"
+--        app:layout_constraintTop_toTopOf="parent"
+--        app:srcCompat="@drawable/car_spotter_logo" />
+--
+--<!--    <TextView-->
+--<!--        android:id="@+id/textMain"-->
+--<!--        android:layout_width="213dp"-->
+--<!--        android:layout_height="37dp"-->
+--<!--        android:layout_marginTop="32dp"-->
+--<!--        android:fontFamily="casual"-->
+--<!--        android:text="CarSpotter"-->
+--<!--        android:textAlignment="center"-->
+--<!--        android:textColor="@color/design_default_color_error"-->
+--<!--        android:textSize="24sp"-->
+--<!--        android:textStyle="bold"-->
+--<!--        app:layout_constraintEnd_toEndOf="parent"-->
+--<!--        app:layout_constraintStart_toStartOf="parent"-->
+--<!--        app:layout_constraintTop_toBottomOf="@+id/imageMain" />-->
+--
+--    <Button
+--        android:id="@+id/btnWiki"
+--        android:layout_width="150dp"
+--        android:layout_height="60dp"
+--        android:onClick="onBtnWiki_Clicked"
+--        android:text="Spotter"
+--        app:layout_constraintBottom_toBottomOf="parent"
+-+    <FrameLayout
+-+        android:id="@+id/flFragment"
+-+        android:layout_width="match_parent"
+-+        android:layout_height="0dp"
+-+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+-         app:layout_constraintEnd_toEndOf="parent"
+--        app:layout_constraintEnd_toStartOf="@+id/btnEvents"
+-+        app:layout_constraintHorizontal_bias="0.5"
+-         app:layout_constraintStart_toStartOf="parent"
+--        app:layout_constraintTop_toBottomOf="@id/imageMain"
+--        />
+--
+--    <Button
+--        android:id="@+id/btnEvents"
+--        android:layout_width="150dp"
+--        android:layout_height="60dp"
+--        android:text="Events"
+--        app:layout_constraintBottom_toBottomOf="parent"
+--        app:layout_constraintEnd_toEndOf="parent"
+--        app:layout_constraintStart_toEndOf="@+id/btnWiki"
+--        app:layout_constraintTop_toBottomOf="@id/imageMain" />
+-+        app:layout_constraintTop_toTopOf="parent" />
+- 
+-     <com.google.android.material.bottomnavigation.BottomNavigationView
+--        android:id="@+id/bottom_navigation"
+-+        android:id="@+id/bottomNavigationView"
+-         android:layout_width="match_parent"
+--        android:layout_height="wrap_content"
+--        app:menu="@menu/bottom_navigation_menu"
+-+        android:layout_height="75dp"
+-         app:layout_constraintBottom_toBottomOf="parent"
+--        tools:layout_editor_absoluteX="8dp"
+--        tools:layout_editor_absoluteY="422dp" />
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintHorizontal_bias="0.5"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:menu="@menu/bottom_navigation_menu"/>
+- 
+- </androidx.constraintlayout.widget.ConstraintLayout>
+-\ No newline at end of file
+-Index: app/src/main/java/com/example/carspotter/BrandSelectFragment.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/carspotter/BrandSelectFragment.java b/app/src/main/java/com/example/carspotter/BrandSelectFragment.java
+-new file mode 100644
+---- /dev/null	(date 1682798352879)
+-+++ b/app/src/main/java/com/example/carspotter/BrandSelectFragment.java	(date 1682798352879)
+-@@ -0,0 +1,185 @@
+-+package com.example.carspotter;
+-+
+-+import android.content.Intent;
+-+import android.os.Bundle;
+-+
+-+import androidx.annotation.NonNull;
+-+import androidx.fragment.app.Fragment;
+-+import androidx.fragment.app.FragmentTransaction;
+-+import androidx.recyclerview.widget.LinearLayoutManager;
+-+import androidx.recyclerview.widget.RecyclerView;
+-+
+-+import android.text.TextUtils;
+-+import android.view.LayoutInflater;
+-+import android.view.View;
+-+import android.view.ViewGroup;
+-+import android.widget.AdapterView;
+-+import android.widget.ArrayAdapter;
+-+import android.widget.AutoCompleteTextView;
+-+import android.widget.TextView;
+-+import android.widget.Toast;
+-+
+-+import com.android.volley.Request;
+-+import com.android.volley.RequestQueue;
+-+import com.android.volley.Response;
+-+import com.android.volley.VolleyError;
+-+import com.android.volley.toolbox.JsonArrayRequest;
+-+import com.android.volley.toolbox.Volley;
+-+import com.example.carspotter.model.Car;
+-+import com.google.android.material.bottomnavigation.BottomNavigationView;
+-+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+-+import com.google.android.material.progressindicator.CircularProgressIndicator;
+-+
+-+import org.json.JSONArray;
+-+import org.json.JSONException;
+-+
+-+import java.util.ArrayList;
+-+import java.util.Arrays;
+-+import java.util.Collections;
+-+import java.util.List;
+-+
+-+
+-+public class BrandSelectFragment extends Fragment implements RecyclerViewInterface {
+-+
+-+    private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetCarsFromBrand";
+-+    private List<Car> cars = new ArrayList<>();
+-+    private RecyclerView carView;
+-+    private TextView infoTxt;
+-+    private CircularProgressIndicator circularProgressIndicatorCarView;
+-+    private ExtendedFloatingActionButton extendedFloatingActionButton;
+-+    View view;
+-+    String item_dropdown = "";
+-+    String[] item = {"Audi","Volkswagen","Volvo","Mazda","Porsche","Seat","BMW","Mercedes","Subaru","Bentley","Tesla","Citroën","Peugeot","Opel","Renault","Skoda","Ford"};
+-+
+-+    AutoCompleteTextView autoCompleteTextView;
+-+    ArrayAdapter<String> adapterItems;
+-+
+-+    ModelViewFragment modelViewFragment = new ModelViewFragment();
+-+
+-+    public BrandSelectFragment() {
+-+        // Required empty public constructor
+-+    }
+-+
+-+    @Override
+-+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+-+                             Bundle savedInstanceState) {
+-+        // Inflate the layout for this fragment
+-+        view = inflater.inflate(R.layout.fragment_brand_select, container, false);
+-+        infoTxt = (TextView) view.findViewById(R.id.noCarsTxt);
+-+        if(item_dropdown.equals("")){
+-+            infoTxt.setText("No brand selected!");
+-+        }
+-+        circularProgressIndicatorCarView = (CircularProgressIndicator) view.findViewById(R.id.progressIndicatorCarView);
+-+        extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.extended_fab);
+-+
+-+        Arrays.sort(item);
+-+        autoCompleteTextView = view.findViewById(R.id.auto_complete_txt);
+-+
+-+        carView = view.findViewById( R.id.carView );
+-+        BrandSelectAdapter adapter = new BrandSelectAdapter( cars, this );
+-+        carView.setAdapter( adapter );
+-+        carView.setLayoutManager( new LinearLayoutManager( getActivity() ));
+-+        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+-+            @Override
+-+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+-+                item_dropdown = adapterView.getItemAtPosition(i).toString();
+-+                cars.clear();
+-+                carView.getAdapter().notifyDataSetChanged();
+-+                circularProgressIndicatorCarView.setVisibility(View.VISIBLE);
+-+                infoTxt.setText("");
+-+                requestCarsFromBrand(item_dropdown);
+-+//                Toast.makeText(BrandSelectActivity.this, "Item: " + item, Toast.LENGTH_SHORT).show();
+-+            }
+-+
+-+        });
+-+
+-+        carView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+-+            @Override
+-+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+-+                super.onScrolled(recyclerView, dx, dy);
+-+                if (dy > 10 & extendedFloatingActionButton.isShown()){
+-+                    extendedFloatingActionButton.hide();
+-+                }
+-+                if (dy < -10 && !extendedFloatingActionButton.isShown()) {
+-+                    extendedFloatingActionButton.show();
+-+                }
+-+                if (!recyclerView.canScrollVertically(-1)) {
+-+                    extendedFloatingActionButton.show();
+-+                }
+-+            }
+-+        });
+-+
+-+        return view;
+-+    }
+-+
+-+    @Override
+-+    public void onResume() {
+-+        super.onResume();
+-+
+-+        ArrayAdapter<String> adapterItems = new ArrayAdapter<String>(requireContext(), R.layout.list_item, item);
+-+        autoCompleteTextView.setAdapter(adapterItems);
+-+    }
+-+
+-+
+-+    private void requestCarsFromBrand(String item) {
+-+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+-+        JsonArrayRequest queueRequest = new JsonArrayRequest(
+-+                Request.Method.GET,
+-+                QUEUE_URL+"/"+item,
+-+                null,
+-+                new Response.Listener<JSONArray>() {
+-+                    @Override
+-+                    public void onResponse(JSONArray response) {
+-+                        processJSONResponse(response);
+-+                        if (cars.size() != 0){
+-+                            infoTxt.setText("");
+-+                        }
+-+                        else{
+-+                            infoTxt.setText("No cars from " + item +" added yet!");
+-+                        }
+-+                        carView.getAdapter().notifyDataSetChanged();
+-+                        circularProgressIndicatorCarView.setVisibility(View.INVISIBLE);
+-+                    }
+-+                },
+-+                new Response.ErrorListener() {
+-+                    @Override
+-+                    public void onErrorResponse(VolleyError error) {
+-+                        Toast.makeText(
+-+                                getActivity(),
+-+                                "Unable to communicate with the server",
+-+                                Toast.LENGTH_LONG).show();
+-+                    }
+-+                });
+-+        requestQueue.add(queueRequest);
+-+    }
+-+
+-+    private void processJSONResponse(JSONArray response) {
+-+        cars.clear();
+-+        for (int i = 0; i < response.length(); i++) {
+-+            try {
+-+                Car car = new Car(response.getJSONObject(i));
+-+                cars.add(car);
+-+            } catch (JSONException e) {
+-+                e.printStackTrace();
+-+            }
+-+        }
+-+        Collections.sort(cars, (o1, o2) -> o1.getModel().compareTo(o2.getModel()));
+-+//        cars.add(cars.get(0));
+-+    }
+-+
+-+    @Override
+-+    public void onItemClick(int position) {
+-+//        Intent intent = new Intent(BrandSelectFragment.this.getActivity(), MainActivity.class);
+-+//        intent.putExtra("Car", cars.get(position));
+-+//        getActivity().startActivity(intent);
+-+
+-+        Bundle bundle = new Bundle();
+-+        modelViewFragment.setArguments(bundle);
+-+        bundle.putParcelable("Car", cars.get(position));
+-+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+-+        transaction.replace(R.id.flFragment, modelViewFragment ); // give your fragment container id in first parameter
+-+        transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+-+        transaction.commit();
+-+    }
+-+
+-+}
+-\ No newline at end of file
+-Index: app/src/main/res/values/strings.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><resources>\r\n    <string name=\"app_name\">CarSpotter</string>\r\n    <string name=\"select_brand\">Select Brand</string>\r\n    <string name=\"extended_fab_label\">ADD WIKI</string>\r\n    <string name=\"extended_fab_content_desc\">2</string>\r\n\r\n    <string name=\"text_label_1\">Spotter</string>\r\n    <string name=\"text_label_2\">Events</string>\r\n</resources>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+---- a/app/src/main/res/values/strings.xml	(revision 67d44e873a3d5f38da05652c63dc2ee63eed3855)
+-+++ b/app/src/main/res/values/strings.xml	(date 1682788824670)
+-@@ -6,4 +6,6 @@
+- 
+-     <string name="text_label_1">Spotter</string>
+-     <string name="text_label_2">Events</string>
+-+    <!-- TODO: Remove or change this placeholder text -->
+-+    <string name="hello_blank_fragment">Hello blank fragment</string>
+- </resources>
+-\ No newline at end of file
+-Index: app/src/main/java/com/example/carspotter/HomeFragment.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/carspotter/HomeFragment.java b/app/src/main/java/com/example/carspotter/HomeFragment.java
+-new file mode 100644
+---- /dev/null	(date 1682792885949)
+-+++ b/app/src/main/java/com/example/carspotter/HomeFragment.java	(date 1682792885949)
+-@@ -0,0 +1,49 @@
+-+package com.example.carspotter;
+-+
+-+import android.content.Intent;
+-+import android.os.Bundle;
+-+
+-+import androidx.fragment.app.Fragment;
+-+import androidx.fragment.app.FragmentTransaction;
+-+
+-+import android.view.LayoutInflater;
+-+import android.view.View;
+-+import android.view.ViewGroup;
+-+import android.widget.Button;
+-+
+-+import com.google.android.material.bottomnavigation.BottomNavigationView;
+-+
+-+public class HomeFragment extends Fragment {
+-+
+-+    private View view;
+-+    private Button btnWiki;
+-+
+-+    private BrandSelectFragment brandSelectFragment = new BrandSelectFragment() ;
+-+    public HomeFragment() {
+-+        // Required empty public constructor
+-+    }
+-+
+-+
+-+    @Override
+-+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+-+                             Bundle savedInstanceState) {
+-+        // Inflate the layout for this fragment
+-+        view = inflater.inflate(R.layout.fragment_home, container, false);
+-+
+-+        btnWiki = (Button) view.findViewById(R.id.btnWiki);
+-+
+-+        btnWiki.setOnClickListener(new View.OnClickListener() {
+-+            @Override
+-+            public void onClick(View v) {
+-+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+-+                transaction.replace(R.id.flFragment, brandSelectFragment ); // give your fragment container id in first parameter
+-+                transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+-+                transaction.commit();
+-+            }
+-+        });
+-+
+-+        return view;
+-+    }
+-+
+-+
+-+}
+-\ No newline at end of file
+-Index: app/src/main/res/layout/fragment_brand_select.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/res/layout/fragment_brand_select.xml b/app/src/main/res/layout/fragment_brand_select.xml
+-new file mode 100644
+---- /dev/null	(date 1682797591146)
+-+++ b/app/src/main/res/layout/fragment_brand_select.xml	(date 1682797591146)
+-@@ -0,0 +1,97 @@
+-+<?xml version="1.0" encoding="utf-8"?>
+-+<androidx.constraintlayout.widget.ConstraintLayout
+-+    xmlns:android="http://schemas.android.com/apk/res/android"
+-+    xmlns:app="http://schemas.android.com/apk/res-auto"
+-+    xmlns:tools="http://schemas.android.com/tools"
+-+    android:layout_width="match_parent"
+-+    android:layout_height="match_parent"
+-+    tools:context=".HomeFragment">
+-+
+-+    <com.google.android.material.textfield.TextInputLayout
+-+        android:id="@+id/textInputLayout2"
+-+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+-+        android:layout_width="0dp"
+-+        android:layout_height="wrap_content"
+-+        android:layout_marginBottom="16dp"
+-+        android:layout_marginTop="8dp"
+-+        android:layout_marginHorizontal="16dp"
+-+        android:hint="@string/select_brand"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintTop_toTopOf="parent"
+-+        app:startIconDrawable="@drawable/ic_car"
+-+        android:focusable="false"
+-+        >
+-+
+-+        <AutoCompleteTextView
+-+            android:id="@+id/auto_complete_txt"
+-+            android:layout_width="match_parent"
+-+            android:layout_height="wrap_content"
+-+            android:inputType="none" />
+-+
+-+    </com.google.android.material.textfield.TextInputLayout>
+-+
+-+    <!--    <TextView-->
+-+    <!--        android:id="@+id/testTextView"-->
+-+    <!--        android:layout_width="0dp"-->
+-+    <!--        android:layout_height="wrap_content"-->
+-+    <!--        android:layout_marginStart="8dp"-->
+-+    <!--        android:layout_marginEnd="8dp"-->
+-+    <!--        android:text="TextView"-->
+-+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+-+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+-+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+-+    <!--        app:layout_constraintTop_toTopOf="parent" />-->
+-+
+-+    <androidx.recyclerview.widget.RecyclerView
+-+        android:id="@+id/carView"
+-+        android:layout_width="match_parent"
+-+        android:layout_height="0dp"
+-+        android:layout_marginHorizontal="8dp"
+-+        android:layout_marginTop="16dp"
+-+        app:layout_constraintBottom_toBottomOf="parent"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout2"
+-+        />
+-+
+-+    <com.google.android.material.progressindicator.CircularProgressIndicator
+-+        android:id="@+id/progressIndicatorCarView"
+-+        android:layout_width="wrap_content"
+-+        android:layout_height="wrap_content"
+-+        android:indeterminate="true"
+-+        app:layout_constraintBottom_toTopOf="@+id/extended_fab"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout2"
+-+        app:trackCornerRadius="10dp"
+-+        app:trackThickness="7dp"
+-+        app:indicatorSize="60dp"
+-+        android:visibility="invisible"/>
+-+
+-+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+-+        android:id="@+id/extended_fab"
+-+        android:layout_width="0dp"
+-+        android:layout_height="wrap_content"
+-+        android:layout_gravity="bottom|right"
+-+        android:layout_marginBottom="16dp"
+-+        android:layout_marginHorizontal="32dp"
+-+        android:contentDescription="@string/extended_fab_content_desc"
+-+        android:text="@string/extended_fab_label"
+-+        app:icon="@drawable/ic_plus_24"
+-+        app:iconPadding="-20dp"
+-+        app:layout_constraintBottom_toBottomOf="parent"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintStart_toStartOf="parent" />
+-+
+-+    <TextView
+-+        android:id="@+id/noCarsTxt"
+-+        android:layout_width="wrap_content"
+-+        android:layout_height="wrap_content"
+-+        android:text=""
+-+        app:layout_constraintBottom_toTopOf="@+id/extended_fab"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout2" />
+-+
+-+
+-+</androidx.constraintlayout.widget.ConstraintLayout>
+-\ No newline at end of file
+-Index: app/src/main/java/com/example/carspotter/MainActivity2.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/carspotter/MainActivity2.java b/app/src/main/java/com/example/carspotter/MainActivity2.java
+-new file mode 100644
+---- /dev/null	(date 1682792132517)
+-+++ b/app/src/main/java/com/example/carspotter/MainActivity2.java	(date 1682792132517)
+-@@ -0,0 +1,31 @@
+-+package com.example.carspotter;
+-+
+-+import androidx.appcompat.app.AppCompatActivity;
+-+
+-+import android.content.Intent;
+-+import android.os.Bundle;
+-+import android.view.View;
+-+import android.widget.Button;
+-+
+-+import com.google.android.material.bottomnavigation.BottomNavigationView;
+-+
+-+public class MainActivity2 extends AppCompatActivity {
+-+
+-+    private Button btnWiki;
+-+    private BottomNavigationView bottomNavigationView;
+-+    @Override
+-+    protected void onCreate(Bundle savedInstanceState) {
+-+        super.onCreate(savedInstanceState);
+-+        setContentView(R.layout.activity_main2);
+-+        btnWiki = (Button) findViewById(R.id.btnWiki);
+-+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+-+        bottomNavigationView.setSelectedItemId(R.id.item_1);
+-+
+-+    }
+-+
+-+//    public void onBtnWiki_Clicked(View caller){
+-+//        Intent intent =new Intent(this, BrandSelectActivity.class);
+-+//        startActivity(intent);
+-+//    }
+-+
+-+}
+-\ No newline at end of file
+-Index: app/src/main/res/layout/fragment_model_view.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/res/layout/fragment_model_view.xml b/app/src/main/res/layout/fragment_model_view.xml
+-new file mode 100644
+---- /dev/null	(date 1682789125227)
+-+++ b/app/src/main/res/layout/fragment_model_view.xml	(date 1682789125227)
+-@@ -0,0 +1,110 @@
+-+<?xml version="1.0" encoding="utf-8"?>
+-+<androidx.constraintlayout.widget.ConstraintLayout
+-+    xmlns:android="http://schemas.android.com/apk/res/android"
+-+    xmlns:app="http://schemas.android.com/apk/res-auto"
+-+    xmlns:tools="http://schemas.android.com/tools"
+-+    android:layout_width="match_parent"
+-+    android:layout_height="match_parent"
+-+    tools:context=".ModelViewFragment">
+-+
+-+    <com.google.android.material.imageview.ShapeableImageView
+-+        android:id="@+id/modelImageView"
+-+        android:layout_width="0dp"
+-+        android:layout_height="200dp"
+-+        android:layout_margin="8dp"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintTop_toTopOf="parent"
+-+        android:src="@drawable/car_spotter_image_placeholder"
+-+        app:shapeAppearanceOverlay="@style/roundImageViewLarge"
+-+        android:scaleType="centerCrop"
+-+        />
+-+
+-+    <com.google.android.material.progressindicator.LinearProgressIndicator
+-+        android:id="@+id/linearProgressIndicatorModelView"
+-+        android:layout_width="match_parent"
+-+        android:layout_height="wrap_content"
+-+        android:layout_marginHorizontal="32dp"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintTop_toTopOf="@id/modelImageView"
+-+        app:layout_constraintBottom_toBottomOf="@id/modelImageView"
+-+        app:layout_constraintVertical_bias="0.6"
+-+        app:trackCornerRadius="10dp"
+-+        app:trackThickness="7dp"
+-+        android:indeterminate="true"
+-+        android:visibility="visible" />
+-+
+-+    <TextView
+-+        android:id="@+id/textBrand"
+-+        android:layout_width="0dp"
+-+        android:layout_height="40dp"
+-+        android:layout_margin="8dp"
+-+        android:text="Brand"
+-+        android:textSize="24sp"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintTop_toBottomOf="@+id/modelImageView" />
+-+
+-+    <TextView
+-+        android:id="@+id/textModel"
+-+        android:layout_width="0dp"
+-+        android:layout_height="40dp"
+-+        android:layout_margin="8dp"
+-+        android:text="Model"
+-+        android:textSize="20sp"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintTop_toBottomOf="@+id/textBrand" />
+-+
+-+    <LinearLayout
+-+        android:layout_width="0dp"
+-+        android:layout_height="0dp"
+-+        android:layout_marginTop="16dp"
+-+        android:layout_marginHorizontal="8dp"
+-+        android:orientation="vertical"
+-+        app:layout_constraintTop_toBottomOf="@+id/textModel"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintBottom_toBottomOf="parent"
+-+        tools:layout_editor_absoluteX="1dp">
+-+
+-+        <TextView
+-+            android:id="@+id/textType"
+-+            android:layout_width="match_parent"
+-+            android:layout_height="wrap_content"
+-+            android:text="Type" />
+-+
+-+        <TextView
+-+            android:id="@+id/textEngineType"
+-+            android:layout_width="match_parent"
+-+            android:layout_height="wrap_content"
+-+            android:text="Engine Type" />
+-+
+-+        <TextView
+-+            android:id="@+id/textMSRP"
+-+            android:layout_width="match_parent"
+-+            android:layout_height="wrap_content"
+-+            android:text="TextView" />
+-+
+-+        <TextView
+-+            android:id="@+id/textBuildYears"
+-+            android:layout_width="match_parent"
+-+            android:layout_height="wrap_content"
+-+            android:text="TextView" />
+-+
+-+        <TextView
+-+            android:id="@+id/textSeats"
+-+            android:layout_width="match_parent"
+-+            android:layout_height="wrap_content"
+-+            android:text="TextView" />
+-+
+-+        <TextView
+-+            android:id="@+id/textView9"
+-+            android:layout_width="match_parent"
+-+            android:layout_height="wrap_content"
+-+            android:text="U moeder" />
+-+    </LinearLayout>
+-+
+-+
+-+</androidx.constraintlayout.widget.ConstraintLayout>
+-\ No newline at end of file
+-Index: app/src/main/java/com/example/carspotter/ModelViewFragment.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/carspotter/ModelViewFragment.java b/app/src/main/java/com/example/carspotter/ModelViewFragment.java
+-new file mode 100644
+---- /dev/null	(date 1682791077223)
+-+++ b/app/src/main/java/com/example/carspotter/ModelViewFragment.java	(date 1682791077223)
+-@@ -0,0 +1,117 @@
+-+package com.example.carspotter;
+-+
+-+import android.graphics.Bitmap;
+-+import android.graphics.BitmapFactory;
+-+import android.os.Bundle;
+-+
+-+import androidx.fragment.app.Fragment;
+-+
+-+import android.util.Base64;
+-+import android.view.LayoutInflater;
+-+import android.view.View;
+-+import android.view.ViewGroup;
+-+import android.widget.ImageView;
+-+import android.widget.TextView;
+-+import android.widget.Toast;
+-+
+-+import com.android.volley.Request;
+-+import com.android.volley.RequestQueue;
+-+import com.android.volley.Response;
+-+import com.android.volley.VolleyError;
+-+import com.android.volley.toolbox.JsonArrayRequest;
+-+import com.android.volley.toolbox.Volley;
+-+import com.example.carspotter.model.Car;
+-+import com.google.android.material.progressindicator.LinearProgressIndicator;
+-+
+-+import org.json.JSONArray;
+-+import org.json.JSONException;
+-+
+-+
+-+public class ModelViewFragment extends Fragment {
+-+
+-+    private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetImageFromCarId";
+-+    private TextView textBrand;
+-+    private TextView textModel;
+-+    private TextView textType;
+-+    private TextView textEngineType;
+-+    private TextView textMSRP;
+-+    private TextView textBuildYears;
+-+    private TextView textSeats;
+-+    private ImageView modelImageView;
+-+    private Bitmap decodedImage;
+-+    private LinearProgressIndicator linearProgressIndicator;
+-+    View view;
+-+
+-+    public ModelViewFragment() {
+-+        // Required empty public constructor
+-+    }
+-+
+-+    @Override
+-+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+-+                             Bundle savedInstanceState) {
+-+        // Inflate the layout for this fragment
+-+        view = inflater.inflate(R.layout.fragment_model_view, container, false);
+-+
+-+//        Car car =(Car) getActivity().getIntent().getParcelableExtra("Car");
+-+        Bundle bundle = this.getArguments();
+-+        Car car = bundle.getParcelable("Car");
+-+
+-+        textBrand = (TextView) view.findViewById(R.id.textBrand);
+-+        textBrand.setText(car.getBrand());
+-+        textModel = (TextView) view.findViewById(R.id.textModel);
+-+        textModel.setText(car.getModel());
+-+        textType = (TextView) view.findViewById(R.id.textType);
+-+        textType.setText(car.getType());
+-+        textEngineType = (TextView) view.findViewById(R.id.textEngineType);
+-+        textEngineType.setText(car.getEnginetype());
+-+        textMSRP = (TextView) view.findViewById(R.id.textMSRP);
+-+        textMSRP.setText(Integer.toString(car.getMsrp()));
+-+        textBuildYears = (TextView) view.findViewById(R.id.textBuildYears);
+-+        textBuildYears.setText(car.getStart_build() +" - "+ car.getEnd_build());
+-+        textSeats = (TextView) view.findViewById(R.id.textSeats);
+-+        textSeats.setText(car.getSeats());
+-+
+-+        modelImageView = (ImageView) view.findViewById(R.id.modelImageView);
+-+        linearProgressIndicator = (LinearProgressIndicator) view.findViewById(R.id.linearProgressIndicatorModelView);
+-+        requestImageFromCarId(Integer.toString(car.getId()));
+-+
+-+        return view;
+-+    }
+-+
+-+    private void requestImageFromCarId(String item) {
+-+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+-+        JsonArrayRequest queueRequest = new JsonArrayRequest(
+-+                Request.Method.GET,
+-+                QUEUE_URL+"/"+item,
+-+                null,
+-+                new Response.Listener<JSONArray>() {
+-+                    @Override
+-+                    public void onResponse(JSONArray response) {
+-+                        processJSONResponse(response);
+-+                        linearProgressIndicator.setVisibility(View.INVISIBLE);
+-+                        modelImageView.setImageBitmap(decodedImage);
+-+                    }
+-+                },
+-+                new Response.ErrorListener() {
+-+                    @Override
+-+                    public void onErrorResponse(VolleyError error) {
+-+                        Toast.makeText(
+-+                                getActivity(),
+-+                                "Unable to load the image!",
+-+                                Toast.LENGTH_LONG).show();
+-+                    }
+-+                });
+-+        requestQueue.add(queueRequest);
+-+    }
+-+
+-+    private void processJSONResponse(JSONArray response) {
+-+        try {
+-+            byte[] byteImage = Base64.decode(response.getJSONObject(0).getString("image"), Base64.DEFAULT);
+-+            decodedImage = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+-+
+-+        } catch (JSONException e) {
+-+            e.printStackTrace();
+-+        }
+-+
+-+    }
+-+}
+-\ No newline at end of file
+-Index: app/src/main/res/menu/bottom_navigation_menu.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><menu xmlns:android=\"http://schemas.android.com/apk/res/android\">\r\n    <item\r\n        android:id=\"@+id/item_1\"\r\n        android:enabled=\"true\"\r\n        android:icon=\"@drawable/home_24\"\r\n        android:title=\"Home\"\r\n        />\r\n    <item\r\n        android:id=\"@+id/item_2\"\r\n        android:enabled=\"true\"\r\n        android:icon=\"@drawable/spotter_24\"\r\n        android:title=\"@string/text_label_1\"/>\r\n    <item\r\n        android:id=\"@+id/item_3\"\r\n        android:enabled=\"true\"\r\n        android:icon=\"@drawable/event_24\"\r\n        android:title=\"@string/text_label_2\"/>\r\n</menu>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/res/menu/bottom_navigation_menu.xml b/app/src/main/res/menu/bottom_navigation_menu.xml
+---- a/app/src/main/res/menu/bottom_navigation_menu.xml	(revision 67d44e873a3d5f38da05652c63dc2ee63eed3855)
+-+++ b/app/src/main/res/menu/bottom_navigation_menu.xml	(date 1682784001792)
+-@@ -1,18 +1,16 @@
+-+<?xml version="1.0" encoding="utf-8"?>
+- <menu xmlns:android="http://schemas.android.com/apk/res/android">
+-     <item
+-         android:id="@+id/item_1"
+--        android:enabled="true"
+-         android:icon="@drawable/home_24"
+-         android:title="Home"
+-         />
+-     <item
+-         android:id="@+id/item_2"
+--        android:enabled="true"
+-         android:icon="@drawable/spotter_24"
+-         android:title="@string/text_label_1"/>
+-     <item
+-         android:id="@+id/item_3"
+--        android:enabled="true"
+-         android:icon="@drawable/event_24"
+-         android:title="@string/text_label_2"/>
+- </menu>
+-\ No newline at end of file
+-Index: app/src/main/res/layout/activity_main2.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/res/layout/activity_main2.xml b/app/src/main/res/layout/activity_main2.xml
+-new file mode 100644
+---- /dev/null	(date 1682779055671)
+-+++ b/app/src/main/res/layout/activity_main2.xml	(date 1682779055671)
+-@@ -0,0 +1,52 @@
+-+<?xml version="1.0" encoding="utf-8"?>
+-+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+-+    xmlns:app="http://schemas.android.com/apk/res-auto"
+-+    xmlns:tools="http://schemas.android.com/tools"
+-+    android:layout_width="match_parent"
+-+    android:layout_height="match_parent"
+-+    tools:context=".MainActivity2">
+-+
+-+    <ImageView
+-+        android:id="@+id/imageMain"
+-+        android:layout_width="250dp"
+-+        android:layout_height="135dp"
+-+        android:layout_marginTop="128dp"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintTop_toTopOf="parent"
+-+        app:srcCompat="@drawable/car_spotter_logo" />
+-+
+-+
+-+    <Button
+-+        android:id="@+id/btnWiki"
+-+        android:layout_width="150dp"
+-+        android:layout_height="60dp"
+-+        android:onClick="onBtnWiki_Clicked"
+-+        android:text="Spotter"
+-+        app:layout_constraintBottom_toBottomOf="parent"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintEnd_toStartOf="@+id/btnEvents"
+-+        app:layout_constraintStart_toStartOf="parent"
+-+        app:layout_constraintTop_toBottomOf="@id/imageMain"
+-+        />
+-+
+-+    <Button
+-+        android:id="@+id/btnEvents"
+-+        android:layout_width="150dp"
+-+        android:layout_height="60dp"
+-+        android:text="Events"
+-+        app:layout_constraintBottom_toBottomOf="parent"
+-+        app:layout_constraintEnd_toEndOf="parent"
+-+        app:layout_constraintStart_toEndOf="@+id/btnWiki"
+-+        app:layout_constraintTop_toBottomOf="@id/imageMain" />
+-+
+-+    <com.google.android.material.bottomnavigation.BottomNavigationView
+-+        android:id="@+id/bottom_navigation"
+-+        android:layout_width="match_parent"
+-+        android:layout_height="wrap_content"
+-+        app:menu="@menu/bottom_navigation_menu"
+-+        app:layout_constraintBottom_toBottomOf="parent"
+-+        tools:layout_editor_absoluteX="8dp"
+-+        tools:layout_editor_absoluteY="422dp" />
+-+
+-+</androidx.constraintlayout.widget.ConstraintLayout>
+-\ No newline at end of file
+-Index: app/src/main/AndroidManifest.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.CarSpotter\"\r\n        tools:targetApi=\"31\">\r\n        <activity\r\n            android:name=\".ModelViewActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".BrandSelectActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".MainActivity\"\r\n            android:exported=\"true\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n    </application>\r\n\r\n    <uses-permission android:name=\"android.permission.INTERNET\"/>\r\n</manifest>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+---- a/app/src/main/AndroidManifest.xml	(revision 67d44e873a3d5f38da05652c63dc2ee63eed3855)
+-+++ b/app/src/main/AndroidManifest.xml	(date 1682782748123)
+-@@ -1,7 +1,9 @@
+- <?xml version="1.0" encoding="utf-8"?>
+- <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+--    xmlns:tools="http://schemas.android.com/tools">
+-+    xmlns:tools="http://schemas.android.com/tools" >
+- 
+-+    <uses-permission android:name="android.permission.INTERNET" />
+-+
+-     <application
+-         android:allowBackup="true"
+-         android:dataExtractionRules="@xml/data_extraction_rules"
+-@@ -11,7 +13,10 @@
+-         android:roundIcon="@mipmap/ic_launcher_round"
+-         android:supportsRtl="true"
+-         android:theme="@style/Theme.CarSpotter"
+--        tools:targetApi="31">
+-+        tools:targetApi="31" >
+-+        <activity
+-+            android:name=".MainActivity2"
+-+            android:exported="false" />
+-         <activity
+-             android:name=".ModelViewActivity"
+-             android:exported="false" />
+-@@ -20,7 +25,7 @@
+-             android:exported="false" />
+-         <activity
+-             android:name=".MainActivity"
+--            android:exported="true">
+-+            android:exported="true" >
+-             <intent-filter>
+-                 <action android:name="android.intent.action.MAIN" />
+- 
+-@@ -29,5 +34,4 @@
+-         </activity>
+-     </application>
+- 
+--    <uses-permission android:name="android.permission.INTERNET"/>
+- </manifest>
+-\ No newline at end of file
