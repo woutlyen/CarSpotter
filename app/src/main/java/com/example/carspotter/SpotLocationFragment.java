@@ -16,9 +16,17 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpotLocationFragment extends Fragment {
-
+    private GoogleMap map;
+    private HeatmapTileProvider provider;
+    private TileOverlay overlay;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -32,16 +40,36 @@ public class SpotLocationFragment extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            //TO DO: maak lijst van de spots en plaats deze als markers op de map.
+            //TODO: maak lijst van de spots en plaats deze als markers op de map.
             // De meest recente krijgt een andere tag (misschien best voor de andere ook de datum in de marker)
             // Voor de tags kunt ge uit de database "lat" en "long" halen voor bepaalde car_id
-            LatLng sydney = new LatLng(-34, 151);
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Most recent"));
-            LatLng sydney1 = new LatLng(-34, 152);
-            googleMap.addMarker(new MarkerOptions().position(sydney1).title("Marker in Sydney"));
-            LatLng sydney2 = new LatLng(-34, 153);
-            googleMap.addMarker(new MarkerOptions().position(sydney2).title("Marker in Sydney"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            /*
+            //HEATMAP
+            addHeatMap(googleMap);
+
+            //MARKER
+            LatLng selectedSpot = new LatLng(50, 5);
+            googleMap.addMarker(new MarkerOptions().position(selectedSpot).title("Selected Spot"));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(selectedSpot));
+            */
+            map = googleMap;
+            // Create a list of LatLng objects representing the heatmap data points
+            ArrayList<LatLng> dataPoints = new ArrayList<>();
+            dataPoints.add(new LatLng(37.775, -122.419));
+            dataPoints.add(new LatLng(37.776, -122.418));
+            dataPoints.add(new LatLng(37.777, -122.417));
+            // Add more data points as needed...
+
+            // Create a HeatmapTileProvider using the data points
+            provider = new HeatmapTileProvider.Builder()
+                    .data(dataPoints)
+                    .build();
+
+            // Add the heatmap overlay to the map
+            map.addTileOverlay(new TileOverlayOptions().tileProvider(provider));
+
+            // Set the camera position to the center of the heatmap data points
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.776, -122.418), 13));
         }
     };
 
@@ -62,4 +90,6 @@ public class SpotLocationFragment extends Fragment {
             mapFragment.getMapAsync(callback);
         }
     }
+
+    //TODO: import all cars from car_id
 }
