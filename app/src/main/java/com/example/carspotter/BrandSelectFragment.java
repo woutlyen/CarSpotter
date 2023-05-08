@@ -62,7 +62,7 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
 
     ModelViewFragment modelViewFragment = new ModelViewFragment();
 
-    AddWikiFragment addWikiFragment = new AddWikiFragment();
+    AddWikiFragment addWikiFragment;
 
     public BrandSelectFragment() {
         // Required empty public constructor
@@ -90,14 +90,14 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
         brandLogo = (ImageView) view.findViewById(R.id.brandLogo);
         brandLogo.setVisibility(View.GONE);
 
-        if(savedInstanceState != null){
-            brandLogoLocation = savedInstanceState.getString("brandLogoLocation");
-            item_dropdown = savedInstanceState.getString("item_dropdown");
+//        if(savedInstanceState != null){
+//            brandLogoLocation = savedInstanceState.getString("brandLogoLocation");
+//            item_dropdown = savedInstanceState.getString("item_dropdown");
 //            if (brandLogoLocation != null) {
 //                Uri uri = Uri.parse(brandLogoLocation);
 //                brandLogo.setImageURI(uri);
 //            }
-        }
+//        }
 
         if (brandLogoLocation != null){
             brandLogo.setVisibility(View.VISIBLE);
@@ -144,6 +144,7 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
         extendedFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                addWikiFragment = new AddWikiFragment();
                 FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
                 transaction.replace(R.id.flFragment, addWikiFragment ); // give your fragment container id in first parameter
                 transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
@@ -246,11 +247,11 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
         transaction.commit();
     }
 
-    public void onSaveInstanceState(Bundle outState){
-        super.onSaveInstanceState(outState);
-
-        outState.putString("brandLogoLocation", brandLogoLocation);
-        outState.putString("item_dropdown", item_dropdown);
-    }
+//    public void onSaveInstanceState(Bundle outState){
+//        super.onSaveInstanceState(outState);
+//
+//        outState.putString("brandLogoLocation", brandLogoLocation);
+//        outState.putString("item_dropdown", item_dropdown);
+//    }
 
 }

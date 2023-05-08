@@ -36,6 +36,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -202,6 +203,7 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        progressIndicatorCarView.animate().alpha(0f).setDuration(500).setListener(null);
                         Toast.makeText(
                                 getActivity(),
                                 "Unable to communicate with the server",
@@ -221,10 +223,8 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
                 e.printStackTrace();
             }
         }
-        //Order cars on brandname, then edition using comparators
-//        Collections.sort(cars, (o1, o2) -> o1.getEdition().compareTo(o2.getEdition()));
-//        Collections.sort(cars, (o1, o2) -> o1.getModel().compareTo(o2.getModel()));
-//        cars.add(cars.get(0));
+
+        Collections.sort(allEvents, (o1, o2) -> o1.getDate().compareTo(o2.getDate()));
     }
 
     @Override

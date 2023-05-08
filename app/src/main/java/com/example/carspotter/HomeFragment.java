@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment implements RecyclerViewInterface {
 
@@ -400,7 +401,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
     }
 
     private void requestWikisForHome() {
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        RequestQueue requestQueue = Volley.newRequestQueue(requireActivity());
         JsonArrayRequest queueRequest = new JsonArrayRequest(
                 Request.Method.GET,
                 QUEUE_URL2,

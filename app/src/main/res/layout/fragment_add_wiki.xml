@@ -1,327 +1,390 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddWikiFragment">
+    tools:context=".AddWikiFragment"
+    android:id="@+id/wikiLayout">
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progressIndicatorAddWikiView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:trackThickness="7dp"
+        android:indeterminate="true"
+        app:showAnimationBehavior="outward"
+        app:hideAnimationBehavior="inward"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 
     <TextView
         android:id="@+id/addWikiTxt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Wiki"
-        android:fontFamily="@font/rubik_semibold"
-        android:textSize="25dp"
-        android:gravity="center_horizontal"
         android:layout_marginVertical="8dp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:fontFamily="@font/rubik_semibold"
+        android:gravity="center_horizontal"
+        android:text="Add Wiki"
+        android:textSize="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/descriptionTxt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Fill in the boxes below &#128071;"
         android:fontFamily="@font/rubik_medium"
-        android:textSize="18dp"
         android:gravity="center_horizontal"
-        app:layout_constraintTop_toBottomOf="@id/addWikiTxt"
+        android:text="Fill in the boxes below &#128071;"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/addWikiTxt" />
 
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:dividerInsetStart="16dp"
+        android:layout_marginVertical="8dp"
         app:dividerInsetEnd="16dp"
-        android:layout_marginVertical="8dp"
-        app:layout_constraintTop_toBottomOf="@id/descriptionTxt"/>
-    
-    <TextView
-        android:id="@+id/txt1"
+        app:dividerInsetStart="16dp"
+        app:layout_constraintTop_toBottomOf="@id/descriptionTxt" />
+
+    <ScrollView
+        android:id="@id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/divider"
-        android:text="1. Fill in the name of the car:"
-        android:fontFamily="@font/rubik_medium"
-        android:layout_marginVertical="8dp"
-        android:layout_marginStart="16dp"
-        />
-    
-    <LinearLayout
-        android:id="@+id/layout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/txt1"
-        android:orientation="horizontal">
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textBrand"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="0dp"
-        android:layout_weight="0.50"
-        android:layout_height="wrap_content"
-        android:hint="Brand"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
-        android:focusable="false"
-        app:helperText="Required">
-    <AutoCompleteTextView
-        android:id="@+id/brandTxt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="none"
-        />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textModel"
-        android:layout_width="0dp"
-        android:layout_weight="0.50"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:hint="Model"
-        app:endIconMode="clear_text"
-        app:helperText="Required"
-        app:counterEnabled="true"
-        app:counterMaxLength="20"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/modelTxt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    </LinearLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textEdition"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/layout1"
-        android:layout_marginVertical="8dp"
-        android:layout_marginHorizontal="16dp"
-        android:hint="Edition (e.g. Gen1, GT)"
-        app:endIconMode="clear_text"
-        app:counterEnabled="true"
-        app:counterMaxLength="20"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/editionTxt"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:id="@+id/txt2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/textEdition"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
-        android:text="2. Select the specifications:"
-        android:fontFamily="@font/rubik_medium"/>
-
-    <LinearLayout
-        android:id="@+id/layout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/txt2"
-        android:orientation="horizontal">
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textBodyStyles"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="0dp"
-        android:layout_weight="0.50"
-        android:layout_height="wrap_content"
-        android:hint="Body Style"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textEdition"
-        android:focusable="false"
-        app:helperText="Required">
-        <AutoCompleteTextView
-            android:id="@+id/bodyStylesTxt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="none" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textEngineType"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="0dp"
-        android:layout_weight="0.50"
-        android:layout_height="wrap_content"
-        android:hint="Engine"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textBodyStyles"
-        android:focusable="false"
-        app:helperText="Required">
-        <AutoCompleteTextView
-            android:id="@+id/engineTypeTxt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="none" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layout4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/layout2"
-        android:orientation="horizontal">
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textMSRP"
-            android:layout_width="0dp"
-            android:layout_weight="0.50"
-            android:layout_height="wrap_content"
-            android:hint="MSRP"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textEdition"
-            android:focusable="false"
-            app:helperText="Required"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">>
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/MSRPTxt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textSeats"
-            android:layout_width="0dp"
-            android:layout_weight="0.50"
-            android:layout_height="wrap_content"
-            android:hint="Seats"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textBodyStyles"
-            android:focusable="false"
-            app:helperText="Required"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">>
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/seatsTxt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/txt3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/layout4"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
-        android:text="3. Select the production years:"
-        android:fontFamily="@font/rubik_medium"/>
-
-
-    <LinearLayout
-        android:id="@+id/layout3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/txt3"
-        android:orientation="horizontal">
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textStartDate"
-            android:layout_width="0dp"
-            android:layout_weight="0.50"
-            android:layout_height="wrap_content"
-            android:hint="Start"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:focusable="false"
-            app:helperText="Required"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/startDateTxt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="  -  "
-            android:gravity="center_vertical"/>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textEndDate"
-            android:layout_width="0dp"
-            android:layout_weight="0.50"
-            android:layout_height="wrap_content"
-            android:hint="End"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:focusable="false"
-            app:helperText="Required"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">>
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/endDateTxt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="16dp"
-            android:text="Now"/>
-
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginHorizontal="16dp"
-        android:text="4. Upload an image of the car:"
-        android:fontFamily="@font/rubik_medium"
-        app:layout_constraintTop_toBottomOf="@id/layout3"/>
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/add_wiki_fab"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginBottom="16dp"
-        android:contentDescription="@string/extended_fab_content_desc"
-        android:fontFamily="@font/rubik_medium"
-        android:text="@string/submit_wiki_fab_label"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/divider">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutTop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txt1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/rubik_medium"
+                android:text="1. Fill in the name of the car:"
+                app:layout_constraintTop_toTopOf="@id/layoutTop" />
+
+            <LinearLayout
+                android:id="@+id/layout1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/txt1">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textBrand"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="0.50"
+                    android:focusable="false"
+                    android:hint="Brand"
+                    app:helperText="Required">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/brandTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textModel"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="0.50"
+                    android:hint="Model"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="20"
+                    app:endIconMode="clear_text"
+                    app:helperText="Required">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/modelTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textEdition"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="8dp"
+                android:hint="Edition (e.g. Gen1, GT)"
+                app:counterEnabled="true"
+                app:counterMaxLength="20"
+                app:endIconMode="clear_text"
+                app:layout_constraintTop_toBottomOf="@id/layout1">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editionTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/txt2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/rubik_medium"
+                android:text="2. Select the specifications:"
+                app:layout_constraintTop_toBottomOf="@id/textEdition" />
+
+            <LinearLayout
+                android:id="@+id/layout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/txt2">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textBodyStyles"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="0.50"
+                    android:focusable="false"
+                    android:hint="Body Style"
+                    app:helperText="Required"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textEdition">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/bodyStylesTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textEngineType"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="0.50"
+                    android:focusable="false"
+                    android:hint="Engine"
+                    app:helperText="Required"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textBodyStyles">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/engineTypeTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/layout2">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textMSRP"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="0.50"
+                    android:focusable="false"
+                    android:hint="MSRP"
+                    app:helperText="Required"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textEdition">>
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/MSRPTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textSeats"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="0.50"
+                    android:focusable="false"
+                    android:hint="Seats"
+                    app:helperText="Required"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textBodyStyles">>
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/seatsTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txt3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/rubik_medium"
+                android:text="3. Select the production years:"
+                app:layout_constraintTop_toBottomOf="@id/layout4" />
+
+
+            <LinearLayout
+                android:id="@+id/layout3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/txt3">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textStartDate"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="0.50"
+                    android:focusable="false"
+                    android:hint="Start"
+                    app:helperText="Required">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/startDateTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="  -  " />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textEndDate"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="0.50"
+                    android:focusable="false"
+                    android:hint="End"
+                    app:helperText="Required">>
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/endDateTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/now"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:text="Now" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txt4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/rubik_medium"
+                android:text="4. Upload an image of the car:"
+                app:layout_constraintTop_toBottomOf="@id/layout3" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/image"
+                android:layout_width="350dp"
+                android:layout_height="210dp"
+                android:layout_margin="16dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintTop_toBottomOf="@id/txt4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:shapeAppearanceOverlay="@style/roundImageViewLarge"
+                android:src="@drawable/add"/>
+
+            <Button
+                android:id="@+id/uploadImage"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:text="Upload Image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/image" />
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/add_wiki_fab"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginVertical="16dp"
+                android:contentDescription="@string/extended_fab_content_desc"
+                android:fontFamily="@font/rubik_medium"
+                android:text="@string/submit_wiki_fab_label"
+                app:layout_constraintTop_toBottomOf="@id/uploadImage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
