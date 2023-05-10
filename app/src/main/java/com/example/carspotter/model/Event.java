@@ -24,7 +24,7 @@ public class Event implements Parcelable {
     private String start_hour;
     private String end_hour;
     private String type;
-    private int fee;
+    private String fee;
     private String image;
     private Bitmap decodedImage;
 
@@ -49,7 +49,7 @@ public class Event implements Parcelable {
             start_hour = o.getString("start_hour");
             end_hour = o.getString("end_hour");
             type = o.getString("type");
-            fee = o.getInt("fee");
+            fee = o.getString("fee");
             image = o.getString("image");
 
             String inputDateStr = date;
@@ -81,7 +81,7 @@ public class Event implements Parcelable {
         this.start_hour = in.readString();
         this.end_hour = in.readString();
         this.type = in.readString();
-        this.fee = in.readInt();
+        this.fee = in.readString();
         this.image = in.readString();
 
     }
@@ -114,7 +114,7 @@ public class Event implements Parcelable {
         return type;
     }
 
-    public int getFee() {
+    public String getFee() {
         return fee;
     }
 
@@ -149,6 +149,6 @@ public class Event implements Parcelable {
         parcel.writeString(start_hour);
         parcel.writeString(end_hour);
         parcel.writeString(type);
-        parcel.writeInt(fee);
+        parcel.writeString(fee);
     }
 }

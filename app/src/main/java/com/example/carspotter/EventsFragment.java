@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -65,6 +66,8 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
     private SearchBar search_bar;
     private SearchView search_view;
     private TextView searchTxt;
+
+    EventViewFragment eventViewFragment = new EventViewFragment();
 
 
     View view;
@@ -286,6 +289,12 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
 
     @Override
     public void onItemClick(int position, String type) {
-
+        Bundle bundle = new Bundle();
+        eventViewFragment.setArguments(bundle);
+        bundle.putParcelable("Event", events.get(position));
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.flFragment, eventViewFragment ); // give your fragment container id in first parameter
+        transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+        transaction.commit();
     }
 }
