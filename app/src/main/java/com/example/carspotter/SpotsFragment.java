@@ -166,7 +166,7 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
             }
         }
         Collections.sort(spots, (o1, o2) -> o1.getDate().compareTo(o2.getDate()));
-//        cars.add(cars.get(0));
+        Collections.reverse(spots);
     }
 
     //Next function is temporary (clicking on recyclerview, will be replaced by map with all spots)

@@ -8,8 +8,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.carspotter.model.Car;
+import com.example.carspotter.model.Spot;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -20,13 +28,22 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SpotLocationFragment extends Fragment {
     private GoogleMap map;
     private HeatmapTileProvider provider;
     private TileOverlay overlay;
+    private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetSpotsFromCarId";
+    private List<LatLng> spots = new ArrayList<>();
+    private Spot selectedSpot;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -40,36 +57,11 @@ public class SpotLocationFragment extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            //TODO: maak lijst van de spots en plaats deze als markers op de map.
-            // De meest recente krijgt een andere tag (misschien best voor de andere ook de datum in de marker)
-            // Voor de tags kunt ge uit de database "lat" en "long" halen voor bepaalde car_id
-            /*
-            //HEATMAP
-            addHeatMap(googleMap);
-
-            //MARKER
-            LatLng selectedSpot = new LatLng(50, 5);
-            googleMap.addMarker(new MarkerOptions().position(selectedSpot).title("Selected Spot"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(selectedSpot));
-            */
+            Toast.makeText(
+                    getActivity(),
+                    "Retreiving Spots from Database",
+                    Toast.LENGTH_LONG).show();
             map = googleMap;
-            // Create a list of LatLng objects representing the heatmap data points
-            ArrayList<LatLng> dataPoints = new ArrayList<>();
-            dataPoints.add(new LatLng(37.775, -122.419));
-            dataPoints.add(new LatLng(37.776, -122.418));
-            dataPoints.add(new LatLng(37.777, -122.417));
-            // Add more data points as needed...
-
-            // Create a HeatmapTileProvider using the data points
-            provider = new HeatmapTileProvider.Builder()
-                    .data(dataPoints)
-                    .build();
-
-            // Add the heatmap overlay to the map
-            map.addTileOverlay(new TileOverlayOptions().tileProvider(provider));
-
-            // Set the camera position to the center of the heatmap data points
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.776, -122.418), 13));
         }
     };
 
@@ -78,6 +70,11 @@ public class SpotLocationFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        Bundle bundle = this.getArguments();
+        selectedSpot = bundle.getParcelable("Spot");
+
+        requestSpotsFromCarId(String.valueOf(selectedSpot.getCar_id()));
+
         return inflater.inflate(R.layout.fragment_spot_location, container, false);
     }
 
@@ -90,6 +87,68 @@ public class SpotLocationFragment extends Fragment {
             mapFragment.getMapAsync(callback);
         }
     }
+    private void requestSpotsFromCarId(String item) {
+        // Retrieve spots from database with Volley
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        JsonArrayRequest queueRequest = new JsonArrayRequest(
+                Request.Method.GET,
+                QUEUE_URL+"/"+item,
+                null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        processJSONResponse(response);
+                        if (spots.size() != 0){
+                            prepMap();
+                            Toast.makeText(
+                                    getActivity(),
+                                    "Succesfully processed all spots",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        else {
+                            Toast.makeText(
+                                    getActivity(),
+                                    "error: there was an issue retreiving data from server",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(
+                                getActivity(),
+                                "Unable to communicate with the server",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+        requestQueue.add(queueRequest);
+    }
 
-    //TODO: import all cars from car_id
+    private void processJSONResponse(JSONArray response) {
+        //Add spots from database into local list
+        spots.clear();
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                Spot spot = new Spot(response.getJSONObject(i));
+                spots.add(spot.getLatLng());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    protected void prepMap(){
+        //HEATPMAP:
+        // 1: Create a HeatmapTileProvider using the data points
+        provider = new HeatmapTileProvider.Builder()
+                .data(spots)
+                .build();
+        // 2: Add the heatmap overlay to the map
+        map.addTileOverlay(new TileOverlayOptions().tileProvider(provider));
+
+        //MARKER
+        // Set the camera position to the center of the heatmap data points
+        map.addMarker(new MarkerOptions().position(selectedSpot.getLatLng()).title("Selected Spot"));
+        map.moveCamera(CameraUpdateFactory.newLatLng(selectedSpot.getLatLng()));
+    }
 }
