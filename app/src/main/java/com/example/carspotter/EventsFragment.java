@@ -68,6 +68,7 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
     private TextView searchTxt;
 
     EventViewFragment eventViewFragment = new EventViewFragment();
+    AddEventFragment addEventFragment = new AddEventFragment();
 
 
     View view;
@@ -173,6 +174,16 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
                 }
 
                 return false;
+            }
+        });
+
+        add_event_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.flFragment, addEventFragment); // give your fragment container id in first parameter
+                transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+                transaction.commit();
             }
         });
 
