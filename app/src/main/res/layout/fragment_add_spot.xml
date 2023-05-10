@@ -47,19 +47,32 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageView
-        android:id="@+id/addSpotImage"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:src="@drawable/add"
-        app:layout_constraintBottom_toTopOf="@+id/addSpotImageBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addSpotInfo" />
+<!--    <ImageView-->
+<!--        android:id="@+id/addSpotImage"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_marginStart="8dp"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        android:layout_marginBottom="8dp"-->
+<!--        android:src="@android:drawable/ic_menu_add"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/addSpotImageBtn"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/addSpotInfo" />-->
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/addSpotImage"
+            android:layout_width="350dp"
+            android:layout_height="210dp"
+            android:layout_margin="8dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/add"
+            app:layout_constraintBottom_toTopOf="@+id/addSpotImageBtn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addSpotInfo"
+            app:shapeAppearanceOverlay="@style/roundImageViewLarge" />
 
     <Button
         android:id="@+id/addSpotImageBtn"
