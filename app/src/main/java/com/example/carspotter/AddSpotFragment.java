@@ -66,7 +66,6 @@ public class AddSpotFragment extends Fragment {
 
     private ExtendedFloatingActionButton extendedFloatingActionButton;
     private LocationRequest locationRequest;
-    private String location = "";
     private ImageView addSpotImage;
     private Button addSpotImageBtn;
     private boolean imageSubmitted = false;
@@ -77,7 +76,9 @@ public class AddSpotFragment extends Fragment {
     View view;
     int SELECT_PICTURE = 200;
     private Car car;
-
+    private String location;
+    private String lat;
+    private String lng;
     public AddSpotFragment() {
         // Required empty public constructor
     }
@@ -182,14 +183,13 @@ public class AddSpotFragment extends Fragment {
                                             if (locationResult != null && locationResult.getLocations().size() > 0) {
                                                 // Here we will extract the latitude and longitude from the location.
                                                 int index = locationResult.getLocations().size() - 1;
-                                                String latitude = String.valueOf(locationResult.getLocations().get(index).getLatitude());
-                                                String longitude = String.valueOf(locationResult.getLocations().get(index).getLongitude());
+                                                lat = String.valueOf(locationResult.getLocations().get(index).getLatitude());
+                                                lng = String.valueOf(locationResult.getLocations().get(index).getLongitude());
 
                                                 // We will now display the results on the app.
-                                                latData.setText(latitude);
-                                                longData.setText(longitude);
-
-                                                locationTranslation();
+                                                latData.setText(lat);
+                                                longData.setText(lng);
+                                                locationTranslation(lat, lng);
                                             }
                                         }
                                     }, Looper.getMainLooper());
@@ -344,8 +344,8 @@ public class AddSpotFragment extends Fragment {
 
     private void confirmationPopUp() {
         new MaterialAlertDialogBuilder(getContext())
-                .setTitle("Submit Wiki")
-                .setMessage("Are you sure you want to submit this wiki?")
+                .setTitle("Submit Spot")
+                .setMessage("Are you sure you want to submit this spot?")
                 .setNeutralButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -366,7 +366,7 @@ public class AddSpotFragment extends Fragment {
                                 },
                                 error -> {
                                     // Handle the error
-                                    Toast.makeText(getActivity(), "" + error, Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getActivity(), ""+error, Toast.LENGTH_LONG).show();
                                     //progressIndicatorAddWikiView.hide();
                                 }) {
                             @Override
@@ -377,8 +377,8 @@ public class AddSpotFragment extends Fragment {
                                             + "&" + "date=" + LocalDate.now()
                                             + "&" + "location=" + location
                                             + "&" + "image=" + URLEncoder.encode(imageString, "UTF-8")
-                                            + "&" + "lat=" + (String) latData.getText()
-                                            + "&" + "lng=" + (String) longData.getText()
+                                            + "&" + "lat=" + lat
+                                            + "&" + "lng=" + lng
                                     ;
                                 } catch (UnsupportedEncodingException e) {
                                     throw new RuntimeException(e);
@@ -398,12 +398,12 @@ public class AddSpotFragment extends Fragment {
                 })
                 .show();
     }
-    private void locationTranslation() {
+    private void locationTranslation(String lat,String lng) {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         JsonObjectRequest queueRequest = new JsonObjectRequest(
                 Request.Method.GET,
-                "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + parseDouble((String) latData.getText()) + "," +
-                        parseDouble((String) longData.getText()) + "&key=AIzaSyBL5W5Y_tALAcsXnJOnK45CAhuOp4kIUio",
+                "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + parseDouble((String) lat) + "," +
+                        parseDouble((String) lng) + "&key=AIzaSyBL5W5Y_tALAcsXnJOnK45CAhuOp4kIUio",
                 null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -416,7 +416,7 @@ public class AddSpotFragment extends Fragment {
                         location = String.valueOf(addSpotLocation.getText());
                         Toast.makeText(
                                 getActivity(),
-                                "Successfully Processed Location",
+                                "Successfully Processed Location: " + location,
                                 Toast.LENGTH_LONG).show();
 
                         locationSubmitted = true;
