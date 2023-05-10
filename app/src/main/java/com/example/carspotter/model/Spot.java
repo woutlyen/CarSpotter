@@ -6,6 +6,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Base64;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -96,6 +98,7 @@ public class Spot implements Parcelable {
         public String getLat() { return lat;}
 
         public String getLng() { return lng;}
+        public LatLng getLatLng(){ return new LatLng(Double.valueOf(lat),Double.valueOf(lng));}
 
         @Override
         public String toString() {
