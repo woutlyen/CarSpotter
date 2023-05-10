@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,8 @@ import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.search.SearchBar;
+import com.google.android.material.search.SearchView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class EventsFragment extends Fragment implements RecyclerViewInterface {
@@ -47,7 +51,9 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
 
     private List<Event> allEvents = new ArrayList<>();
     private List<Event> events = new ArrayList<>();
+    private List<Event> searchEvents = new ArrayList<>();
     private RecyclerView eventView;
+    private RecyclerView searchView;
     private TextView noEventsTxt;
     private MaterialButtonToggleGroup toggleButton;
     private LinearProgressIndicator progressIndicatorCarView;
@@ -55,6 +61,10 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
     private MaterialButton month;
     private MaterialButton year;
     private ExtendedFloatingActionButton add_event_fab;
+
+    private SearchBar search_bar;
+    private SearchView search_view;
+    private TextView searchTxt;
 
 
     View view;
@@ -87,6 +97,20 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
 
         add_event_fab = (ExtendedFloatingActionButton) view.findViewById(R.id.add_event_fab);
 
+        searchView = (RecyclerView) view.findViewById(R.id.searchView);
+        EventsAdapter adapter2 = new EventsAdapter(searchEvents, this);
+        searchView.setAdapter(adapter2);
+        searchView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        search_bar = (SearchBar) view.findViewById(R.id.search_bar);
+        search_view = (SearchView) view.findViewById(R.id.search_view);
+        searchTxt = (TextView) view.findViewById(R.id.searchTxt);
+
+        if (searchEvents.size() == 0) {
+            String text = "Press on the Searchbar above! ";
+            text += new String(Character.toChars(0x1F446));
+            searchTxt.setText(text);
+        }
 
         requestEvents();
 
@@ -127,6 +151,28 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
         });
 
 
+        search_view.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                searchEvents.clear();
+                List<Event> search= allEvents.stream()
+                        .filter(e -> e.getName().toLowerCase().contains(search_view.getText().toString().toLowerCase()))
+                        .collect(Collectors.toList());
+                searchEvents.addAll(search);
+                searchView.getAdapter().notifyDataSetChanged();
+
+                if (searchEvents.size() != 0){
+                    searchTxt.setText("");
+                } else {
+                    String text = "Event not found! ";
+                    text += new String(Character.toChars(0x1F613));
+                    searchTxt.setText(text);
+                }
+
+                return false;
+            }
+        });
+
         return view;
     }
 
@@ -164,11 +210,22 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
                     }
                 }
 
+
             }
 
         } else {
             String text = "No events planned at this moment! ";
             text += new String(Character.toChars(0x1F613));
+            noEventsTxt.setText(text);
+        }
+
+        if (events.size() == 0){
+            String text = "No events planned at this moment! ";
+            text += new String(Character.toChars(0x1F613));
+            noEventsTxt.setText(text);
+        }
+        else {
+            String text = "";
             noEventsTxt.setText(text);
         }
         eventView.getAdapter().notifyDataSetChanged();
