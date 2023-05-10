@@ -101,7 +101,7 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
         add_event_fab = (ExtendedFloatingActionButton) view.findViewById(R.id.add_event_fab);
 
         searchView = (RecyclerView) view.findViewById(R.id.searchView);
-        EventsAdapter adapter2 = new EventsAdapter(searchEvents, this);
+        EventsSearchAdapter adapter2 = new EventsSearchAdapter(searchEvents, this);
         searchView.setAdapter(adapter2);
         searchView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -290,11 +290,21 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
     @Override
     public void onItemClick(int position, String type) {
         Bundle bundle = new Bundle();
-        eventViewFragment.setArguments(bundle);
-        bundle.putParcelable("Event", events.get(position));
-        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-        transaction.replace(R.id.flFragment, eventViewFragment ); // give your fragment container id in first parameter
-        transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
-        transaction.commit();
+
+        if (type.equals("Event")) {
+            eventViewFragment.setArguments(bundle);
+            bundle.putParcelable("Event", events.get(position));
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            transaction.replace(R.id.flFragment, eventViewFragment); // give your fragment container id in first parameter
+            transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+            transaction.commit();
+        } else if (type.equals("SearchEvent")) {
+            eventViewFragment.setArguments(bundle);
+            bundle.putParcelable("Event", searchEvents.get(position));
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            transaction.replace(R.id.flFragment, eventViewFragment); // give your fragment container id in first parameter
+            transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+            transaction.commit();
+        }
     }
 }
