@@ -22,6 +22,8 @@ public class Spot implements Parcelable {
         private String date;
         private String image;
         private Bitmap decodedImage;
+        private String lat;
+        private String lng;
 
         public static final Creator<Spot> CREATOR = new Creator<Spot>() {
             @Override
@@ -42,6 +44,8 @@ public class Spot implements Parcelable {
                 location = o.getString("location");
                 date = o.getString("date");
                 image = o.getString("image");
+                lat = o.getString("lat");
+                lng = o.getString("lng");
 
                 String inputDateStr = date;
                 SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -69,6 +73,8 @@ public class Spot implements Parcelable {
             this.car_id = in.readInt();
             this.location = in.readString();
             this.date = in.readString();
+            this.lat = in.readString();
+            this.lng = in.readString();
 
         }
 
@@ -87,10 +93,13 @@ public class Spot implements Parcelable {
         public String getImage() { return image; }
 
         public Bitmap getDecodedImage() { return decodedImage; }
+        public String getLat() { return lat;}
+
+        public String getLng() { return lng;}
 
         @Override
         public String toString() {
-            return spot_id+car_id+location+date+image;
+            return spot_id+car_id+location+date+image+lat+lng;
         }
 
         @Override
@@ -104,5 +113,7 @@ public class Spot implements Parcelable {
             parcel.writeInt(car_id);
             parcel.writeString(location);
             parcel.writeString(date);
+            parcel.writeString(lat);
+            parcel.writeString(lng);
         }
     }
