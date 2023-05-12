@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -80,6 +82,7 @@ public class AddSpotFragment extends Fragment {
     private String location;
     private String lat;
     private String lng;
+    private ProgressBar progressBar;
     public AddSpotFragment() {
         // Required empty public constructor
     }
@@ -89,6 +92,10 @@ public class AddSpotFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_add_spot, container, false);
+
+        // Initiate progress bar
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        progressBar.setVisibility(view.INVISIBLE);
 
         // Get car information
         Bundle bundle = this.getArguments();
@@ -357,13 +364,15 @@ public class AddSpotFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // Respond to positive button press
+                        progressBar.setVisibility(view.VISIBLE);
+                        extendedFloatingActionButton.setVisibility(View.INVISIBLE);
                         StringRequest stringRequest = new StringRequest(Request.Method.POST,
                                 QUEUE_URL,
                                 response -> {
                                     // Handle the response
                                     Toast.makeText(getActivity(), "New Spot Submitted", Toast.LENGTH_LONG).show();
-                                    //TODO: progressbar
-                                    //progressIndicatorAddWikiView.hide();
+                                    progressBar.setVisibility(view.INVISIBLE);
+                                    clear();
                                 },
                                 error -> {
                                     // Handle the error
@@ -446,5 +455,15 @@ public class AddSpotFragment extends Fragment {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
+    }
+    private void clear(){
+        imageSubmitted = false;
+        locationSubmitted = false;
+        addSpotImage.setImageResource(R.drawable.add);
+        addSpotLocation.setText("Add location");
+        latInfo.setText("*awaiting input*");
+        longInfo.setText(" ");
+        latData.setText(" ");
+        longData.setText(" ");
     }
 }
