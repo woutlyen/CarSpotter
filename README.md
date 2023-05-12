@@ -1,7 +1,7 @@
 # Java application assignment: *CarSpotter*
 Made by:
 * Wout Lyen
-* Jonathan Valgaeren
+* Jonathan Valgaeren (ItsAlphie)
 ## Inspiration
 The original idea for the application was a form of wikipedia, but all about cars. However, we have changed to a more user-interactive application. The main goal of the app to share sightings or 'spots' of cars with others. We have retained the wiki side of the app, where the user is able to look up information about the spotted cars. We also added an event feature for even more user-interaction.
 ## Functions
