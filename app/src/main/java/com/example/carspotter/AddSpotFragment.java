@@ -54,6 +54,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 
 public class AddSpotFragment extends Fragment {
@@ -374,7 +375,7 @@ public class AddSpotFragment extends Fragment {
                                 String body = null;
                                 try {
                                     body = "car=" + car.getId()
-                                            + "&" + "date=" + LocalDate.now()
+                                            + "&" + "date=" + LocalDate.now()+" "+ LocalTime.now()
                                             + "&" + "location=" + location
                                             + "&" + "image=" + URLEncoder.encode(imageString, "UTF-8")
                                             + "&" + "lat=" + lat
@@ -411,13 +412,13 @@ public class AddSpotFragment extends Fragment {
                         Toast.makeText(
                                 getActivity(),
                                 "Processing Location",
-                                Toast.LENGTH_LONG).show();
+                                Toast.LENGTH_SHORT).show();
                         processJSONResponse(response);
                         location = String.valueOf(addSpotLocation.getText());
                         Toast.makeText(
                                 getActivity(),
                                 "Successfully Processed Location: " + location,
-                                Toast.LENGTH_LONG).show();
+                                Toast.LENGTH_SHORT).show();
 
                         locationSubmitted = true;
                         if (imageSubmitted) {
