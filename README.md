@@ -18,3 +18,6 @@ The original idea for the application was a form of wikipedia, but all about car
 ## Possible expandability
 * User functionality: login and password, enlist for events, user information in list of spots
 * Add location to the events.
+
+## Important note
+Incase there might be any issues during testing, you might have to add the google API key to local.properties. (MAPS_API_KEY=AIzaSyBL5W5Y_tALAcsXnJOnK45CAhuOp4kIUio)
