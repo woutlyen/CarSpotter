@@ -58,7 +58,6 @@ public class SpotLocationFragment extends Fragment {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
-        //TODO: add progress indicator when loading in spots :)
         @Override
         public void onMapReady(GoogleMap googleMap) {
             Toast.makeText(

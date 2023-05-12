@@ -367,7 +367,6 @@ public class AddWikiFragment extends Fragment {
                 selectedImageUri = data.getData();
                 if (null != selectedImageUri) {
                     // update the preview image in the layout
-                    //TODO: crop image in juiste formaat
                     image.setImageURI(selectedImageUri);
                     imageSubmitted = true;
                 }
