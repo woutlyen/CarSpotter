@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -44,6 +46,7 @@ public class SpotLocationFragment extends Fragment {
     private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetSpotsFromCarId";
     private List<LatLng> spots = new ArrayList<>();
     private Spot selectedSpot;
+    private ProgressBar progressBar;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -55,6 +58,7 @@ public class SpotLocationFragment extends Fragment {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
+        //TODO: add progress indicator when loading in spots :)
         @Override
         public void onMapReady(GoogleMap googleMap) {
             Toast.makeText(
@@ -70,12 +74,17 @@ public class SpotLocationFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_spot_location, container, false);
+
+        progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
+
+
         Bundle bundle = this.getArguments();
         selectedSpot = bundle.getParcelable("Spot");
 
         requestSpotsFromCarId(String.valueOf(selectedSpot.getCar_id()));
-
-        return inflater.inflate(R.layout.fragment_spot_location, container, false);
+        return view;
     }
 
     @Override
@@ -111,6 +120,7 @@ public class SpotLocationFragment extends Fragment {
                                     "error: there was an issue retreiving data from server",
                                     Toast.LENGTH_LONG).show();
                         }
+                        progressBar.setVisibility(View.INVISIBLE);
                     }
                 },
                 new Response.ErrorListener() {
@@ -120,6 +130,7 @@ public class SpotLocationFragment extends Fragment {
                                 getActivity(),
                                 "Unable to communicate with the server",
                                 Toast.LENGTH_LONG).show();
+                        progressBar.setVisibility(View.INVISIBLE);
                     }
                 });
         requestQueue.add(queueRequest);
