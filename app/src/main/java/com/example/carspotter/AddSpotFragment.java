@@ -226,8 +226,6 @@ public class AddSpotFragment extends Fragment {
          * If none of the permissions are granted, both coarse and fine will be requested.
          * If both are granted, nothing will be requested.
          */
-
-        //TODO: Weigeren dat ge kunt localiseren nadat (fine) location geweigerd is.
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
                                 .RequestMultiplePermissions(), result -> {
