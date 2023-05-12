@@ -43,7 +43,7 @@ public class SpotLocationFragment extends Fragment {
     private GoogleMap map;
     private HeatmapTileProvider provider;
     private TileOverlay overlay;
-    private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetSpotsFromCarId";
+    private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetSpotsForMap";
     private List<LatLng> spots = new ArrayList<>();
     private Spot selectedSpot;
     private ProgressBar progressBar;
@@ -78,7 +78,6 @@ public class SpotLocationFragment extends Fragment {
 
         progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
-
 
         Bundle bundle = this.getArguments();
         selectedSpot = bundle.getParcelable("Spot");
@@ -141,8 +140,9 @@ public class SpotLocationFragment extends Fragment {
         spots.clear();
         for (int i = 0; i < response.length(); i++) {
             try {
-                Spot spot = new Spot(response.getJSONObject(i));
-                spots.add(spot.getLatLng());
+                Double lat = response.getJSONObject(i).getDouble("lat");
+                Double lng = response.getJSONObject(i).getDouble("lng");
+                spots.add(new LatLng(lat, lng));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
