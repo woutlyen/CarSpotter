@@ -83,6 +83,7 @@ public class AddSpotFragment extends Fragment {
     private String lat;
     private String lng;
     private ProgressBar progressBar;
+    private ProgressBar progressLocation;
     public AddSpotFragment() {
         // Required empty public constructor
     }
@@ -93,9 +94,11 @@ public class AddSpotFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_add_spot, container, false);
 
-        // Initiate progress bar
+        // Initiate progress bars
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         progressBar.setVisibility(view.INVISIBLE);
+        progressLocation = (ProgressBar) view.findViewById(R.id.progressLocation);
+        progressLocation.setVisibility(view.INVISIBLE);
 
         // Get car information
         Bundle bundle = this.getArguments();
@@ -170,6 +173,7 @@ public class AddSpotFragment extends Fragment {
         addSpotLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressLocation.setVisibility(view.VISIBLE);
                 latInfo.setText("Latitude: ");
                 longInfo.setText("Longitude: ");
                 latData.setText("Loading...");
@@ -242,17 +246,19 @@ public class AddSpotFragment extends Fragment {
                     } else if (coarseLocationGranted != null && coarseLocationGranted) {
                                 // Only approximate location access granted.
                                 latInfo.setText("Error: ");
-                                latData.setText("Please allow usage of precise location.");
+                                latData.setText("Please refresh allow usage of precise location.");
                                 longInfo.setText("");
                                 longData.setText("");
                                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                                addSpotLocation.setVisibility(view.INVISIBLE);
                             } else {
                                 // No location access granted.
                                 latInfo.setText("Error: ");
-                                latData.setText("Please allow usage of location.");
+                                latData.setText("Please refresh and allow usage of location.");
                                 longInfo.setText("");
                                 longData.setText("");
                                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                                addSpotLocation.setVisibility(view.INVISIBLE);
                             }
                         }
                 );
@@ -301,7 +307,6 @@ public class AddSpotFragment extends Fragment {
                 selectedImageUri = data.getData();
                 if (null != selectedImageUri) {
                     // update the preview image in the layout
-                    //TODO: crop image in juiste formaat
                     addSpotImage.setImageURI(selectedImageUri);
                     processImageUpload();
                 }
@@ -430,6 +435,7 @@ public class AddSpotFragment extends Fragment {
                                 Toast.LENGTH_SHORT).show();
 
                         locationSubmitted = true;
+                        progressLocation.setVisibility(view.INVISIBLE);
                         if (imageSubmitted) {
                             extendedFloatingActionButton.setVisibility(View.VISIBLE);
                         }
