@@ -58,7 +58,7 @@ public class AddEventFragment extends Fragment {
                 .setValidator(DateValidatorPointForward.now()).build();
 
         MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select Date")
+                .setTitleText("Select D ate")
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                 .setCalendarConstraints(constraintsBuilder)
                 .build();

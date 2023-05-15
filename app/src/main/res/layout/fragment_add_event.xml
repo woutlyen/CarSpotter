@@ -304,7 +304,7 @@
                 android:layout_marginVertical="16dp"
                 android:contentDescription="@string/extended_fab_content_desc"
                 android:fontFamily="@font/rubik_medium"
-                android:text="@string/submit_wiki_fab_label"
+                android:text="@string/submit_event_fab_label"
                 app:layout_constraintTop_toBottomOf="@id/uploadImage"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
