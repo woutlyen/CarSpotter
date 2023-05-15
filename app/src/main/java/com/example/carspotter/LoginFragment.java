@@ -3,7 +3,10 @@ package com.example.carspotter;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +27,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,6 +52,10 @@ import java.util.UUID;
  * create an instance of this fragment.
  */
 public class LoginFragment extends Fragment {
+    /**
+     * These are needed for the login process
+     */
+    private ConstraintLayout textFields;
     private String REGISTER_URL = "https://studev.groept.be/api/a22pt304/RegisterUser";
     private String CHECK_USER_URL = "https://studev.groept.be/api/a22pt304/CheckUser";
     private String LOGIN_URL = "https://studev.groept.be/api/a22pt304/CheckPass";
@@ -59,6 +67,12 @@ public class LoginFragment extends Fragment {
     private TextInputEditText password;
     private String givenUser;
     boolean exists = false;
+
+
+    /**
+     * These are needed to switch to a list of all the user's spots
+     */
+    private RecyclerView personalSpots;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -82,6 +96,9 @@ public class LoginFragment extends Fragment {
         loginfab = (ExtendedFloatingActionButton) view.findViewById(R.id.loginfab);
         username = view.findViewById(R.id.username);
         password = view.findViewById(R.id.password);
+
+        textFields = view.findViewById(R.id.textFields);
+
         Process();
         return view;
     }
@@ -292,6 +309,7 @@ public class LoginFragment extends Fragment {
                                          getActivity(),
                                          "Succesfully logged in, welcome back "+loggedUser,
                                          Toast.LENGTH_SHORT).show();
+                                 toggleLayout();
                              }
                              else {
                                  Toast.makeText(
@@ -315,4 +333,25 @@ public class LoginFragment extends Fragment {
                  });
          requestQueue.add(queueRequest);
      }
+
+    /**
+     * Once logged in we switch layouts
+     */
+    public enum newLayout {
+        login,
+        personalSpots;
+    }
+    private void toggleLayout(newLayout layout){
+        if(layout == newLayout.login){
+            textFields.setVisibility(view.VISIBLE);
+            loginfab.setVisibility(view.VISIBLE);
+
+
+        }
+        else{
+            textFields.setVisibility(view.INVISIBLE);
+            loginfab.setVisibility(view.INVISIBLE);
+        }
+
+    }
 }
