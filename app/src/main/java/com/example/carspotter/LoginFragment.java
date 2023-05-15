@@ -51,6 +51,7 @@ public class LoginFragment extends Fragment {
     private String REGISTER_URL = "https://studev.groept.be/api/a22pt304/RegisterUser";
     private String CHECK_USER_URL = "https://studev.groept.be/api/a22pt304/CheckUser";
     private String LOGIN_URL = "https://studev.groept.be/api/a22pt304/CheckPass";
+    private String STRING_URL = "https://studev.groept.be/api/a22pt304/GetRandomString";
 
     private View view;
     private ExtendedFloatingActionButton loginfab;
@@ -146,7 +147,7 @@ public class LoginFragment extends Fragment {
                         Toast.makeText(
                                 getActivity(),
                                 "Unable to communicate with the server",
-                                Toast.LENGTH_LONG).show();
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
         requestQueue.add(queueRequest);
@@ -235,10 +236,83 @@ public class LoginFragment extends Fragment {
     }
     private void login(){
         /**
-         * Here we check the password. If it matches, the user will be "logged in".
-         * If it doesn't match, a notification will be given.
+         * Here we create the hashed password from the given textfields and then proceed to checkLogin()
          */
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        JsonArrayRequest queueRequest = new JsonArrayRequest(
+                Request.Method.GET,
+            STRING_URL + "/" + givenUser,
+                null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        // Check if database contains the user
+                        try {
+                            String randomString = response.getJSONObject(0).getString("randomString");
+                            String givenPass = String.valueOf(password.getText());
 
+                            String hashedPass = hash(givenPass,randomString);
+                            checkLogin(hashedPass);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(
+                                getActivity(),
+                                "Unable to communicate with the server",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+        requestQueue.add(queueRequest);
     }
 
+    /**
+     * Here we check if the local hashed password matches the one stored in the database.
+     * The actual check will be in the SQL query for user safety.
+     */
+     private void checkLogin(String hashedPass){
+         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+         JsonArrayRequest queueRequest = new JsonArrayRequest(
+                 Request.Method.GET,
+                 LOGIN_URL + "/" + hashedPass + "/" +givenUser,
+                 null,
+                 new Response.Listener<JSONArray>() {
+                     @Override
+                     public void onResponse(JSONArray response) {
+                         // Check if database contains the user
+                         try {
+                             if (response.getJSONObject(0).getString("password_match").equals("1")){
+                                 String loggedUser = String.valueOf(username.getText());
+                                 ((MainActivity) (getContext())).setUser(loggedUser);
+                                 Toast.makeText(
+                                         getActivity(),
+                                         "Succesfully logged in, welcome back "+loggedUser,
+                                         Toast.LENGTH_SHORT).show();
+                             }
+                             else {
+                                 Toast.makeText(
+                                         getActivity(),
+                                         "Password doesn't match! Please try again.",
+                                         Toast.LENGTH_SHORT).show();
+                             }
+                         } catch (JSONException e) {
+                             throw new RuntimeException(e);
+                         }
+                     }
+                 },
+                 new Response.ErrorListener() {
+                     @Override
+                     public void onErrorResponse(VolleyError error) {
+                         Toast.makeText(
+                                 getActivity(),
+                                 "Unable to communicate with the server",
+                                 Toast.LENGTH_SHORT).show();
+                     }
+                 });
+         requestQueue.add(queueRequest);
+     }
 }
