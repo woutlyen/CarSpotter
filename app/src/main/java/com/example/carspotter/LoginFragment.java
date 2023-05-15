@@ -55,7 +55,7 @@ public class LoginFragment extends Fragment {
     /**
      * These are needed for the login process
      */
-    private ConstraintLayout textFields;
+    private ConstraintLayout loginLayout;
     private String REGISTER_URL = "https://studev.groept.be/api/a22pt304/RegisterUser";
     private String CHECK_USER_URL = "https://studev.groept.be/api/a22pt304/CheckUser";
     private String LOGIN_URL = "https://studev.groept.be/api/a22pt304/CheckPass";
@@ -73,6 +73,7 @@ public class LoginFragment extends Fragment {
      * These are needed to switch to a list of all the user's spots
      */
     private RecyclerView personalSpots;
+    private ConstraintLayout spotLayout;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -97,7 +98,8 @@ public class LoginFragment extends Fragment {
         username = view.findViewById(R.id.username);
         password = view.findViewById(R.id.password);
 
-        textFields = view.findViewById(R.id.textFields);
+        loginLayout = view.findViewById(R.id.loginLayout);
+        spotLayout = view.findViewById(R.id.spotLayout);
 
         Process();
         return view;
@@ -309,7 +311,7 @@ public class LoginFragment extends Fragment {
                                          getActivity(),
                                          "Succesfully logged in, welcome back "+loggedUser,
                                          Toast.LENGTH_SHORT).show();
-                                 toggleLayout();
+                                 toggleLayout(newLayout.personalSpots);
                              }
                              else {
                                  Toast.makeText(
@@ -343,14 +345,16 @@ public class LoginFragment extends Fragment {
     }
     private void toggleLayout(newLayout layout){
         if(layout == newLayout.login){
-            textFields.setVisibility(view.VISIBLE);
+            loginLayout.setVisibility(view.VISIBLE);
             loginfab.setVisibility(view.VISIBLE);
 
-
+            spotLayout.setVisibility(view.INVISIBLE);
         }
         else{
-            textFields.setVisibility(view.INVISIBLE);
+            loginLayout.setVisibility(view.INVISIBLE);
             loginfab.setVisibility(view.INVISIBLE);
+
+            spotLayout.setVisibility(view.VISIBLE);
         }
 
     }
