@@ -35,7 +35,7 @@ import java.util.List;
 
 public class SpotsFragment extends Fragment implements RecyclerViewInterface{
 
-    private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetSpotsFromCarId";
+    private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetSpotsFromCarId2";
     private List<Spot> spots = new ArrayList<>();
     private RecyclerView spotView;
     private TextView spotInfo;
@@ -72,7 +72,7 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
 //
         //Recyclerview on fragment_spots.xml
         spotView = view.findViewById( R.id.spotView);
-        SpotsAdapter adapter = new SpotsAdapter( spots, this );
+        SpotsAdapter2 adapter = new SpotsAdapter2( spots, this );
         spotView.setAdapter( adapter );
         spotView.setLayoutManager( new LinearLayoutManager( getActivity() ));
 

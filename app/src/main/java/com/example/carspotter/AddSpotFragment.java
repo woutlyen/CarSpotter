@@ -46,6 +46,8 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,8 +84,8 @@ public class AddSpotFragment extends Fragment {
     private String location;
     private String lat;
     private String lng;
-    private ProgressBar progressBar;
-    private ProgressBar progressLocation;
+    private LinearProgressIndicator progressIndicatorAddSpotView;
+    private LinearProgressIndicator progressLocation;
     public AddSpotFragment() {
         // Required empty public constructor
     }
@@ -95,10 +97,10 @@ public class AddSpotFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_add_spot, container, false);
 
         // Initiate progress bars
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        progressBar.setVisibility(view.INVISIBLE);
-        progressLocation = (ProgressBar) view.findViewById(R.id.progressLocation);
-        progressLocation.setVisibility(view.INVISIBLE);
+        progressIndicatorAddSpotView = (LinearProgressIndicator) view.findViewById(R.id.progressIndicatorAddSpotView);
+        progressIndicatorAddSpotView.hide();
+        progressLocation = (LinearProgressIndicator) view.findViewById(R.id.progressLocation);
+        progressLocation.hide();
 
         // Get car information
         Bundle bundle = this.getArguments();
@@ -144,7 +146,12 @@ public class AddSpotFragment extends Fragment {
          */
         //Get info from selected car
         addSpotInfo = (TextView) view.findViewById(R.id.addSpotInfo);
-        addSpotInfo.setText(car.getBrand() + ": " + car.getModel() + " " + car.getEdition());
+        if (car.getEdition().length() > 0){
+            addSpotInfo.setText(car.getBrand() + " " + car.getModel() + " " + car.getEdition());
+        } else {
+            addSpotInfo.setText(car.getBrand() + " " + car.getModel());
+        }
+
 
         extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.submit_fab);
         extendedFloatingActionButton.hide();
@@ -173,7 +180,7 @@ public class AddSpotFragment extends Fragment {
         addSpotLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressLocation.setVisibility(view.VISIBLE);
+                progressLocation.show();
                 latInfo.setText("Latitude: ");
                 longInfo.setText("Longitude: ");
                 latData.setText("Loading...");
@@ -367,14 +374,14 @@ public class AddSpotFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // Respond to positive button press
-                        progressBar.setVisibility(view.VISIBLE);
+                        progressIndicatorAddSpotView.show();
                         extendedFloatingActionButton.setVisibility(View.INVISIBLE);
                         StringRequest stringRequest = new StringRequest(Request.Method.POST,
                                 QUEUE_URL,
                                 response -> {
                                     // Handle the response
                                     Toast.makeText(getActivity(), "New Spot Submitted", Toast.LENGTH_LONG).show();
-                                    progressBar.setVisibility(view.INVISIBLE);
+                                    progressIndicatorAddSpotView.hide();
                                     clear();
                                 },
                                 error -> {
@@ -433,7 +440,7 @@ public class AddSpotFragment extends Fragment {
                                 Toast.LENGTH_SHORT).show();
 
                         locationSubmitted = true;
-                        progressLocation.setVisibility(view.INVISIBLE);
+                        progressLocation.hide();
                         if (imageSubmitted) {
                             extendedFloatingActionButton.setVisibility(View.VISIBLE);
                         }

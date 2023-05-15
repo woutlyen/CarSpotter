@@ -59,7 +59,7 @@ import java.util.Objects;
 
 public class HomeFragment extends Fragment implements RecyclerViewInterface {
 
-    private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetSpotsForHome";
+    private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetSpotsForHome2";
     private static final String QUEUE_URL2 = "https://studev.groept.be/api/a22pt304/GetWikisForHome";
     private final int DELAY_MS = 4000; // Delay in milliseconds
     private View view;
