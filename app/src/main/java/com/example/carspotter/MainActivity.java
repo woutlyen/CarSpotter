@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.commons.logging.Log;
+
 import java.io.*;
 
 public class MainActivity extends AppCompatActivity
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity
     BrandSelectFragment brandSelectFragment = new BrandSelectFragment();
     HomeFragment homeFragment = new HomeFragment();
     EventsFragment eventsFragment = new EventsFragment();
+    LoginFragment loginFragment = new LoginFragment();
 
     @Override
     public boolean
@@ -105,6 +108,13 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.flFragment, eventsFragment)
+                    .commit();
+            return true;
+        }
+        else if (id == R.id.item_4){
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.flFragment, loginFragment)
                     .commit();
             return true;
         }
