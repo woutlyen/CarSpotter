@@ -5,37 +5,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.carspotter.model.Spot;
 
 import java.util.List;
 
-public class SpotsAdapter extends RecyclerView.Adapter<SpotsAdapter.ViewHolder> {
+public class SpotsAdapter2 extends RecyclerView.Adapter<SpotsAdapter2.ViewHolder> {
     private List<Spot> spotList;
     private final RecyclerViewInterface recyclerViewInterface;
-    public SpotsAdapter(List<Spot> spotList, RecyclerViewInterface recyclerViewInterface) {
+    public SpotsAdapter2(List<Spot> spotList, RecyclerViewInterface recyclerViewInterface) {
         this.spotList = spotList;
         this.recyclerViewInterface = recyclerViewInterface;
     }
     @Override
-    public SpotsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SpotsAdapter2.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View spotView = layoutInflater.inflate(R.layout.spot_view, parent, false);
+        View spotView = layoutInflater.inflate(R.layout.spot_view_2, parent, false);
         ViewHolder myViewHolder = new ViewHolder(spotView, recyclerViewInterface);
         return myViewHolder;
     }
     @Override
-    public void onBindViewHolder(SpotsAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(SpotsAdapter2.ViewHolder holder, int position) {
         Spot spot = spotList.get(position);
-        if (spot.getBrand() != null){
-            holder.spotView.findViewById(R.id.spotCarModel).setVisibility(View.VISIBLE);
-            ((TextView) holder.spotView.findViewById(R.id.spotCarModel))
-                    .setText(spot.getBrand() + " " + spot.getModel() + " " + spot.getEdition());
-            ((TextView) holder.spotView.findViewById(R.id.spotCarModel)).setSelected(true);
-        } else {
-            holder.spotView.findViewById(R.id.spotCarModel).setVisibility(View.GONE);
-        }
         ((TextView) holder.spotView.findViewById(R.id.spotWhen))
                 .setText(spot.getDate());
         ((TextView) holder.spotView.findViewById(R.id.spotWhere))

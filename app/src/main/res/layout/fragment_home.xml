@@ -128,7 +128,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/newSpot"
                     android:layout_width="match_parent"
-                    android:layout_height="135dp" />
+                    android:layout_height="315dp" />
 
                 <TextView
                     android:id="@+id/mainWiki"
@@ -146,31 +146,31 @@
                     android:layout_width="match_parent"
                     android:layout_height="135dp" />
 
-                <TextView
-                    android:id="@+id/mainEvent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="8dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:fontFamily="@font/rubik_medium"
-                    android:gravity="center_horizontal"
-                    android:text="Upcoming Events" />
+<!--                <TextView-->
+<!--                    android:id="@+id/mainEvent"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginHorizontal="8dp"-->
+<!--                    android:layout_marginTop="16dp"-->
+<!--                    android:layout_marginBottom="8dp"-->
+<!--                    android:fontFamily="@font/rubik_medium"-->
+<!--                    android:gravity="center_horizontal"-->
+<!--                    android:text="Upcoming Events" />-->
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/newEvent"
-                    android:layout_width="match_parent"
-                    android:layout_height="135dp" />
+<!--                <androidx.recyclerview.widget.RecyclerView-->
+<!--                    android:id="@+id/newEvent"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="135dp" />-->
 
-                <TextView
-                    android:id="@+id/noEvents"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="-100dp"
-                    android:fontFamily="@font/rubik_regular"
-                    android:gravity="center_horizontal"
-                    android:text="No events planned at this moment! &#128531;"
-                    app:layout_constraintTop_toBottomOf="@id/linearLayout3" />
+<!--                <TextView-->
+<!--                    android:id="@+id/noEvents"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="-100dp"-->
+<!--                    android:fontFamily="@font/rubik_regular"-->
+<!--                    android:gravity="center_horizontal"-->
+<!--                    android:text="No events planned at this moment! &#128531;"-->
+<!--                    app:layout_constraintTop_toBottomOf="@id/linearLayout3" />-->
 
             </LinearLayout>
 
