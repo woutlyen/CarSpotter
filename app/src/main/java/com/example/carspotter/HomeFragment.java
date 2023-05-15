@@ -158,12 +158,16 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
 
         // Set the greeting message based on the time
         String greeting;
+        String user = "";
+        if (((MainActivity) (getContext())).getUser() != null){
+            user = " " + ((MainActivity) (getContext())).getUser();
+        }
         if (timeOfDay < 12) {
-            greeting = "Good morning!";
+            greeting = "Good morning"+user+"!";
         } else if (timeOfDay < 18) {
-            greeting = "Good afternoon!";
+            greeting = "Good afternoon"+user+"!";
         } else {
-            greeting = "Good evening! ";
+            greeting = "Good evening"+user+"!";
         }
 
         greeting += " \uD83D\uDC4B";
