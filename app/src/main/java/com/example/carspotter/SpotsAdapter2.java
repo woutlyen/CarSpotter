@@ -33,6 +33,7 @@ public class SpotsAdapter2 extends RecyclerView.Adapter<SpotsAdapter2.ViewHolder
                 .setText(spot.getDate());
         ((TextView) holder.spotView.findViewById(R.id.spotWhere))
                 .setText(spot.getLocation());
+        holder.spotView.findViewById(R.id.spotWhere).setSelected(true);
         ((ImageView) holder.spotView.findViewById(R.id.spotImage))
                 .setImageBitmap(spot.getDecodedImage());
         if (!spot.getUsername().equals("null")){

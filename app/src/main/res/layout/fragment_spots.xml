@@ -35,16 +35,12 @@
         android:id="@+id/spotView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        app:layout_constraintVertical_bias="0.6">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -52,7 +48,8 @@
         android:id="@+id/linearLayout2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_marginVertical="8dp"
+        android:layout_marginHorizontal="16dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -60,26 +57,21 @@
 
         <TextView
             android:id="@+id/spots"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Recent Sightings"
-            android:textSize="34sp"
-            android:typeface="normal"
-            tools:layout_conversion_absoluteHeight="45dp"
-            tools:layout_editor_absoluteY="8dp"
-            tools:layout_editor_absoluteX="8dp"
-            tools:layout_conversion_absoluteWidth="395dp"/>
+            android:text="Recent Spots"
+            android:textSize="26sp"
+            android:fontFamily="@font/rubik_semibold"
+            android:textAlignment="center" />
 
         <TextView
             android:id="@+id/spotCar"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="spotCar"
-            android:textSize="24sp"
-            tools:layout_conversion_absoluteHeight="32dp"
-            tools:layout_editor_absoluteY="53dp"
-            tools:layout_editor_absoluteX="8dp"
-            tools:layout_conversion_absoluteWidth="395dp" />
+            android:textSize="20sp"
+            android:fontFamily="@font/rubik_medium"
+            android:textAlignment="center"/>
 
     </LinearLayout>
 
@@ -98,13 +90,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <View
+
+    <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider4"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@+id/spotView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        app:dividerColor="@color/m3_sys_color_dynamic_dark_outline"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

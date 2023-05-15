@@ -32,7 +32,7 @@ public class SpotsAdapter extends RecyclerView.Adapter<SpotsAdapter.ViewHolder> 
             holder.spotView.findViewById(R.id.spotCarModel).setVisibility(View.VISIBLE);
             ((TextView) holder.spotView.findViewById(R.id.spotCarModel))
                     .setText(spot.getBrand() + " " + spot.getModel() + " " + spot.getEdition());
-            ((TextView) holder.spotView.findViewById(R.id.spotCarModel)).setSelected(true);
+            holder.spotView.findViewById(R.id.spotCarModel).setSelected(true);
         } else {
             holder.spotView.findViewById(R.id.spotCarModel).setVisibility(View.GONE);
         }
@@ -40,6 +40,7 @@ public class SpotsAdapter extends RecyclerView.Adapter<SpotsAdapter.ViewHolder> 
                 .setText(spot.getDate());
         ((TextView) holder.spotView.findViewById(R.id.spotWhere))
                 .setText(spot.getLocation());
+        holder.spotView.findViewById(R.id.spotWhere).setSelected(true);
         ((ImageView) holder.spotView.findViewById(R.id.spotImage))
                 .setImageBitmap(spot.getDecodedImage());
         if (!spot.getUsername().equals("null")){
