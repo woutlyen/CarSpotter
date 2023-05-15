@@ -24,6 +24,12 @@ public class MainActivity extends AppCompatActivity
 
     // TO DO: add code for the 2 recyclerviews to showcase latest submissions
     // newSpot & newEvent
+    /**
+     * This part is for passing along the username between fragments.
+     */
+    public static String user;
+    public String getUser(){return user;}
+    public void setUser(String givenUser){user = givenUser;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
