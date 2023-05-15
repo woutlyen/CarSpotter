@@ -101,6 +101,12 @@ public class LoginFragment extends Fragment {
         loginLayout = view.findViewById(R.id.loginLayout);
         spotLayout = view.findViewById(R.id.spotLayout);
 
+        if (((MainActivity) (getContext())).getUser() != null) {
+            toggleLayout(newLayout.personalSpots);
+        }
+        else {
+            toggleLayout(newLayout.login);
+        }
         Process();
         return view;
     }
