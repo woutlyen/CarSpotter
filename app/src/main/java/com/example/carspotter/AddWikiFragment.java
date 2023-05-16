@@ -470,4 +470,16 @@ public class AddWikiFragment extends Fragment {
 
         outState.putBoolean("now", now.isChecked());
     }
+    private void clearAll(){
+        brandTxt.setText("");
+        modelTxt.setText("");
+        editionTxt.setText("");
+        bodyStylesTxt.setText("");
+        engineTypesTxt.setText("");
+        MSRPTxt.setText("");
+        seatsTxt.setText("");
+        startDateTxt.setText("");
+        endDateTxt.setText("");
+        image.setImageResource(R.drawable.add);;
+    }
 }
