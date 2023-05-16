@@ -277,23 +277,17 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_weight="0.50"
-                android:focusable="false"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="8dp"
                 android:hint="Location"
-                app:layout_constraintTop_toBottomOf="@id/txt5"
-                app:helperText="Required">
+                app:helperText="Required"
+                app:endIconMode="clear_text"
+                app:layout_constraintTop_toBottomOf="@id/txt5">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/locationTxt"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:editable="false"
-                    android:focusable="false"
-                    android:inputType="none" />
-
+                    android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
