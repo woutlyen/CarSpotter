@@ -1,5 +1,7 @@
 package com.example.carspotter;
 
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -83,6 +85,9 @@ public class MainActivity extends AppCompatActivity
 //                        .commit();
 //            }
 //        });
+
+
+       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
     }
     BrandSelectFragment brandSelectFragment = new BrandSelectFragment();

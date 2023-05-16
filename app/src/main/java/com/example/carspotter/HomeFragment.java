@@ -82,6 +82,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
 
     private RecyclerView newEvent;
     private TextView greetingTextView;
+    private TextView greetingTextUser;
     private ImageView logoTop;
     private TextView slogan2;
     private MaterialDivider divider;
@@ -151,6 +152,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
 
         // Find the greeting TextView by ID
         greetingTextView = view.findViewById(R.id.greeting_text_view);
+        greetingTextUser = view.findViewById(R.id.greeting_text_user);
 
         // Get the current time
         Calendar c = Calendar.getInstance();
@@ -160,20 +162,22 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         String greeting;
         String user = "";
         if (((MainActivity) (getContext())).getUser() != null){
-            user = " " + ((MainActivity) (getContext())).getUser();
+            user = ((MainActivity) (getContext())).getUser();
         }
         if (timeOfDay < 12) {
-            greeting = "Good morning"+user+"!";
+            greeting = "Good morning!";
         } else if (timeOfDay < 18) {
-            greeting = "Good afternoon"+user+"!";
+            greeting = "Good afternoon!";
         } else {
-            greeting = "Good evening"+user+"!";
+            greeting = "Good evening!";
         }
 
         greeting += " \uD83D\uDC4B";
 
         // Display the greeting message
         greetingTextView.setText(greeting);
+        greetingTextUser.setText("\t" + user);
+
 
         logoTop = (ImageView) view.findViewById(R.id.logoTop);
         slogan2 = (TextView) view.findViewById(R.id.slogan2);
@@ -206,15 +210,20 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                 if(recyclerviews.getAlpha() > 0) {
                     if (scrollY > 3 * logoHeight) {
                         greetingTextView.setVisibility(View.INVISIBLE);
+                        greetingTextUser.setVisibility(View.INVISIBLE);
                         scrollUpImage.setVisibility(View.INVISIBLE);
                     } else if (scrollY > 2 * logoHeight) {
                         greetingTextView.setVisibility(View.VISIBLE);
                         greetingTextView.setAlpha((float) 1 - (float) (scrollY - 2 * logoHeight) / logoHeight);
+                        greetingTextUser.setVisibility(View.VISIBLE);
+                        greetingTextUser.setAlpha((float) 1 - (float) (scrollY - 2 * logoHeight) / logoHeight);
                         scrollUpImage.setVisibility(View.VISIBLE);
                         scrollUpImage.setAlpha((float) 1 - (float) (scrollY - 2 * logoHeight) / logoHeight);
                     } else {
                         greetingTextView.setVisibility(View.VISIBLE);
                         greetingTextView.setAlpha(1f);
+                        greetingTextUser.setVisibility(View.VISIBLE);
+                        greetingTextUser.setAlpha(1f);
                         scrollUpImage.setVisibility(View.VISIBLE);
                         scrollUpImage.setAlpha(1f);
                     }

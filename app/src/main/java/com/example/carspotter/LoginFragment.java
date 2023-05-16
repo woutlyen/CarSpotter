@@ -3,6 +3,7 @@ package com.example.carspotter;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
@@ -29,6 +30,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -74,6 +76,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
     boolean exists = false;
     private List<Spot> spots = new ArrayList<>();
     private TextView spotInfo;
+    private LinearProgressIndicator progressIndicatorOwnSpotView;
     SpotLocationFragment spotLocationFragment = new SpotLocationFragment();
 
 
@@ -82,7 +85,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
      */
     private RecyclerView personalSpots;
     private ConstraintLayout spotLayout;
-    private FloatingActionButton logoutBtn;
+    private ExtendedFloatingActionButton logoutBtn;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -114,6 +117,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
 
         if (((MainActivity) (getContext())).getUser() != null) {
             toggleLayout(newLayout.personalSpots);
+            getSpotsFromUser();
         }
         else {
             toggleLayout(newLayout.login);
@@ -129,6 +133,21 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
 
         spots.clear();
         spotView.getAdapter().notifyDataSetChanged();
+        progressIndicatorOwnSpotView = view.findViewById(R.id.progressIndicatorOwnSpotView);
+        progressIndicatorOwnSpotView.hide();
+
+        spotView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 10 & logoutBtn.isExtended()){
+                    logoutBtn.shrink();
+                }
+                if (dy < -10 && !logoutBtn.isExtended()) {
+                    logoutBtn.extend();
+                }
+            }
+        });
 
         return view;
     }
@@ -425,6 +444,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
     }
 
     private void getSpotsFromUser() {
+        progressIndicatorOwnSpotView.show();
         String user = ((MainActivity) (getContext())).getUser();
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         JsonArrayRequest queueRequest = new JsonArrayRequest(
@@ -442,7 +462,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
                             spotInfo.setText("You haven't add a spot yet!");
                             }
                         spotView.getAdapter().notifyDataSetChanged();
-                        //circularProgressIndicatorCarView.setVisibility(View.INVISIBLE);
+                        progressIndicatorOwnSpotView.hide();
                     }
                 },
                 new Response.ErrorListener() {
@@ -452,6 +472,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
                                 getActivity(),
                                 "Unable to communicate with the server",
                                 Toast.LENGTH_LONG).show();
+                        progressIndicatorOwnSpotView.hide();
                     }
                 });
         requestQueue.add(queueRequest);

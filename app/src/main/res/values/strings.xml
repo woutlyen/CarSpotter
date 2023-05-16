@@ -24,7 +24,7 @@
     <string name="login_failed">"Login failed"</string>
     <string name="search">Search Event</string>
     <string name="add_event_fab_label">Add Event</string>
-    <string name="thanksTxt">Made with &#10084; from Johnny and Wout</string>
+    <string name="thanksTxt">Made with &#10084; by Johnny and Wout</string>
     <string name="submit_wiki_fab_label">Submit Wiki</string>
     <string name="submit_event_fab_label">Submit Event</string>
     <string name="cancel">Cancel</string>
