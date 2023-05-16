@@ -263,14 +263,48 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/txt5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/rubik_medium"
+                android:text="4. Fill in the location of the events:"
+                app:layout_constraintTop_toBottomOf="@id/layout3" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textLocation"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_weight="0.50"
+                android:focusable="false"
+                android:hint="Location"
+                app:layout_constraintTop_toBottomOf="@id/txt5"
+                app:helperText="Required">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/locationTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:editable="false"
+                    android:focusable="false"
+                    android:inputType="none" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
                 android:id="@+id/txt4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/rubik_medium"
-                android:text="4. Upload an image of the events:"
-                app:layout_constraintTop_toBottomOf="@id/layout3" />
+                android:text="5. Upload an image of the event:"
+                app:layout_constraintTop_toBottomOf="@id/textLocation" />
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/image"
