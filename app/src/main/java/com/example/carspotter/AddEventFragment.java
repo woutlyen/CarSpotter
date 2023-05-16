@@ -67,6 +67,7 @@ public class AddEventFragment extends Fragment {
     private TextInputEditText startTimeTxt;
     private TextInputLayout textEndTime;
     private TextInputEditText endTimeTxt;
+    private TextInputEditText locationTxt;
     private ExtendedFloatingActionButton add_event_fab;
 
     Button uploadImage;
@@ -105,6 +106,7 @@ public class AddEventFragment extends Fragment {
         startTimeTxt = (TextInputEditText) view.findViewById(R.id.startTimeTxt);
         textEndTime = (TextInputLayout) view.findViewById(R.id.textEndTime);
         endTimeTxt = (TextInputEditText) view.findViewById(R.id.endTimeTxt);
+        locationTxt = (TextInputEditText) view.findViewById(R.id.locationTxt);
 
         add_event_fab = (ExtendedFloatingActionButton) view.findViewById(R.id.add_event_fab);
 
@@ -268,9 +270,16 @@ public class AddEventFragment extends Fragment {
                     endTimeTxt.setError(null);
                     count += 1;
                 }
+                input = locationTxt.getText().toString().trim();
+                if (input.isEmpty()) {
+                    locationTxt.setError("This field cannot be empty");
+                } else {
+                    locationTxt.setError(null);
+                    count += 1;
+                }
 
 
-                if (count == 7 && imageSubmitted) {
+                if (count == 8 && imageSubmitted) {
 //                    Toast.makeText(getActivity(), "Everything is filled in", Toast.LENGTH_SHORT).show();
 
                     String inputDateStr = dateTxt.getText().toString().trim();
@@ -286,7 +295,7 @@ public class AddEventFragment extends Fragment {
                     }
 
                     showAlertDialog();
-                } else if (count == 7) {
+                } else if (count == 8) {
                     Toast.makeText(getActivity(), "Upload an image", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getActivity(), "Fill everything required in", Toast.LENGTH_SHORT).show();
@@ -401,6 +410,7 @@ public class AddEventFragment extends Fragment {
                                             + "&" + "endhour=" + endTimeTxt.getText().toString().trim()
                                             + "&" + "type=" + typeTxt.getText().toString().trim()
                                             + "&" + "fee=" + feeTxt.getText().toString().trim()
+                                            + "&" + "location=" + locationTxt.getText().toString().trim()
                                     ;
                                 } catch (UnsupportedEncodingException e) {
                                     throw new RuntimeException(e);
