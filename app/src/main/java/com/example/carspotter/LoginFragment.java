@@ -46,12 +46,9 @@ import java.util.Map;
 import java.util.Random;
 import java.security.MessageDigest;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link LoginFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class LoginFragment extends Fragment {
     /**
      * These are needed for the login process
@@ -122,12 +119,24 @@ public class LoginFragment extends Fragment {
                  * Here we simply check if both fields are filled in, if so we proceed to processing the data.
                  */
                 //TODO: vermijd speciale characters
+
                 // Check if username is filled in
                 int check = 0;
                 String input = username.getText().toString().trim();
                 if (input.isEmpty()) {
                     username.setError("This field cannot be empty");
                 } else {
+                    username.setError(null);
+                    check += 1;
+                }
+
+                // Check if username contains special characters
+                Pattern specialChars = Pattern.compile ("[!@#$%&*()_+=|<>?{}\\[\\]~'\"/;`%:-]");
+                Matcher hasSpecialUser = specialChars.matcher(input);
+                if (hasSpecialUser.find()) {
+                    username.setError("The username can't contain any special characters!");
+                }
+                else {
                     username.setError(null);
                     check += 1;
                 }
@@ -140,13 +149,37 @@ public class LoginFragment extends Fragment {
                     password.setError(null);
                     check += 1;
                 }
+                // Check if username contains special characters
+                Matcher hasSpecialPass = specialChars.matcher(input);
+                if (hasSpecialPass.find()) {
+                    password.setError("The password can't contain any special characters!");
+                }
+                else {
+                    password.setError(null);
+                    check += 1;
+                }
 
-                if(check == 2){
+                if(check == 4){
                     givenUser = String.valueOf(username.getText());
                     processData();
                 }
             }
         });
+    }
+    public static boolean Password_Validation(String password)
+    {
+        if(password.length()>=8)
+        {
+            Pattern specialChars = Pattern.compile ("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
+
+            Matcher hasSpecial = specialChars.matcher(password);
+
+            return hasSpecial.find();
+
+        }
+        else
+            return false;
+
     }
     private void processData() {
         /**
