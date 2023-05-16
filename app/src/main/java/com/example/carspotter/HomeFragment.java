@@ -165,18 +165,25 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
             user = ((MainActivity) (getContext())).getUser();
         }
         if (timeOfDay < 12) {
-            greeting = "Good morning!";
+            greeting = "Good morning";
         } else if (timeOfDay < 18) {
-            greeting = "Good afternoon!";
+            greeting = "Good afternoon";
         } else {
-            greeting = "Good evening!";
+            greeting = "Good evening";
         }
 
-        greeting += " \uD83D\uDC4B";
+        if (((MainActivity) (getContext())).getUser() != null){
+            greeting += ",";
+            user += "!";
+            user += " \uD83D\uDC4B";
+        } else{
+            greeting += "!";
+            greeting += " \uD83D\uDC4B";
+        }
 
         // Display the greeting message
         greetingTextView.setText(greeting);
-        greetingTextUser.setText("\t" + user);
+        greetingTextUser.setText(user);
 
 
         logoTop = (ImageView) view.findViewById(R.id.logoTop);
