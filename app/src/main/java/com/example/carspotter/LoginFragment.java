@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -74,6 +75,7 @@ public class LoginFragment extends Fragment {
      */
     private RecyclerView personalSpots;
     private ConstraintLayout spotLayout;
+    private FloatingActionButton logoutBtn;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -100,6 +102,7 @@ public class LoginFragment extends Fragment {
 
         loginLayout = view.findViewById(R.id.loginLayout);
         spotLayout = view.findViewById(R.id.spotLayout);
+        logoutBtn = view.findViewById(R.id.logoutBtn);
 
         if (((MainActivity) (getContext())).getUser() != null) {
             toggleLayout(newLayout.personalSpots);
@@ -107,6 +110,7 @@ public class LoginFragment extends Fragment {
         else {
             toggleLayout(newLayout.login);
         }
+        logoutListener();
         Process();
         return view;
     }
@@ -362,6 +366,15 @@ public class LoginFragment extends Fragment {
 
             spotLayout.setVisibility(view.VISIBLE);
         }
+    }
 
+    private void logoutListener(){
+        logoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) (getContext())).logoutUser();
+                toggleLayout(newLayout.login);
+            }
+        });
     }
 }

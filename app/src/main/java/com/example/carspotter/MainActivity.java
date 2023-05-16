@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity
     public static String user;
     public String getUser(){return user;}
     public void setUser(String givenUser){user = givenUser;}
+    public void logoutUser(){user = null;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
