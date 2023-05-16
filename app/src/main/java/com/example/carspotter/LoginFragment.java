@@ -7,11 +7,13 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -40,8 +42,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.security.MessageDigest;
@@ -49,7 +53,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment implements RecyclerViewInterface{
+
     /**
      * These are needed for the login process
      */
@@ -58,13 +63,18 @@ public class LoginFragment extends Fragment {
     private String CHECK_USER_URL = "https://studev.groept.be/api/a22pt304/CheckUser";
     private String LOGIN_URL = "https://studev.groept.be/api/a22pt304/CheckPass";
     private String STRING_URL = "https://studev.groept.be/api/a22pt304/GetRandomString";
+    private String SPOTS_URL = "https://studev.groept.be/api/a22pt304/GetSpotsFromUser/";
 
     private View view;
     private ExtendedFloatingActionButton loginfab;
     private TextInputEditText username;
     private TextInputEditText password;
+    private RecyclerView spotView;
     private String givenUser;
     boolean exists = false;
+    private List<Spot> spots = new ArrayList<>();
+    private TextView spotInfo;
+    SpotLocationFragment spotLocationFragment = new SpotLocationFragment();
 
 
     /**
@@ -100,6 +110,7 @@ public class LoginFragment extends Fragment {
         loginLayout = view.findViewById(R.id.loginLayout);
         spotLayout = view.findViewById(R.id.spotLayout);
         logoutBtn = view.findViewById(R.id.logoutBtn);
+        spotInfo = view.findViewById(R.id.spotInfo);
 
         if (((MainActivity) (getContext())).getUser() != null) {
             toggleLayout(newLayout.personalSpots);
@@ -109,6 +120,16 @@ public class LoginFragment extends Fragment {
         }
         logoutListener();
         Process();
+
+
+        spotView = view.findViewById( R.id.spotView);
+        SpotsAdapter2 adapter = new SpotsAdapter2( spots, this );
+        spotView.setAdapter( adapter );
+        spotView.setLayoutManager( new LinearLayoutManager( getActivity() ));
+
+        spots.clear();
+        spotView.getAdapter().notifyDataSetChanged();
+
         return view;
     }
     private void Process(){
@@ -398,10 +419,45 @@ public class LoginFragment extends Fragment {
             loginfab.setVisibility(view.INVISIBLE);
 
             spotLayout.setVisibility(view.VISIBLE);
+            getSpotsFromUser();
         }
+
     }
 
-    private void logoutListener(){
+    private void getSpotsFromUser() {
+        String user = ((MainActivity) (getContext())).getUser();
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        JsonArrayRequest queueRequest = new JsonArrayRequest(
+                Request.Method.GET,
+                SPOTS_URL + user,
+                null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        processJSONResponse(response);
+                        if (spots.size() != 0){
+                            spotInfo.setText("");
+                        }
+                        else{
+                            spotInfo.setText("You haven't add a spot yet!");
+                            }
+                        spotView.getAdapter().notifyDataSetChanged();
+                        //circularProgressIndicatorCarView.setVisibility(View.INVISIBLE);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(
+                                getActivity(),
+                                "Unable to communicate with the server",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+        requestQueue.add(queueRequest);
+    }
+
+    private void logoutListener() {
         logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -409,5 +465,32 @@ public class LoginFragment extends Fragment {
                 toggleLayout(newLayout.login);
             }
         });
+    }
+
+    private void processJSONResponse(JSONArray response) {
+        //Add spots from database into local list for recyclerview
+        spots.clear();
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                Spot spot = new Spot(response.getJSONObject(i));
+                spots.add(spot);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        Collections.sort(spots, (o1, o2) -> o1.getDate().compareTo(o2.getDate()));
+        Collections.reverse(spots);
+    }
+
+    @Override
+    public void onItemClick(int position, String type) {
+        //Send information from the selected spot to the new fragment (map)
+        Bundle bundle = new Bundle();
+        spotLocationFragment.setArguments(bundle);
+        bundle.putParcelable("Spot", spots.get(position));
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.flFragment, spotLocationFragment ); // give your fragment container id in first parameter
+        transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+        transaction.commit();
     }
 }
