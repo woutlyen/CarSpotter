@@ -44,8 +44,10 @@ public class SpotLocationFragment extends Fragment {
     private HeatmapTileProvider provider;
     private TileOverlay overlay;
     private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetSpotsForMap";
+    private static final String QUEUE_USER_URL = "https://studev.groept.be/api/a22pt304/GetUserSpotsForMap";
     private List<LatLng> spots = new ArrayList<>();
     private Spot selectedSpot;
+    private boolean spotsFromUser;
     private ProgressBar progressBar;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -80,8 +82,14 @@ public class SpotLocationFragment extends Fragment {
 
         Bundle bundle = this.getArguments();
         selectedSpot = bundle.getParcelable("Spot");
+        spotsFromUser = bundle.getBoolean("spotsFromUser");
 
-        requestSpotsFromCarId(String.valueOf(selectedSpot.getCar_id()));
+        if(spotsFromUser){
+            requestSpotsFromUser(String.valueOf(selectedSpot.getCar_id()));
+        }
+        else {
+            requestSpotsFromCarId(String.valueOf(selectedSpot.getCar_id()));
+        }
         return view;
     }
 
@@ -100,6 +108,46 @@ public class SpotLocationFragment extends Fragment {
         JsonArrayRequest queueRequest = new JsonArrayRequest(
                 Request.Method.GET,
                 QUEUE_URL+"/"+item,
+                null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        processJSONResponse(response);
+                        if (spots.size() != 0){
+                            prepMap();
+                            Toast.makeText(
+                                    getActivity(),
+                                    "Succesfully processed all spots",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        else {
+                            Toast.makeText(
+                                    getActivity(),
+                                    "error: there was an issue retreiving data from server",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(
+                                getActivity(),
+                                "Unable to communicate with the server",
+                                Toast.LENGTH_LONG).show();
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+                });
+        requestQueue.add(queueRequest);
+    }
+    private void requestSpotsFromUser(String item) {
+        // Retrieve spots from database with Volley
+        String user = ((MainActivity) (getContext())).getUser();
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        JsonArrayRequest queueRequest = new JsonArrayRequest(
+                Request.Method.GET,
+                QUEUE_USER_URL+"/"+user,
                 null,
                 new Response.Listener<JSONArray>() {
                     @Override

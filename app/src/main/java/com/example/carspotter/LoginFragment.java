@@ -139,7 +139,6 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
                 /**
                  * Here we simply check if both fields are filled in, if so we proceed to processing the data.
                  */
-                //TODO: vermijd speciale characters
 
                 // Check if username is filled in
                 int check = 0;
@@ -261,6 +260,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
                                                 getActivity(),
                                                 "Succesfully registered, welcome "+givenUser+"!",
                                                 Toast.LENGTH_SHORT).show();
+                                        toggleLayout(newLayout.personalSpots);
                                     }
                                 },
                                 new Response.ErrorListener() {
@@ -488,6 +488,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
         Bundle bundle = new Bundle();
         spotLocationFragment.setArguments(bundle);
         bundle.putParcelable("Spot", spots.get(position));
+        bundle.putBoolean("sportsFromUser", true);
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.replace(R.id.flFragment, spotLocationFragment ); // give your fragment container id in first parameter
         transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
