@@ -3,7 +3,10 @@ package com.example.carspotter;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +27,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,9 +52,14 @@ import java.util.UUID;
  * create an instance of this fragment.
  */
 public class LoginFragment extends Fragment {
+    /**
+     * These are needed for the login process
+     */
+    private ConstraintLayout loginLayout;
     private String REGISTER_URL = "https://studev.groept.be/api/a22pt304/RegisterUser";
     private String CHECK_USER_URL = "https://studev.groept.be/api/a22pt304/CheckUser";
     private String LOGIN_URL = "https://studev.groept.be/api/a22pt304/CheckPass";
+    private String STRING_URL = "https://studev.groept.be/api/a22pt304/GetRandomString";
 
     private View view;
     private ExtendedFloatingActionButton loginfab;
@@ -58,6 +67,13 @@ public class LoginFragment extends Fragment {
     private TextInputEditText password;
     private String givenUser;
     boolean exists = false;
+
+
+    /**
+     * These are needed to switch to a list of all the user's spots
+     */
+    private RecyclerView personalSpots;
+    private ConstraintLayout spotLayout;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -81,6 +97,16 @@ public class LoginFragment extends Fragment {
         loginfab = (ExtendedFloatingActionButton) view.findViewById(R.id.loginfab);
         username = view.findViewById(R.id.username);
         password = view.findViewById(R.id.password);
+
+        loginLayout = view.findViewById(R.id.loginLayout);
+        spotLayout = view.findViewById(R.id.spotLayout);
+
+        if (((MainActivity) (getContext())).getUser() != null) {
+            toggleLayout(newLayout.personalSpots);
+        }
+        else {
+            toggleLayout(newLayout.login);
+        }
         Process();
         return view;
     }
@@ -146,7 +172,7 @@ public class LoginFragment extends Fragment {
                         Toast.makeText(
                                 getActivity(),
                                 "Unable to communicate with the server",
-                                Toast.LENGTH_LONG).show();
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
         requestQueue.add(queueRequest);
@@ -235,10 +261,107 @@ public class LoginFragment extends Fragment {
     }
     private void login(){
         /**
-         * Here we check the password. If it matches, the user will be "logged in".
-         * If it doesn't match, a notification will be given.
+         * Here we create the hashed password from the given textfields and then proceed to checkLogin()
          */
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        JsonArrayRequest queueRequest = new JsonArrayRequest(
+                Request.Method.GET,
+            STRING_URL + "/" + givenUser,
+                null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        // Check if database contains the user
+                        try {
+                            String randomString = response.getJSONObject(0).getString("randomString");
+                            String givenPass = String.valueOf(password.getText());
 
+                            String hashedPass = hash(givenPass,randomString);
+                            checkLogin(hashedPass);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(
+                                getActivity(),
+                                "Unable to communicate with the server",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+        requestQueue.add(queueRequest);
     }
 
+    /**
+     * Here we check if the local hashed password matches the one stored in the database.
+     * The actual check will be in the SQL query for user safety.
+     */
+     private void checkLogin(String hashedPass){
+         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+         JsonArrayRequest queueRequest = new JsonArrayRequest(
+                 Request.Method.GET,
+                 LOGIN_URL + "/" + hashedPass + "/" +givenUser,
+                 null,
+                 new Response.Listener<JSONArray>() {
+                     @Override
+                     public void onResponse(JSONArray response) {
+                         // Check if database contains the user
+                         try {
+                             if (response.getJSONObject(0).getString("password_match").equals("1")){
+                                 String loggedUser = String.valueOf(username.getText());
+                                 ((MainActivity) (getContext())).setUser(loggedUser);
+                                 Toast.makeText(
+                                         getActivity(),
+                                         "Succesfully logged in, welcome back "+loggedUser,
+                                         Toast.LENGTH_SHORT).show();
+                                 toggleLayout(newLayout.personalSpots);
+                             }
+                             else {
+                                 Toast.makeText(
+                                         getActivity(),
+                                         "Password doesn't match! Please try again.",
+                                         Toast.LENGTH_SHORT).show();
+                             }
+                         } catch (JSONException e) {
+                             throw new RuntimeException(e);
+                         }
+                     }
+                 },
+                 new Response.ErrorListener() {
+                     @Override
+                     public void onErrorResponse(VolleyError error) {
+                         Toast.makeText(
+                                 getActivity(),
+                                 "Unable to communicate with the server",
+                                 Toast.LENGTH_SHORT).show();
+                     }
+                 });
+         requestQueue.add(queueRequest);
+     }
+
+    /**
+     * Once logged in we switch layouts
+     */
+    public enum newLayout {
+        login,
+        personalSpots;
+    }
+    private void toggleLayout(newLayout layout){
+        if(layout == newLayout.login){
+            loginLayout.setVisibility(view.VISIBLE);
+            loginfab.setVisibility(view.VISIBLE);
+
+            spotLayout.setVisibility(view.INVISIBLE);
+        }
+        else{
+            loginLayout.setVisibility(view.INVISIBLE);
+            loginfab.setVisibility(view.INVISIBLE);
+
+            spotLayout.setVisibility(view.VISIBLE);
+        }
+
+    }
 }

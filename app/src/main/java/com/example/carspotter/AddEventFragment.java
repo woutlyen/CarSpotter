@@ -44,7 +44,6 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Locale;
@@ -92,9 +91,9 @@ public class AddEventFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_add_event, container, false);
 
-        textName = (TextInputLayout) view.findViewById(R.id.textName);
+        textName = (TextInputLayout) view.findViewById(R.id.textUsername);
         nameTxt = (TextInputEditText) view.findViewById(R.id.nameTxt);
-        textDescription = (TextInputLayout) view.findViewById(R.id.textDescription);
+        textDescription = (TextInputLayout) view.findViewById(R.id.textPassword);
         descriptionTxt = (TextInputEditText) view.findViewById(R.id.descriptionTxt);
         textType = (TextInputLayout) view.findViewById(R.id.textType);
         typeTxt = (TextInputEditText) view.findViewById(R.id.typeTxt);

@@ -2,7 +2,6 @@ package com.example.carspotter;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -21,7 +20,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.carspotter.model.Car;
 import com.example.carspotter.model.Event;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
@@ -55,7 +53,7 @@ public class EventViewFragment extends Fragment {
         Bundle bundle = this.getArguments();
         Event event = bundle.getParcelable("Event");
 
-        textName = (TextView) view.findViewById(R.id.textName);
+        textName = (TextView) view.findViewById(R.id.textUsername);
         textName.setText(event.getName());
         textDate = (TextView) view.findViewById(R.id.textDate);
         textDate.setText(event.getOnlyDate());
