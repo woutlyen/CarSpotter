@@ -239,13 +239,13 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         int[] colors = {Color.TRANSPARENT, Color.rgb(42, 100, 134)};
 
         // Create a gradient drawable with the start and end colors
-        GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.BR_TL, colors);
+        GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors);
 
         // Define the bounds of the gradient (in this case, the bottom 200 pixels of the fragment view)
         int bottom = view.getHeight();
         int top = bottom - 200;
         gradientDrawable.setBounds(0, top, view.getWidth(), bottom);
-        gradientDrawable.setAlpha(80);
+        gradientDrawable.setAlpha(60);
         view.setBackground(gradientDrawable);
 
         newWiki.setOnTouchListener(new View.OnTouchListener() {
