@@ -391,6 +391,7 @@ public class AddEventFragment extends Fragment {
                                     // Handle the response
                                     Toast.makeText(getActivity(), "Event Submitted", Toast.LENGTH_LONG).show();
                                     progressIndicatorAddEventView.hide();
+                                    clearAll();
                                 },
                                 error -> {
                                     // Handle the error
@@ -432,5 +433,16 @@ public class AddEventFragment extends Fragment {
                 .show();
 
 
+    }
+    private void clearAll(){
+        nameTxt.setText("");
+        descriptionTxt.setText("");
+        typeTxt.setText("");
+        feeTxt.setText("");
+        dateTxt.setText("");
+        startTimeTxt.setText("");
+        endTimeTxt.setText("");
+        locationTxt.setText("");
+        image.setImageResource(R.drawable.add);;
     }
 }
