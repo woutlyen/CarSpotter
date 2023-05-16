@@ -26,6 +26,7 @@ public class Event implements Parcelable {
     private String type;
     private String fee;
     private String image;
+    private String location;
     private Bitmap decodedImage;
 
     public static final Creator<Event> CREATOR = new Creator<Event>() {
@@ -51,6 +52,7 @@ public class Event implements Parcelable {
             type = o.getString("type");
             fee = o.getString("fee");
             image = o.getString("image");
+            location = o.getString("location");
 
             String inputDateStr = date;
             SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -83,6 +85,7 @@ public class Event implements Parcelable {
         this.type = in.readString();
         this.fee = in.readString();
         this.image = in.readString();
+        this.location = in.readString();
 
     }
 
@@ -129,10 +132,11 @@ public class Event implements Parcelable {
     public String getOnlyDate() {
         return onlyDate;
     }
+    public String getLocation(){return location;}
 
     @Override
     public String toString() {
-        return id+name+description+date+start_hour+end_hour+type+fee+image;
+        return id+name+description+date+start_hour+end_hour+type+fee+image+location;
     }
 
     @Override
@@ -150,5 +154,6 @@ public class Event implements Parcelable {
         parcel.writeString(end_hour);
         parcel.writeString(type);
         parcel.writeString(fee);
+        parcel.writeString(location);
     }
 }

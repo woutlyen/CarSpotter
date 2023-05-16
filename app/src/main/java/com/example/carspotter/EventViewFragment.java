@@ -34,6 +34,7 @@ public class EventViewFragment extends Fragment {
     private TextView textType;
     private TextView textFee;
     private TextView textDesc;
+    private TextView textLocation;
     private ImageView eventImageView;
     private Bitmap decodedImage;
     private LinearProgressIndicator linearProgressIndicator;
@@ -65,6 +66,8 @@ public class EventViewFragment extends Fragment {
         textFee.setText("€" + event.getFee());
         textDesc = (TextView) view.findViewById(R.id.textDesc);
         textDesc.setText(event.getDescription());
+        textLocation = (TextView) view.findViewById(R.id.textLocation);
+        textLocation.setText(event.getLocation());
 
         eventImageView = (ImageView) view.findViewById(R.id.eventImageView);
         linearProgressIndicator = (LinearProgressIndicator) view.findViewById(R.id.linearProgressIndicatorEventView);
