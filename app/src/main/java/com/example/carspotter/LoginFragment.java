@@ -488,7 +488,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
         Bundle bundle = new Bundle();
         spotLocationFragment.setArguments(bundle);
         bundle.putParcelable("Spot", spots.get(position));
-        bundle.putBoolean("sportsFromUser", true);
+        bundle.putInt("spotsFromUser", 1);
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.replace(R.id.flFragment, spotLocationFragment ); // give your fragment container id in first parameter
         transaction.addToBackStack(null);  // if written, this transaction will be added to backstack

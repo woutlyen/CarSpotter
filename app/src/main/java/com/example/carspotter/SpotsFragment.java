@@ -176,7 +176,7 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
         Bundle bundle = new Bundle();
         spotLocationFragment.setArguments(bundle);
         bundle.putParcelable("Spot", spots.get(position));
-        bundle.putBoolean("spotsFromUser", false);
+        bundle.putInt("spotsFromUser", 0);
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.replace(R.id.flFragment, spotLocationFragment ); // give your fragment container id in first parameter
         transaction.addToBackStack(null);  // if written, this transaction will be added to backstack

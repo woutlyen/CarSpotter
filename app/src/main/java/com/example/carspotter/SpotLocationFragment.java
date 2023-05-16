@@ -47,7 +47,7 @@ public class SpotLocationFragment extends Fragment {
     private static final String QUEUE_USER_URL = "https://studev.groept.be/api/a22pt304/GetUserSpotsForMap";
     private List<LatLng> spots = new ArrayList<>();
     private Spot selectedSpot;
-    private boolean spotsFromUser;
+    private int spotsFromUser;
     private ProgressBar progressBar;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -82,10 +82,10 @@ public class SpotLocationFragment extends Fragment {
 
         Bundle bundle = this.getArguments();
         selectedSpot = bundle.getParcelable("Spot");
-        spotsFromUser = bundle.getBoolean("spotsFromUser");
+        spotsFromUser = bundle.getInt("spotsFromUser");
 
-        if(spotsFromUser){
-            requestSpotsFromUser(String.valueOf(selectedSpot.getCar_id()));
+        if(spotsFromUser == 1){
+            requestSpotsFromUser();
         }
         else {
             requestSpotsFromCarId(String.valueOf(selectedSpot.getCar_id()));
@@ -141,7 +141,7 @@ public class SpotLocationFragment extends Fragment {
                 });
         requestQueue.add(queueRequest);
     }
-    private void requestSpotsFromUser(String item) {
+    private void requestSpotsFromUser() {
         // Retrieve spots from database with Volley
         String user = ((MainActivity) (getContext())).getUser();
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
@@ -157,7 +157,7 @@ public class SpotLocationFragment extends Fragment {
                             prepMap();
                             Toast.makeText(
                                     getActivity(),
-                                    "Succesfully processed all spots",
+                                    "Succesfully processed all spots from user",
                                     Toast.LENGTH_LONG).show();
                         }
                         else {
