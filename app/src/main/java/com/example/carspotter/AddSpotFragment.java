@@ -392,6 +392,8 @@ public class AddSpotFragment extends Fragment {
                             @Override
                             public byte[] getBody() throws AuthFailureError {
                                 String body = null;
+                                String user = ((MainActivity) (getContext())).getUser();
+
                                 try {
                                     body = "car=" + car.getId()
                                             + "&" + "date=" + LocalDate.now()+" "+ LocalTime.now()
@@ -399,6 +401,7 @@ public class AddSpotFragment extends Fragment {
                                             + "&" + "image=" + URLEncoder.encode(imageString, "UTF-8")
                                             + "&" + "lat=" + lat
                                             + "&" + "lng=" + lng
+                                            + "&" + "username=" + user
                                     ;
                                 } catch (UnsupportedEncodingException e) {
                                     throw new RuntimeException(e);

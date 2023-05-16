@@ -65,7 +65,7 @@ public class SpotLocationFragment extends Fragment {
             Toast.makeText(
                     getActivity(),
                     "Retreiving Spots from Database",
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
             map = googleMap;
         }
     };
@@ -118,13 +118,13 @@ public class SpotLocationFragment extends Fragment {
                             Toast.makeText(
                                     getActivity(),
                                     "Succesfully processed all spots",
-                                    Toast.LENGTH_LONG).show();
+                                    Toast.LENGTH_SHORT).show();
                         }
                         else {
                             Toast.makeText(
                                     getActivity(),
                                     "error: there was an issue retreiving data from server",
-                                    Toast.LENGTH_LONG).show();
+                                    Toast.LENGTH_SHORT).show();
                         }
                         progressBar.setVisibility(View.INVISIBLE);
                     }
@@ -135,7 +135,7 @@ public class SpotLocationFragment extends Fragment {
                         Toast.makeText(
                                 getActivity(),
                                 "Unable to communicate with the server",
-                                Toast.LENGTH_LONG).show();
+                                Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.INVISIBLE);
                     }
                 });
@@ -158,13 +158,13 @@ public class SpotLocationFragment extends Fragment {
                             Toast.makeText(
                                     getActivity(),
                                     "Succesfully processed all spots from user",
-                                    Toast.LENGTH_LONG).show();
+                                    Toast.LENGTH_SHORT).show();
                         }
                         else {
                             Toast.makeText(
                                     getActivity(),
                                     "error: there was an issue retreiving data from server",
-                                    Toast.LENGTH_LONG).show();
+                                    Toast.LENGTH_SHORT).show();
                         }
                         progressBar.setVisibility(View.INVISIBLE);
                     }
@@ -175,7 +175,7 @@ public class SpotLocationFragment extends Fragment {
                         Toast.makeText(
                                 getActivity(),
                                 "Unable to communicate with the server",
-                                Toast.LENGTH_LONG).show();
+                                Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.INVISIBLE);
                     }
                 });
