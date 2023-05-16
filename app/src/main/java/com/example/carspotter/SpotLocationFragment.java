@@ -196,6 +196,7 @@ public class SpotLocationFragment extends Fragment {
         }
     }
     protected void prepMap(){
+        map.clear();
         //HEATPMAP:
         // 1: Create a HeatmapTileProvider using the data points
         provider = new HeatmapTileProvider.Builder()
