@@ -31,6 +31,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -78,6 +79,10 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
     private TextView spotInfo;
     private LinearProgressIndicator progressIndicatorOwnSpotView;
     SpotLocationFragment spotLocationFragment = new SpotLocationFragment();
+
+    private ConstraintLayout mySpots;
+    private ConstraintLayout settings;
+    private TabLayout tabs;
 
 
     /**
@@ -134,7 +139,38 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
         spots.clear();
         spotView.getAdapter().notifyDataSetChanged();
         progressIndicatorOwnSpotView = view.findViewById(R.id.progressIndicatorOwnSpotView);
-        progressIndicatorOwnSpotView.hide();
+        progressIndicatorOwnSpotView.show();
+
+        mySpots = view.findViewById(R.id.mySpots);
+        mySpots.setVisibility(View.VISIBLE);
+        settings = view.findViewById(R.id.settings);
+        settings.setVisibility(View.INVISIBLE);
+        tabs = view.findViewById(R.id.tabs);
+
+        tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if(tab.getPosition() == 0){
+                    mySpots.setVisibility(View.VISIBLE);
+                    settings.setVisibility(View.INVISIBLE);
+                }
+                else {
+                    mySpots.setVisibility(View.INVISIBLE);
+                    settings.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
 
         spotView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -392,7 +428,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
                                  ((MainActivity) (getContext())).setUser(loggedUser);
                                  Toast.makeText(
                                          getActivity(),
-                                         "Succesfully logged in, welcome back "+loggedUser,
+                                         "Succesfully logged in, welcome back "+loggedUser+"!",
                                          Toast.LENGTH_SHORT).show();
                                  toggleLayout(newLayout.personalSpots);
                              }

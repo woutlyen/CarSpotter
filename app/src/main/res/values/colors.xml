@@ -73,4 +73,5 @@
     <color name="topNavBarLight">#fbfcfe</color>
     <color name="bottomNavBar">#202a30</color>
     <color name="bottomNavBarLight">#e6eff4</color>
+    <color name="deleteFAB">#D5121F</color>
 </resources>

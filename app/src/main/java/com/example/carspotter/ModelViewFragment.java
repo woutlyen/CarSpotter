@@ -89,6 +89,10 @@ public class ModelViewFragment extends Fragment {
         brandIconView = (ImageView) view.findViewById(R.id.brandIcon);
 
         Uri uri = Uri.parse("android.resource://com.example.carspotter/drawable/"+car.getBrand().toLowerCase());
+        if (car.getBrand().equals("Citroën")) {
+            uri = Uri.parse("android.resource://com.example.carspotter/drawable/citroen");
+        }
+
 
         brandIconView.setImageURI(uri);
 

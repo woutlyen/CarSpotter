@@ -269,7 +269,7 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/rubik_medium"
-                android:text="4. Fill in the location of the events:"
+                android:text="4. Fill in the location of the event:"
                 app:layout_constraintTop_toBottomOf="@id/layout3" />
 
             <com.google.android.material.textfield.TextInputLayout
