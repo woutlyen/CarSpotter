@@ -102,6 +102,15 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
     private ConstraintLayout spotLayout;
     private ExtendedFloatingActionButton logoutBtn;
 
+    /**
+     * These are needed for the user's statistics tab
+     */
+    private TextView userStats;
+    private TextView totalSpots;
+    private TextView totalCars;
+    private TextView mostSpottedBrand;
+    private TextView mostSpottedCar;
+
     public LoginFragment() {
         // Required empty public constructor
     }
@@ -498,10 +507,11 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
                             spotInfo.setText("");
                         }
                         else{
-                            spotInfo.setText("You haven't add a spot yet!");
+                            spotInfo.setText("You haven't added a spot yet!");
                             }
                         spotView.getAdapter().notifyDataSetChanged();
                         progressIndicatorOwnSpotView.hide();
+                        initiateUserStats();
                     }
                 },
                 new Response.ErrorListener() {
@@ -554,5 +564,92 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
         transaction.replace(R.id.flFragment, spotLocationFragment ); // give your fragment container id in first parameter
         transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
         transaction.commit();
+    }
+    private void initiateUserStats(){
+        // Initialise the views
+        userStats = view.findViewById(R.id.userStats);
+        totalSpots = view.findViewById(R.id.totalSpots);
+        totalCars = view.findViewById(R.id.totalCars);
+        mostSpottedBrand = view.findViewById(R.id.mostSpottedBrand);
+        mostSpottedCar = view.findViewById(R.id.mostSpottedCar);
+
+        // Set contents
+        userStats.setText(((MainActivity) (getContext())).getUser() + "'s statistics");
+        totalSpots.setText(String.valueOf(spots.size()));
+        totalCars.setText(getAmountOfCars());
+        mostSpottedBrand.setText(getMostSpottedBrand());
+        mostSpottedCar.setText(getMostSpottedCar());
+    }
+    private String getAmountOfCars() {
+        ArrayList<Integer> cars = new ArrayList<Integer>();
+        spots.forEach(spot -> {
+            if (!cars.contains(spot.getCar_id())) {
+                cars.add(spot.getCar_id());
+            }
+        });
+        return String.valueOf(cars.size());
+    }
+    private String getMostSpottedBrand(){
+        ArrayList<String> brands = new ArrayList<String>();
+        ArrayList<Integer> brandAmount = new ArrayList<Integer>();
+
+        spots.forEach(spot -> {
+            if (!brands.contains(spot.getBrand())) {
+                brands.add(spot.getBrand());
+                brandAmount.add(1);
+            }
+            else {
+                int brandsIndex = brands.indexOf(spot.getBrand());
+                int value = brandAmount.get(brandsIndex);
+                brandAmount.set(brandsIndex, value+1);
+            }
+        });
+        int maxIndex = 0;
+        int maxValue = 0;
+
+        for (int i = 0; i < brandAmount.size(); i++) {
+            int current = brandAmount.get(i);
+            if (current > maxValue) {
+                maxValue = current;
+                maxIndex = i;
+            }
+        }
+
+        if (maxValue == 0){
+            return "no spots yet!";
+        }
+        return brands.get(maxIndex);
+    }
+    private String getMostSpottedCar(){
+        ArrayList<String> cars = new ArrayList<String>();
+        ArrayList<Integer> carAmount = new ArrayList<Integer>();
+
+        spots.forEach(spot -> {
+            String car = spot.getBrand() + " " + spot.getModel();
+            if (!cars.contains(car)) {
+                cars.add(car);
+                carAmount.add(1);
+            }
+            else {
+                int carsIndex = cars.indexOf(car);
+                int value = carAmount.get(carsIndex);
+                carAmount.set(carsIndex, value+1);
+            }
+        });
+        int maxIndex = 0;
+        int maxValue = 0;
+
+        for (int i = 0; i < carAmount.size(); i++) {
+            int current = carAmount.get(i);
+            if (current > maxValue) {
+                maxValue = current;
+                maxIndex = i;
+            }
+        }
+
+        if (maxValue == 0){
+            return "no spots yet!";
+        }
+        return cars.get(maxIndex);
     }
 }
