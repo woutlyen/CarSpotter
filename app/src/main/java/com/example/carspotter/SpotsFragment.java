@@ -161,15 +161,14 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
     private void processJSONResponse(JSONArray response) {
         //Add spots from database into local list for recyclerview
         spots.clear();
-        List<JSONObject> list = (List<JSONObject>) response;
-        list.forEach(obj -> {
+        for (int i = 0; i < response.length(); i++) {
             try {
-                Spot spot = new Spot(obj);
+                Spot spot = new Spot(response.getJSONObject(i));
                 spots.add(spot);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        });
+        }
         Collections.sort(spots, (o1, o2) -> o1.getDate().compareTo(o2.getDate()));
         Collections.reverse(spots);
     }

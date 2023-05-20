@@ -179,16 +179,15 @@ public class SpotLocationFragment extends Fragment {
     private void processJSONResponse(JSONArray response) {
         //Add spots from database into local list
         spots.clear();
-        List<JSONObject> list = (List<JSONObject>) response;
-        list.forEach(spot -> {
+        for (int i = 0; i < response.length(); i++) {
             try {
-                Double lat = spot.getDouble("lat");
-                Double lng = spot.getDouble("lng");
+                Double lat = response.getJSONObject(i).getDouble("lat");
+                Double lng = response.getJSONObject(i).getDouble("lng");
                 spots.add(new LatLng(lat, lng));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        });
+        }
     }
     protected void prepMap(){
         map.clear();
