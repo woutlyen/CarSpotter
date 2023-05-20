@@ -32,6 +32,7 @@ import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +41,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SpotLocationFragment extends Fragment {
+    /**
+     * This fragment is used for loading in the map with the associated spots.
+     * It's used for a specific model (in the spotter tab), or all the spots from the user (in the user tab).
+     */
     private GoogleMap map;
     private HeatmapTileProvider provider;
     private TileOverlay overlay;
@@ -50,16 +55,6 @@ public class SpotLocationFragment extends Fragment {
     private int spotsFromUser;
     private ProgressBar progressBar;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
-
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
         @Override
         public void onMapReady(GoogleMap googleMap) {
             Toast.makeText(
@@ -157,13 +152,13 @@ public class SpotLocationFragment extends Fragment {
                             prepMap();
                             Toast.makeText(
                                     getActivity(),
-                                    "Succesfully processed all spots from user",
+                                    "Successfully processed all spots from user",
                                     Toast.LENGTH_SHORT).show();
                         }
                         else {
                             Toast.makeText(
                                     getActivity(),
-                                    "error: there was an issue retreiving data from server",
+                                    "error: there was an issue retrieving data from server",
                                     Toast.LENGTH_SHORT).show();
                         }
                         progressBar.setVisibility(View.INVISIBLE);
@@ -181,19 +176,19 @@ public class SpotLocationFragment extends Fragment {
                 });
         requestQueue.add(queueRequest);
     }
-
     private void processJSONResponse(JSONArray response) {
         //Add spots from database into local list
         spots.clear();
-        for (int i = 0; i < response.length(); i++) {
+        List<JSONObject> list = (List<JSONObject>) response;
+        list.forEach(spot -> {
             try {
-                Double lat = response.getJSONObject(i).getDouble("lat");
-                Double lng = response.getJSONObject(i).getDouble("lng");
+                Double lat = spot.getDouble("lat");
+                Double lng = spot.getDouble("lng");
                 spots.add(new LatLng(lat, lng));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
+        });
     }
     protected void prepMap(){
         map.clear();

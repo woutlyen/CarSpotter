@@ -28,13 +28,18 @@ import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class SpotsFragment extends Fragment implements RecyclerViewInterface{
-
+    /**
+     * This class is for showing all the spots from a specific car model (selected in spotter tab).
+     * We use a RecyclerViewInterface with the SpotsAdapter2 to showcase said spots.
+     * When clicking on a spot, the user will be sent to a new SpotLocationFragment.
+     */
     private static final String QUEUE_URL = "https://studev.groept.be/api/a22pt304/GetSpotsFromCarId2";
     private List<Spot> spots = new ArrayList<>();
     private RecyclerView spotView;
@@ -43,7 +48,6 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
     private CircularProgressIndicator circularProgressIndicatorCarView;
     private ExtendedFloatingActionButton extendedFloatingActionButton;
     AddSpotFragment addSpotFragment = new AddSpotFragment();
-
     View view;
     Car car;
     SpotLocationFragment spotLocationFragment = new SpotLocationFragment();
@@ -100,7 +104,8 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
             }
         });
 
-        //When clicking on the "+ Add spot", you will be sent to a new fragment to upload the information.
+        //When clicking on the "Add spot"-button, the user will be sent to a new AddSpotFragment
+        // to upload the information.
         extendedFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,26 +158,25 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
                 });
         requestQueue.add(queueRequest);
     }
-
     private void processJSONResponse(JSONArray response) {
         //Add spots from database into local list for recyclerview
         spots.clear();
-        for (int i = 0; i < response.length(); i++) {
+        List<JSONObject> list = (List<JSONObject>) response;
+        list.forEach(obj -> {
             try {
-                Spot spot = new Spot(response.getJSONObject(i));
+                Spot spot = new Spot(obj);
                 spots.add(spot);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
+        });
         Collections.sort(spots, (o1, o2) -> o1.getDate().compareTo(o2.getDate()));
         Collections.reverse(spots);
     }
-
-    //Next function is temporary (clicking on recyclerview, will be replaced by map with all spots)
+    // clicking on an item from the RecyclerView, will send the user to a map with all spots (SpotLocationFragment).
     @Override
     public void onItemClick(int position, String type) {
-        //Send information from the selected spot to the new fragment (map)
+        //Send information from the selected spot to the new SpotLocationFragment (map)
         Bundle bundle = new Bundle();
         spotLocationFragment.setArguments(bundle);
         bundle.putParcelable("Spot", spots.get(position));

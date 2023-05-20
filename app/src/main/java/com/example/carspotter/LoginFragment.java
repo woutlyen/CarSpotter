@@ -37,6 +37,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -57,6 +58,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LoginFragment extends Fragment implements RecyclerViewInterface{
+    /**
+     * This fragment is firstly used for the user to login
+     * (or autmatically register if the account doesn't exist).
+     * For this login process we make use of salted hashing and only check server side.
+     *
+     * Upon logging in, the fragment will switch layouts. Now the user is able to look through all
+     * their spots.
+     */
 
     /**
      * These are needed for the login process
@@ -103,7 +112,6 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -120,6 +128,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
         logoutBtn = view.findViewById(R.id.logoutBtn);
         spotInfo = view.findViewById(R.id.spotInfo);
 
+        // To initiate the fragment, we first check whether the user is logged in or not.
         if (((MainActivity) (getContext())).getUser() != null) {
             toggleLayout(newLayout.personalSpots);
             getSpotsFromUser();
@@ -188,11 +197,15 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
         return view;
     }
     private void Process(){
+        /**
+         * In this method we will process the given username and password to attempt to log in.
+         */
         loginfab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 /**
-                 * Here we simply check if both fields are filled in, if so we proceed to processing the data.
+                 * Here we check the contents of both fields.
+                 * If everything checks out we proceed to processing the data.
                  */
 
                 // Check if username is filled in
@@ -224,7 +237,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
                     password.setError(null);
                     check += 1;
                 }
-                // Check if username contains special characters
+                // Check if password contains special characters
                 Matcher hasSpecialPass = specialChars.matcher(input);
                 if (hasSpecialPass.find()) {
                     password.setError("The password can't contain any special characters!");
@@ -241,25 +254,10 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
             }
         });
     }
-    public static boolean Password_Validation(String password)
-    {
-        if(password.length()>=8)
-        {
-            Pattern specialChars = Pattern.compile ("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
-
-            Matcher hasSpecial = specialChars.matcher(password);
-
-            return hasSpecial.find();
-
-        }
-        else
-            return false;
-
-    }
     private void processData() {
         /**
          * Here we first check if the user already exists. If they do, the password will be checked and they'll log in.
-         * If the user doesn't already exist, they'll be promted with a pop-up to confirm the registration.
+         * If the user doesn't already exist, they'll be prompted with a pop-up to confirm the registration.
          */
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         JsonArrayRequest queueRequest = new JsonArrayRequest(
@@ -292,7 +290,8 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
     private void register() {
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle("Register")
-                .setMessage("Seems like you don't already have an account, do you wish to register? DISCLAIMER: You will not be able to change your username afterwards, chose carefully.")
+                .setMessage("Seems like you don't already have an account, do you wish to register? " +
+                        "DISCLAIMER: You will not be able to change your username afterwards, choose carefully.")
                 .setNeutralButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -313,7 +312,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
                                         ((MainActivity) (getContext())).setUser(givenUser);
                                         Toast.makeText(
                                                 getActivity(),
-                                                "Succesfully registered, welcome "+givenUser+"!",
+                                                "Successfully registered, welcome "+givenUser+"!",
                                                 Toast.LENGTH_SHORT).show();
                                         toggleLayout(newLayout.personalSpots);
                                     }
@@ -327,7 +326,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
                                                 Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                        ) { //NOTE THIS PART: here we are passing the POST parameters to the webservice
+                        ) { // here we are passing the POST parameters to the webservice
                             @Override
                             protected Map<String, String> getParams() {
                                 String newPass = String.valueOf(password.getText());
@@ -347,13 +346,16 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
                 .show();
     }
     static String generateRandomString() {
-        // This code is used for generating the randomString
+        // This code is used for generating the randomString for our salted hashing
         UUID randomUUID = UUID.randomUUID();
         String randomString = randomUUID.toString().replaceAll("_", "");
         randomString = randomUUID.toString().replaceAll("-", "");
         return randomString;
     }
     private String hash(String password, String randomString){
+        /**
+         * The password and salt will be encrypted using SHA-256.
+         */
         String hashedPass = "";
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -374,7 +376,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
     }
     private void login(){
         /**
-         * Here we create the hashed password from the given textfields and then proceed to checkLogin()
+         * Here we create the hashed password from the given text fields and then proceed to checkLogin()
          */
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         JsonArrayRequest queueRequest = new JsonArrayRequest(
@@ -428,7 +430,7 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
                                  ((MainActivity) (getContext())).setUser(loggedUser);
                                  Toast.makeText(
                                          getActivity(),
-                                         "Succesfully logged in, welcome back "+loggedUser+"!",
+                                         "Successfully logged in, welcome back "+loggedUser+"!",
                                          Toast.LENGTH_SHORT).show();
                                  toggleLayout(newLayout.personalSpots);
                              }
@@ -523,25 +525,27 @@ public class LoginFragment extends Fragment implements RecyclerViewInterface{
             }
         });
     }
-
     private void processJSONResponse(JSONArray response) {
         //Add spots from database into local list for recyclerview
         spots.clear();
-        for (int i = 0; i < response.length(); i++) {
+        List<JSONObject> list = (List<JSONObject>) response;
+        list.forEach(obj -> {
             try {
-                Spot spot = new Spot(response.getJSONObject(i));
+                Spot spot = new Spot(obj);
                 spots.add(spot);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
+        });
         Collections.sort(spots, (o1, o2) -> o1.getDate().compareTo(o2.getDate()));
         Collections.reverse(spots);
     }
-
     @Override
     public void onItemClick(int position, String type) {
-        //Send information from the selected spot to the new fragment (map)
+        /**
+         * When clicking on a specific spot, the app will send information from the selected spot
+         * to a new SpotLocationFragment (map of the spots)
+         */
         Bundle bundle = new Bundle();
         spotLocationFragment.setArguments(bundle);
         bundle.putParcelable("Spot", spots.get(position));

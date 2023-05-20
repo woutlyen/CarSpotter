@@ -62,6 +62,16 @@ import java.time.LocalTime;
 
 
 public class AddSpotFragment extends Fragment {
+    /**
+     * This class is for adding a spot (sighting of a specific car), accessible in the spotter tab.
+     *
+     * It is able to open the user's image library to upload one to the app.
+     *
+     * It also requests permission to access the user's specific location and saves this in
+     * coordinates aswell as turn it into a real world address.
+     *
+     * Lastly, the spot is uploaded to the sql-database with the according information.
+     */
     private Button addSpotLocation;
     private TextView latData;
     private TextView latInfo;
@@ -152,14 +162,12 @@ public class AddSpotFragment extends Fragment {
             addSpotInfo.setText(car.getBrand() + " " + car.getModel());
         }
 
-
         extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.submit_fab);
         extendedFloatingActionButton.hide();
-
     }
 
     /**
-     * This part of the Class is for uploading location information
+     * The following part of the Class is for uploading location information
      */
     protected boolean isGPSEnabled() {
         /**
@@ -275,7 +283,7 @@ public class AddSpotFragment extends Fragment {
 
 
     /**
-     * This part of the Class is for uploading the image
+     * The following part of the Class is for uploading an image.
      */
     protected void getImage() {
         /**
@@ -300,10 +308,8 @@ public class AddSpotFragment extends Fragment {
         // pass the constant to compare it with the returned requestCode (200)
         startActivityForResult(Intent.createChooser(i, "Select Picture"), SELECT_PICTURE);
     }
-
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (resultCode == RESULT_OK) {
             // compare the resultCode with the
             // SELECT_PICTURE constant
@@ -346,7 +352,7 @@ public class AddSpotFragment extends Fragment {
     }
 
     /**
-     * This part of the Class is for taking the given information and uploading it to the SQL-database.
+     * The following part of the Class is for taking the given information and uploading it to the SQL-database.
      */
     private void submitButton() {
         /**
@@ -359,7 +365,6 @@ public class AddSpotFragment extends Fragment {
             }
         });
     }
-
     private void confirmationPopUp() {
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle("Submit Spot")
@@ -471,6 +476,9 @@ public class AddSpotFragment extends Fragment {
         }
     }
     private void clear(){
+        /**
+         * Right after uploading the spot, the user's input will be removed for a new spot.
+         */
         imageSubmitted = false;
         locationSubmitted = false;
         addSpotImage.setImageResource(R.drawable.add);
