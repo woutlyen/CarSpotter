@@ -74,30 +74,7 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_brand_select, container, false);
 
-        infoTxt = (TextView) view.findViewById(R.id.noCarsTxt);
-        infoTxt2 = (TextView) view.findViewById(R.id.noCarsTxt2);
-        if(item_dropdown.equals("")){
-            infoTxt.setText(R.string.help_text);
-            infoTxt2.setText(R.string.help_text_sub);
-        }
-        circularProgressIndicatorCarView = (CircularProgressIndicator) view.findViewById(R.id.progressIndicatorCarView);
-        extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.add_wiki_fab);
-
-        Arrays.sort(item);
-        autoCompleteTextView = view.findViewById(R.id.auto_complete_txt);
-
-
-        brandLogo = (ImageView) view.findViewById(R.id.brandLogo);
-        brandLogo.setVisibility(View.GONE);
-
-//        if(savedInstanceState != null){
-//            brandLogoLocation = savedInstanceState.getString("brandLogoLocation");
-//            item_dropdown = savedInstanceState.getString("item_dropdown");
-//            if (brandLogoLocation != null) {
-//                Uri uri = Uri.parse(brandLogoLocation);
-//                brandLogo.setImageURI(uri);
-//            }
-//        }
+        initViewComponents();
 
         if (brandLogoLocation != null){
             brandLogo.setVisibility(View.VISIBLE);
@@ -112,10 +89,13 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
             }
         }
 
-        carView = view.findViewById( R.id.carView );
-        BrandSelectAdapter adapter = new BrandSelectAdapter( cars, this );
-        carView.setAdapter( adapter );
-        carView.setLayoutManager( new LinearLayoutManager( getActivity() ));
+        initRecyclerview();
+        initListeners();
+
+        return view;
+    }
+
+    private void initListeners() {
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -136,7 +116,6 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
                 brandLogo.setImageURI(uri);
 
                 requestCarsFromBrand(item_dropdown);
-//                Toast.makeText(BrandSelectActivity.this, "Item: " + item, Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -171,8 +150,30 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
                 }
             }
         });
+    }
 
-        return view;
+    private void initViewComponents() {
+        infoTxt = (TextView) view.findViewById(R.id.noCarsTxt);
+        infoTxt2 = (TextView) view.findViewById(R.id.noCarsTxt2);
+        if(item_dropdown.equals("")){
+            infoTxt.setText(R.string.help_text);
+            infoTxt2.setText(R.string.help_text_sub);
+        }
+        circularProgressIndicatorCarView = (CircularProgressIndicator) view.findViewById(R.id.progressIndicatorCarView);
+        extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.add_wiki_fab);
+
+        Arrays.sort(item);
+        autoCompleteTextView = view.findViewById(R.id.auto_complete_txt);
+
+        brandLogo = (ImageView) view.findViewById(R.id.brandLogo);
+        brandLogo.setVisibility(View.GONE);
+    }
+
+    private void initRecyclerview() {
+        carView = view.findViewById( R.id.carView );
+        BrandSelectAdapter adapter = new BrandSelectAdapter( cars, this );
+        carView.setAdapter( adapter );
+        carView.setLayoutManager( new LinearLayoutManager( getActivity() ));
     }
 
     @Override
@@ -229,14 +230,10 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
         //Order cars on brandname, then edition using comparators
         Collections.sort(cars, (o1, o2) -> o1.getEdition().compareTo(o2.getEdition()));
         Collections.sort(cars, (o1, o2) -> o1.getModel().compareTo(o2.getModel()));
-//        cars.add(cars.get(0));
     }
 
     @Override
     public void onItemClick(int position, String type) {
-//        Intent intent = new Intent(BrandSelectFragment.this.getActivity(), MainActivity.class);
-//        intent.putExtra("Car", cars.get(position));
-//        getActivity().startActivity(intent);
 
         Bundle bundle = new Bundle();
         modelViewFragment.setArguments(bundle);
@@ -247,11 +244,5 @@ public class BrandSelectFragment extends Fragment implements RecyclerViewInterfa
         transaction.commit();
     }
 
-//    public void onSaveInstanceState(Bundle outState){
-//        super.onSaveInstanceState(outState);
-//
-//        outState.putString("brandLogoLocation", brandLogoLocation);
-//        outState.putString("item_dropdown", item_dropdown);
-//    }
 
 }

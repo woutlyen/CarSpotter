@@ -92,28 +92,7 @@ public class AddEventFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_add_event, container, false);
 
-        textName = (TextInputLayout) view.findViewById(R.id.textUsername);
-        nameTxt = (TextInputEditText) view.findViewById(R.id.nameTxt);
-        textDescription = (TextInputLayout) view.findViewById(R.id.textPassword);
-        descriptionTxt = (TextInputEditText) view.findViewById(R.id.descriptionTxt);
-        textType = (TextInputLayout) view.findViewById(R.id.textType);
-        typeTxt = (TextInputEditText) view.findViewById(R.id.typeTxt);
-        textFee = (TextInputLayout) view.findViewById(R.id.textFee);
-        feeTxt = (TextInputEditText) view.findViewById(R.id.feeTxt);
-        textDate = (TextInputLayout) view.findViewById(R.id.textDate);
-        dateTxt = (TextInputEditText) view.findViewById(R.id.dateTxt);
-        textStartTime = (TextInputLayout) view.findViewById(R.id.textStartTime);
-        startTimeTxt = (TextInputEditText) view.findViewById(R.id.startTimeTxt);
-        textEndTime = (TextInputLayout) view.findViewById(R.id.textEndTime);
-        endTimeTxt = (TextInputEditText) view.findViewById(R.id.endTimeTxt);
-        locationTxt = (TextInputEditText) view.findViewById(R.id.locationTxt);
-
-        add_event_fab = (ExtendedFloatingActionButton) view.findViewById(R.id.add_event_fab);
-
-        uploadImage = (Button) view.findViewById(R.id.uploadImage);
-        image = (ShapeableImageView) view.findViewById(R.id.image);
-        progressIndicatorAddEventView = (LinearProgressIndicator) view.findViewById(R.id.progressIndicatorAddEventView);
-        progressIndicatorAddEventView.hide();
+        initViewComponents();
 
 
         CalendarConstraints constraintsBuilder = new CalendarConstraints.Builder()
@@ -127,9 +106,6 @@ public class AddEventFragment extends Fragment {
 
         boolean isSystem24Hour = android.text.format.DateFormat.is24HourFormat(getContext());
         int clockFormat = TimeFormat.CLOCK_24H;
-//        if (!isSystem24Hour) {
-//            clockFormat = TimeFormat.CLOCK_12H;
-//        }
 
         MaterialTimePicker timePicker1 =
                 new MaterialTimePicker.Builder()
@@ -149,6 +125,14 @@ public class AddEventFragment extends Fragment {
                         .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)
                         .build();
 
+        initOnClickListeners(datePicker, timePicker1, timePicker2);
+
+        getImage();
+
+        return view;
+    }
+
+    private void initOnClickListeners(MaterialDatePicker<Long> datePicker, MaterialTimePicker timePicker1, MaterialTimePicker timePicker2) {
         dateTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -280,7 +264,6 @@ public class AddEventFragment extends Fragment {
 
 
                 if (count == 8 && imageSubmitted) {
-//                    Toast.makeText(getActivity(), "Everything is filled in", Toast.LENGTH_SHORT).show();
 
                     String inputDateStr = dateTxt.getText().toString().trim();
                     SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -305,10 +288,29 @@ public class AddEventFragment extends Fragment {
             }
 
         });
+    }
 
-        getImage();
-
-        return view;
+    private void initViewComponents() {
+        textName = (TextInputLayout) view.findViewById(R.id.textUsername);
+        nameTxt = (TextInputEditText) view.findViewById(R.id.nameTxt);
+        textDescription = (TextInputLayout) view.findViewById(R.id.textPassword);
+        descriptionTxt = (TextInputEditText) view.findViewById(R.id.descriptionTxt);
+        textType = (TextInputLayout) view.findViewById(R.id.textType);
+        typeTxt = (TextInputEditText) view.findViewById(R.id.typeTxt);
+        textFee = (TextInputLayout) view.findViewById(R.id.textFee);
+        feeTxt = (TextInputEditText) view.findViewById(R.id.feeTxt);
+        textDate = (TextInputLayout) view.findViewById(R.id.textDate);
+        dateTxt = (TextInputEditText) view.findViewById(R.id.dateTxt);
+        textStartTime = (TextInputLayout) view.findViewById(R.id.textStartTime);
+        startTimeTxt = (TextInputEditText) view.findViewById(R.id.startTimeTxt);
+        textEndTime = (TextInputLayout) view.findViewById(R.id.textEndTime);
+        endTimeTxt = (TextInputEditText) view.findViewById(R.id.endTimeTxt);
+        locationTxt = (TextInputEditText) view.findViewById(R.id.locationTxt);
+        add_event_fab = (ExtendedFloatingActionButton) view.findViewById(R.id.add_event_fab);
+        uploadImage = (Button) view.findViewById(R.id.uploadImage);
+        image = (ShapeableImageView) view.findViewById(R.id.image);
+        progressIndicatorAddEventView = (LinearProgressIndicator) view.findViewById(R.id.progressIndicatorAddEventView);
+        progressIndicatorAddEventView.hide();
     }
 
     protected void getImage() {
@@ -368,9 +370,6 @@ public class AddEventFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // Respond to positive button press
-                        // Convert the URI to a Base64 encoded string
-//                        base64Uri = Base64.getEncoder().encodeToString(selectedImageUri.toString().getBytes(StandardCharsets.UTF_8));
-
                         progressIndicatorAddEventView.show();
 
                         InputStream inputStream = null;

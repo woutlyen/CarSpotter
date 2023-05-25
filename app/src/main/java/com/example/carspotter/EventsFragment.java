@@ -12,7 +12,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +25,6 @@ import com.example.carspotter.model.Event;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.search.SearchBar;
 import com.google.android.material.search.SearchView;
@@ -83,52 +81,34 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_events, container, false);
 
-        eventView = (RecyclerView) view.findViewById(R.id.eventView);
-        EventsAdapter adapter = new EventsAdapter(events, this);
-        eventView.setAdapter(adapter);
-        eventView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        noEventsTxt = (TextView) view.findViewById(R.id.noEventsTxt);
-
-        toggleButton = (MaterialButtonToggleGroup) view.findViewById(R.id.toggleButton);
-        progressIndicatorCarView = (LinearProgressIndicator) view.findViewById(R.id.progressIndicatorCarView);
-
-        week = (MaterialButton) view.findViewById(R.id.week);
-        month = (MaterialButton) view.findViewById(R.id.month);
-        year = (MaterialButton) view.findViewById(R.id.year);
-
-        progressIndicatorCarView.setVisibility(View.VISIBLE);
-
-        add_event_fab = (ExtendedFloatingActionButton) view.findViewById(R.id.add_event_fab);
-
-        searchView = (RecyclerView) view.findViewById(R.id.searchView);
-        EventsSearchAdapter adapter2 = new EventsSearchAdapter(searchEvents, this);
-        searchView.setAdapter(adapter2);
-        searchView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        search_bar = (SearchBar) view.findViewById(R.id.search_bar);
-        search_view = (SearchView) view.findViewById(R.id.search_view);
-        searchTxt = (TextView) view.findViewById(R.id.searchTxt);
+        initEventRecyclerview();
+        initSearchRecyclerview();
+        initViewComponents();
 
         if (searchEvents.size() == 0) {
-            String text = "Press on the Searchbar above! ";
+            String text = "Search to find events! ";
             text += new String(Character.toChars(0x1F446));
             searchTxt.setText(text);
         }
 
         requestEvents();
+        initListeners();
 
+        return view;
+    }
+
+    private void initListeners() {
         toggleButton.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
             @Override
             public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
                 if (checkedId == R.id.week && isChecked) {
-                    updateUmoeder("week");
+                    filterDate("week");
                 } else if (checkedId == R.id.month && isChecked) {
-                    updateUmoeder("month");
+                    filterDate("month");
                 } else if (checkedId == R.id.year && isChecked) {
-                    updateUmoeder("year");
+                    filterDate("year");
                 } else if (!week.isChecked() && !month.isChecked() && !year.isChecked()) {
-                    updateUmoeder("all");
+                    filterDate("all");
                 }
             }
         });
@@ -186,11 +166,37 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
                 transaction.commit();
             }
         });
-
-        return view;
     }
 
-    private void updateUmoeder(String sort){
+    private void initViewComponents() {
+        noEventsTxt = (TextView) view.findViewById(R.id.noEventsTxt);
+        toggleButton = (MaterialButtonToggleGroup) view.findViewById(R.id.toggleButton);
+        progressIndicatorCarView = (LinearProgressIndicator) view.findViewById(R.id.progressIndicatorCarView);
+        progressIndicatorCarView.setVisibility(View.VISIBLE);
+        week = (MaterialButton) view.findViewById(R.id.week);
+        month = (MaterialButton) view.findViewById(R.id.month);
+        year = (MaterialButton) view.findViewById(R.id.year);
+        add_event_fab = (ExtendedFloatingActionButton) view.findViewById(R.id.add_event_fab);
+        search_bar = (SearchBar) view.findViewById(R.id.search_bar);
+        search_view = (SearchView) view.findViewById(R.id.search_view);
+        searchTxt = (TextView) view.findViewById(R.id.searchTxt);
+    }
+
+    private void initSearchRecyclerview() {
+        searchView = (RecyclerView) view.findViewById(R.id.searchView);
+        EventsSearchAdapter adapter2 = new EventsSearchAdapter(searchEvents, this);
+        searchView.setAdapter(adapter2);
+        searchView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
+
+    private void initEventRecyclerview() {
+        eventView = (RecyclerView) view.findViewById(R.id.eventView);
+        EventsAdapter adapter = new EventsAdapter(events, this);
+        eventView.setAdapter(adapter);
+        eventView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
+
+    private void filterDate(String sort){
         if (allEvents.size() != 0) {
             noEventsTxt.setText("");
             events.clear();
@@ -243,7 +249,6 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
             noEventsTxt.setText(text);
         }
         eventView.getAdapter().notifyDataSetChanged();
-        //circularProgressIndicatorCarView.setVisibility(View.INVISIBLE);
     }
 
 
@@ -258,16 +263,14 @@ public class EventsFragment extends Fragment implements RecyclerViewInterface {
                     public void onResponse(JSONArray response) {
                         processJSONResponse(response);
                         if (!week.isChecked() && !month.isChecked() && !year.isChecked()) {
-                            updateUmoeder("all");
+                            filterDate("all");
                         } else if (week.isChecked()) {
-                            updateUmoeder("week");
+                            filterDate("week");
                         } else if (month.isChecked()) {
-                            updateUmoeder("month");
+                            filterDate("month");
                         } else{
-                            updateUmoeder("year");
+                            filterDate("year");
                         }
-//                        progressIndicatorCarView.setVisibility(View.INVISIBLE);
-//                        eventView.getAdapter().notifyDataSetChanged();
                         progressIndicatorCarView.animate().alpha(0f).setDuration(500).setListener(null);
                     }
                 },

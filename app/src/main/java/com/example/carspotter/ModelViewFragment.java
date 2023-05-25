@@ -66,10 +66,32 @@ public class ModelViewFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_model_view, container, false);
 
-//        Car car =(Car) getActivity().getIntent().getParcelableExtra("Car");
         Bundle bundle = this.getArguments();
         Car car = bundle.getParcelable("Car");
 
+        initViewComponents(car);
+        requestImageFromCarId(Integer.toString(car.getId()));
+        initOnClickListener(car);
+
+        return view;
+    }
+
+    private void initOnClickListener(Car car) {
+        extendedFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                spotsFragment.setArguments(bundle);
+                bundle.putParcelable("Car", car);
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.flFragment, spotsFragment ); // give your fragment container id in first parameter
+                transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+                transaction.commit();
+            }
+        });
+    }
+
+    private void initViewComponents(Car car) {
         textBrand = (TextView) view.findViewById(R.id.textBrand);
         textBrand.setText(car.getBrand());
         textModel = (TextView) view.findViewById(R.id.textModel);
@@ -88,11 +110,10 @@ public class ModelViewFragment extends Fragment {
         textSeats.setText(car.getSeats());
         brandIconView = (ImageView) view.findViewById(R.id.brandIcon);
 
-        Uri uri = Uri.parse("android.resource://com.example.carspotter/drawable/"+car.getBrand().toLowerCase());
+        Uri uri = Uri.parse("android.resource://com.example.carspotter/drawable/"+ car.getBrand().toLowerCase());
         if (car.getBrand().equals("Citroën")) {
             uri = Uri.parse("android.resource://com.example.carspotter/drawable/citroen");
         }
-
 
         brandIconView.setImageURI(uri);
 
@@ -103,22 +124,6 @@ public class ModelViewFragment extends Fragment {
         extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.spots_fab);
         modelImageView = (ImageView) view.findViewById(R.id.modelImageView);
         linearProgressIndicator = (LinearProgressIndicator) view.findViewById(R.id.linearProgressIndicatorModelView);
-        requestImageFromCarId(Integer.toString(car.getId()));
-
-        extendedFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                spotsFragment.setArguments(bundle);
-                bundle.putParcelable("Car", car);
-                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.flFragment, spotsFragment ); // give your fragment container id in first parameter
-                transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
-                transaction.commit();
-            }
-        });
-
-        return view;
     }
 
     private void requestImageFromCarId(String item) {

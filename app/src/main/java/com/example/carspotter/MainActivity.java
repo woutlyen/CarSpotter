@@ -49,43 +49,12 @@ public class MainActivity extends AppCompatActivity
         // Restore previous state
         if (savedInstanceState != null){
             navbarId = savedInstanceState.getInt("navbarId");
-//            if (navbarId == R.id.item_1){
-//                getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.flFragment, homeFragment)
-//                        .commit();
-//            }
-//            else if (navbarId == R.id.item_2){
-//                getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.flFragment, brandSelectFragment)
-//                        .commit();
-//            }
-//            else if (navbarId == R.id.item_3){
-//                getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.flFragment, homeFragment)
-//                        .commit();
-//            }
         }
 
         if (navbarId == 0){
             bottomNavigationView.setSelectedItemId(R.id.item_1);
             navbarId = bottomNavigationView.getSelectedItemId();
         }
-
-//        btnWiki = (Button) findViewById(R.id.btnWiki);
-//
-//        btnWiki.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.flFragment, brandSelectFragment)
-//                        .commit();
-//            }
-//        });
-
 
        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 

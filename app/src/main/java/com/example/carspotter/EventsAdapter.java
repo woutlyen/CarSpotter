@@ -36,8 +36,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                 .setText(event.getName());
         ((TextView) holder.eventView.findViewById(R.id.date))
                 .setText(event.getOnlyDate() + " from " + event.getStart_hour() + "h till " + event.getEnd_hour() + "h");
-//        ((TextView) holder.eventView.findViewById(R.id.fee))
-//                .setText(Integer.toString(event.getFee()));
         ((ImageView) holder.eventView.findViewById(R.id.image))
                 .setImageBitmap(event.getDecodedImage());
     }

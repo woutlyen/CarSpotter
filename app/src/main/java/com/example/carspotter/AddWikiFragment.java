@@ -115,41 +115,7 @@ public class AddWikiFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_add_wiki, container, false);
 
-        Arrays.sort(brands);
-        brandTxt = (AutoCompleteTextView) view.findViewById(R.id.brandTxt);
-        textBrand = (TextInputLayout) view.findViewById(R.id.textBrand);
-
-        Arrays.sort(bodyStyles);
-        bodyStylesTxt = (AutoCompleteTextView) view.findViewById(R.id.bodyStylesTxt);
-        textBodyStyles = (TextInputLayout) view.findViewById(R.id.textBodyStyles);
-
-        Arrays.sort(engineTypes);
-        engineTypesTxt = (AutoCompleteTextView) view.findViewById(R.id.engineTypeTxt);
-        textEngineTypes = (TextInputLayout) view.findViewById(R.id.textEngineType);
-
-        modelTxt = (TextInputEditText) view.findViewById(R.id.modelTxt);
-        textModel = (TextInputLayout) view.findViewById(R.id.textModel);
-
-        add_wiki_fab = (ExtendedFloatingActionButton) view.findViewById(R.id.add_wiki_fab);
-        scrollView = (ScrollView) view.findViewById(R.id.scrollView);
-        wikiLayout = (ConstraintLayout) view.findViewById(R.id.wikiLayout);
-        uploadImage = (Button) view.findViewById(R.id.uploadImage);
-        image = (ShapeableImageView) view.findViewById(R.id.image);
-
-        MSRPTxt = (TextInputEditText) view.findViewById(R.id.MSRPTxt);
-        textMSRP = (TextInputLayout) view.findViewById(R.id.textMSRP);
-        seatsTxt = (TextInputEditText) view.findViewById(R.id.seatsTxt);
-        textSeats = (TextInputLayout) view.findViewById(R.id.textSeats);
-        startDateTxt = (TextInputEditText) view.findViewById(R.id.startDateTxt);
-        textStartDate = (TextInputLayout) view.findViewById(R.id.textStartDate);
-        endDateTxt = (TextInputEditText) view.findViewById(R.id.endDateTxt);
-        textEndDate = (TextInputLayout) view.findViewById(R.id.textEndDate);
-        editionTxt = (TextInputEditText) view.findViewById(R.id.editionTxt);
-        textEdition = (TextInputLayout) view.findViewById(R.id.textEdition);
-
-        now = (AppCompatCheckBox) view.findViewById(R.id.now);
-        progressIndicatorAddWikiView = (LinearProgressIndicator) view.findViewById(R.id.progressIndicatorAddWikiView);
-        progressIndicatorAddWikiView.hide();
+        initViewComponents();
 
         if (savedInstanceState != null) {
             boolean input = savedInstanceState.getBoolean("now");
@@ -162,21 +128,13 @@ public class AddWikiFragment extends Fragment {
             }
         }
 
-        // Set up listener for validation
-//        modelTxt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View view, boolean hasFocus) {
-//                if (!hasFocus) {
-//                    String input = modelTxt.getText().toString().trim();
-//                    if (input.isEmpty()) {
-//                        modelTxt.setError("This field cannot be empty");
-//                    } else {
-//                        modelTxt.setError(null);
-//                    }
-//                }
-//            }
-//        });
+        initOnClickListener();
+        getImage();
 
+        return view;
+    }
+
+    private void initOnClickListener() {
         add_wiki_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -270,13 +228,11 @@ public class AddWikiFragment extends Fragment {
                 }
 
                 if (count == 9 && imageSubmitted) {
-//                    Toast.makeText(getActivity(), "Everything is filled in", Toast.LENGTH_SHORT).show();
                     showAlertDialog();
                 } else if (count == 9) {
                     Toast.makeText(getActivity(), "Upload an image", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getActivity(), "Fill everything required in", Toast.LENGTH_SHORT).show();
-//                    showAlertDialog();
                 }
 
             }
@@ -295,23 +251,44 @@ public class AddWikiFragment extends Fragment {
                 }
             }
         });
+    }
 
-//        // The device is in light mode
-//        int[] colors = {Color.TRANSPARENT, Color.rgb(42, 100, 134)};
-//
-//        // Create a gradient drawable with the start and end colors
-//        GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.BR_TL, colors);
-//
-//        // Define the bounds of the gradient (in this case, the bottom 200 pixels of the fragment view)
-//        int bottom = view.getHeight();
-//        int top = bottom - 200;
-//        gradientDrawable.setBounds(0, top, view.getWidth(), bottom);
-//        gradientDrawable.setAlpha(50);
-//        view.setBackground(gradientDrawable);
+    private void initViewComponents() {
+        Arrays.sort(brands);
+        brandTxt = (AutoCompleteTextView) view.findViewById(R.id.brandTxt);
+        textBrand = (TextInputLayout) view.findViewById(R.id.textBrand);
 
-        getImage();
+        Arrays.sort(bodyStyles);
+        bodyStylesTxt = (AutoCompleteTextView) view.findViewById(R.id.bodyStylesTxt);
+        textBodyStyles = (TextInputLayout) view.findViewById(R.id.textBodyStyles);
 
-        return view;
+        Arrays.sort(engineTypes);
+        engineTypesTxt = (AutoCompleteTextView) view.findViewById(R.id.engineTypeTxt);
+        textEngineTypes = (TextInputLayout) view.findViewById(R.id.textEngineType);
+
+        modelTxt = (TextInputEditText) view.findViewById(R.id.modelTxt);
+        textModel = (TextInputLayout) view.findViewById(R.id.textModel);
+
+        add_wiki_fab = (ExtendedFloatingActionButton) view.findViewById(R.id.add_wiki_fab);
+        scrollView = (ScrollView) view.findViewById(R.id.scrollView);
+        wikiLayout = (ConstraintLayout) view.findViewById(R.id.wikiLayout);
+        uploadImage = (Button) view.findViewById(R.id.uploadImage);
+        image = (ShapeableImageView) view.findViewById(R.id.image);
+
+        MSRPTxt = (TextInputEditText) view.findViewById(R.id.MSRPTxt);
+        textMSRP = (TextInputLayout) view.findViewById(R.id.textMSRP);
+        seatsTxt = (TextInputEditText) view.findViewById(R.id.seatsTxt);
+        textSeats = (TextInputLayout) view.findViewById(R.id.textSeats);
+        startDateTxt = (TextInputEditText) view.findViewById(R.id.startDateTxt);
+        textStartDate = (TextInputLayout) view.findViewById(R.id.textStartDate);
+        endDateTxt = (TextInputEditText) view.findViewById(R.id.endDateTxt);
+        textEndDate = (TextInputLayout) view.findViewById(R.id.textEndDate);
+        editionTxt = (TextInputEditText) view.findViewById(R.id.editionTxt);
+        textEdition = (TextInputLayout) view.findViewById(R.id.textEdition);
+
+        now = (AppCompatCheckBox) view.findViewById(R.id.now);
+        progressIndicatorAddWikiView = (LinearProgressIndicator) view.findViewById(R.id.progressIndicatorAddWikiView);
+        progressIndicatorAddWikiView.hide();
     }
 
 
@@ -384,18 +361,11 @@ public class AddWikiFragment extends Fragment {
                         // Respond to neutral button press
                     }
                 })
-//                .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        // Respond to negative button press
-//                    }
-//                })
+
                 .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // Respond to positive button press
-                        // Convert the URI to a Base64 encoded string
-//                        base64Uri = Base64.getEncoder().encodeToString(selectedImageUri.toString().getBytes(StandardCharsets.UTF_8));
 
                         progressIndicatorAddWikiView.show();
 

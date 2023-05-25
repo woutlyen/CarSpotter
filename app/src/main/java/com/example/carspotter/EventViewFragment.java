@@ -54,6 +54,13 @@ public class EventViewFragment extends Fragment {
         Bundle bundle = this.getArguments();
         Event event = bundle.getParcelable("Event");
 
+        initViewComponents(event);
+        requestImageFromEventId(Integer.toString(event.getId()));
+
+        return view;
+    }
+
+    private void initViewComponents(Event event) {
         textName = (TextView) view.findViewById(R.id.textUsername);
         textName.setText(event.getName());
         textDate = (TextView) view.findViewById(R.id.textDate);
@@ -71,9 +78,6 @@ public class EventViewFragment extends Fragment {
 
         eventImageView = (ImageView) view.findViewById(R.id.eventImageView);
         linearProgressIndicator = (LinearProgressIndicator) view.findViewById(R.id.linearProgressIndicatorEventView);
-        requestImageFromEventId(Integer.toString(event.getId()));
-
-        return view;
     }
 
     private void requestImageFromEventId(String item) {

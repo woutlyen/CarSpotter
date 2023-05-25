@@ -62,29 +62,22 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_spots, container, false);
-        circularProgressIndicatorCarView = (CircularProgressIndicator) view.findViewById(R.id.progressIndicatorSpotView);
-        circularProgressIndicatorCarView.setVisibility(View.VISIBLE);
-        extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.add_spot_fab);
 
         Bundle bundle = this.getArguments();
         car = bundle.getParcelable("Car");
-//
-        //Text fields on fragment_spots.xml
-        spotInfo = (TextView) view.findViewById(R.id.spotInfo);
-        spotCar = (TextView) view.findViewById(R.id.spotCar);
-        spotCar.setText(car.getBrand() + " " + car.getModel() + " " + car.getEdition());
-//
-        //Recyclerview on fragment_spots.xml
-        spotView = view.findViewById( R.id.spotView);
-        SpotsAdapter2 adapter = new SpotsAdapter2( spots, this );
-        spotView.setAdapter( adapter );
-        spotView.setLayoutManager( new LinearLayoutManager( getActivity() ));
+
+        initViewComponents();
+        InitRecyclerview();
 
         spots.clear();
         spotView.getAdapter().notifyDataSetChanged();
-        System.out.println(Integer.toString(car.getId()));
         requestSpotsFromCarId(Integer.toString(car.getId()));
 
+        initListeners();
+        return view;
+    }
+
+    private void initListeners() {
         spotView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -118,7 +111,25 @@ public class SpotsFragment extends Fragment implements RecyclerViewInterface{
                 transaction.commit();
             }
         });
-        return view;
+    }
+
+    private void InitRecyclerview() {
+        //Recyclerview on fragment_spots.xml
+        spotView = view.findViewById( R.id.spotView);
+        SpotsAdapter2 adapter = new SpotsAdapter2( spots, this );
+        spotView.setAdapter( adapter );
+        spotView.setLayoutManager( new LinearLayoutManager( getActivity() ));
+    }
+
+    private void initViewComponents() {
+        circularProgressIndicatorCarView = (CircularProgressIndicator) view.findViewById(R.id.progressIndicatorSpotView);
+        circularProgressIndicatorCarView.setVisibility(View.VISIBLE);
+        extendedFloatingActionButton = (ExtendedFloatingActionButton) view.findViewById(R.id.add_spot_fab);
+
+        //Text fields on fragment_spots.xml
+        spotInfo = (TextView) view.findViewById(R.id.spotInfo);
+        spotCar = (TextView) view.findViewById(R.id.spotCar);
+        spotCar.setText(car.getBrand() + " " + car.getModel() + " " + car.getEdition());
     }
 
     private void requestSpotsFromCarId(String item) {

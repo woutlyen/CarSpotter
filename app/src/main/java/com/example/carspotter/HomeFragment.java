@@ -120,76 +120,53 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
             spotIsRunning = savedInstanceState.getBoolean("spotIsRunning");
         }
 
-        loadingScreen = (ConstraintLayout) view.findViewById(R.id.loading_screen);
-        recyclerviews = (LinearLayout) view.findViewById(R.id.linearLayout3);
+        initViewComponents();
+        initSpotRecyclerview();
+        initWikiRecyclerview();
+        initFadeAnimation();
 
-        loadingScreen.setVisibility(View.VISIBLE);
-        recyclerviews.setVisibility(View.INVISIBLE);
+        requestSpotsForHome();
+        requestWikisForHome();
+        startAnimation();
 
-        newSpot = (RecyclerView) view.findViewById(R.id.newSpot);
-        newWiki = (RecyclerView) view.findViewById(R.id.newWiki);
-//        newEvent = (RecyclerView) view.findViewById(R.id.newEvent);
+        // The device is in light mode
+        int[] colors = {Color.TRANSPARENT, Color.rgb(42, 100, 134)};
 
-        adapter = new SpotsAdapter(spots, this);
-        newSpot.setAdapter(adapter);
-        newSpot.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        // Create a gradient drawable with the start and end colors
+        GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors);
 
-        PagerSnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(newSpot);
-        newSpot.addItemDecoration(new PagerDecorator());
+        // Define the bounds of the gradient (in this case, the bottom 200 pixels of the fragment view)
+        int bottom = view.getHeight();
+        int top = bottom - 200;
+        gradientDrawable.setBounds(0, top, view.getWidth(), bottom);
+        gradientDrawable.setAlpha(60);
+        view.setBackground(gradientDrawable);
 
-        adapter2 = new BrandSelectAdapter(cars, this);
-        newWiki.setAdapter(adapter2);
-        newWiki.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        initOnClickListeners();
 
-        PagerSnapHelper snapHelper2 = new PagerSnapHelper();
-        snapHelper2.attachToRecyclerView(newWiki);
-        newWiki.addItemDecoration(new PagerDecorator());
+        reset = true;
 
-        bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
-//        linearProgressIndicator1 = view.findViewById(R.id.linearProgressIndicator1);
-//        linearProgressIndicator2 = view.findViewById(R.id.linearProgressIndicator2);
+        return view;
+    }
 
-        // Find the greeting TextView by ID
-        greetingTextView = view.findViewById(R.id.greeting_text_view);
-        greetingTextUser = view.findViewById(R.id.greeting_text_user);
+    private void initOnClickListeners() {
+        newWiki.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                stopWikiAutoScroll();
+                return false;
+            }
+        });
+        newSpot.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                stopSpotsAutoScroll();
+                return false;
+            }
+        });
+    }
 
-        // Get the current time
-        Calendar c = Calendar.getInstance();
-        int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
-
-        // Set the greeting message based on the time
-        String greeting;
-        String user = "";
-        if (((MainActivity) (getContext())).getUser() != null){
-            user = ((MainActivity) (getContext())).getUser();
-        }
-        if (timeOfDay < 12) {
-            greeting = "Good morning";
-        } else if (timeOfDay < 18) {
-            greeting = "Good afternoon";
-        } else {
-            greeting = "Good evening";
-        }
-
-        if (((MainActivity) (getContext())).getUser() != null){
-            greeting += ",";
-            user += "!";
-            user += " \uD83D\uDC4B";
-        } else{
-            greeting += "!";
-            greeting += " \uD83D\uDC4B";
-        }
-
-        // Display the greeting message
-        greetingTextView.setText(greeting);
-        greetingTextUser.setText(user);
-
-
-        logoTop = (ImageView) view.findViewById(R.id.logoTop);
-        slogan2 = (TextView) view.findViewById(R.id.slogan2);
-        divider = (MaterialDivider) view.findViewById(R.id.divider);
-        scrollView = (NestedScrollView) view.findViewById(R.id.scrollView);
+    private void initFadeAnimation() {
         scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -237,9 +214,79 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                 }
             }
         });
+    }
 
-        requestSpotsForHome();
-        requestWikisForHome();
+    private void initWikiRecyclerview() {
+        adapter2 = new BrandSelectAdapter(cars, this);
+        newWiki.setAdapter(adapter2);
+        newWiki.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+
+        PagerSnapHelper snapHelper2 = new PagerSnapHelper();
+        snapHelper2.attachToRecyclerView(newWiki);
+        newWiki.addItemDecoration(new PagerDecorator());
+    }
+
+    private void initSpotRecyclerview() {
+        adapter = new SpotsAdapter(spots, this);
+        newSpot.setAdapter(adapter);
+        newSpot.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+
+        PagerSnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(newSpot);
+        newSpot.addItemDecoration(new PagerDecorator());
+    }
+
+    private void initViewComponents() {
+        loadingScreen = (ConstraintLayout) view.findViewById(R.id.loading_screen);
+        recyclerviews = (LinearLayout) view.findViewById(R.id.linearLayout3);
+
+        loadingScreen.setVisibility(View.VISIBLE);
+        recyclerviews.setVisibility(View.INVISIBLE);
+
+        newSpot = (RecyclerView) view.findViewById(R.id.newSpot);
+        newWiki = (RecyclerView) view.findViewById(R.id.newWiki);
+
+        bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+
+        // Find the greeting TextView by ID
+        greetingTextView = view.findViewById(R.id.greeting_text_view);
+        greetingTextUser = view.findViewById(R.id.greeting_text_user);
+
+        // Get the current time
+        Calendar c = Calendar.getInstance();
+        int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
+
+        // Set the greeting message based on the time
+        String greeting;
+        String user = "";
+        if (((MainActivity) (getContext())).getUser() != null){
+            user = ((MainActivity) (getContext())).getUser();
+        }
+        if (timeOfDay < 12) {
+            greeting = "Good morning";
+        } else if (timeOfDay < 18) {
+            greeting = "Good afternoon";
+        } else {
+            greeting = "Good evening";
+        }
+
+        if (((MainActivity) (getContext())).getUser() != null){
+            greeting += ",";
+            user += "!";
+            user += " \uD83D\uDC4B";
+        } else{
+            greeting += "!";
+            greeting += " \uD83D\uDC4B";
+        }
+
+        // Display the greeting message
+        greetingTextView.setText(greeting);
+        greetingTextUser.setText(user);
+
+        logoTop = (ImageView) view.findViewById(R.id.logoTop);
+        slogan2 = (TextView) view.findViewById(R.id.slogan2);
+        divider = (MaterialDivider) view.findViewById(R.id.divider);
+        scrollView = (NestedScrollView) view.findViewById(R.id.scrollView);
 
         thanksTxt = (TextView) view.findViewById(R.id.thanksTxt);
         thanksTxt2 = (TextView) view.findViewById(R.id.thanksTxt2);
@@ -248,40 +295,6 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         recyclerviews.setVisibility(View.GONE);
         thanksTxt2.setVisibility(View.GONE);
         recyclerviews.setAlpha(0f);
-        startAnimation();
-
-        // The device is in light mode
-//        int[] colors = {Color.TRANSPARENT, Color.rgb(177, 214, 255)};
-        int[] colors = {Color.TRANSPARENT, Color.rgb(42, 100, 134)};
-
-        // Create a gradient drawable with the start and end colors
-        GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors);
-
-        // Define the bounds of the gradient (in this case, the bottom 200 pixels of the fragment view)
-        int bottom = view.getHeight();
-        int top = bottom - 200;
-        gradientDrawable.setBounds(0, top, view.getWidth(), bottom);
-        gradientDrawable.setAlpha(60);
-        view.setBackground(gradientDrawable);
-
-        newWiki.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                stopWikiAutoScroll();
-                return false;
-            }
-        });
-        newSpot.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                stopSpotsAutoScroll();
-                return false;
-            }
-        });
-
-        reset = true;
-
-        return view;
     }
 
     @Override
@@ -342,9 +355,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                 }
 
                 if(wikisGenerated && spotsGenerated && reset) {
-//                    loadingScreen.setVisibility(View.GONE);
                     recyclerviews.setVisibility(View.VISIBLE);
-//                    thanksTxt.setVisibility(View.INVISIBLE);
                     thanksTxt2.setVisibility(View.VISIBLE);
                     scrollUpImage.animate()
                             .alpha(1f)
@@ -382,15 +393,9 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                     @Override
                     public void onResponse(JSONArray response) {
 
-//                        scrollUpImage.animate()
-//                                .alpha(1f)
-//                                .setDuration(500)
-//                                .setListener(null);
-
                         processJSONResponse(response);
                         newSpot.getAdapter().notifyDataSetChanged();
                         spotsGenerated = true;
-//                        linearProgressIndicator1.setVisibility(View.INVISIBLE);
                     }
                 },
                 new Response.ErrorListener() {
