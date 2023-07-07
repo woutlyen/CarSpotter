@@ -1,7 +1,11 @@
 # Java application assignment: *CarSpotter*
-Made by:
+This project was an assignment for our studies as Industrial Engineer in Electronics & ICT, in the second year of our bachelor at GroepT, KULeuven.
+The purpose was to learn to manage a project and to create a fully working android application including API's we could find on the internet, without strict guidance from the TA's.
+
+## Made by:
 * Wout Lyen
 * Jonathan Valgaeren (ItsAlphie)
+
 ## Inspiration
 The original idea for the application was a form of wikipedia, but all about cars. However, we have changed to a more user-interactive application. The main goal of the app to share sightings or 'spots' of cars with others. We have retained the wiki side of the app, where the user is able to look up information about the spotted cars. We also added an event feature for even more user-interaction.
 ## Functions
@@ -20,4 +24,4 @@ Upon logging in the layout will change to a list of all the user's spots. Clicki
 When logged in and the user spots a car, a tag will be added in the lists of spot showing who made that specific spot.
 
 ## Important note
-Incase there might be any issues during testing, you might have to add the google API key to local.properties. (MAPS_API_KEY=AIzaSyBL5W5Y_tALAcsXnJOnK45CAhuOp4kIUio)
+The API-key used for this project has been disabled for security purposes.
