@@ -3,8 +3,8 @@ This project was an assignment for our studies as Industrial Engineer in Electro
 The purpose was to learn to manage a project and to create a fully working android application including API's we could find on the internet, without strict guidance from the TA's.
 
 ## Made by:
-* Wout Lyen
-* Jonathan Valgaeren (ItsAlphie)
+- Wout Lyen ([@woutlyen](https://www.github.com/woutlyen))
+- Jonathan Valgaeren ([@ItsAlphie](https://www.github.com/ItsAlphie))
 
 ## Inspiration
 The original idea for the application was a form of wikipedia, but all about cars. However, we have changed to a more user-interactive application. The main goal of the app to share sightings or 'spots' of cars with others. We have retained the wiki side of the app, where the user is able to look up information about the spotted cars. We also added an event feature for even more user-interaction.
