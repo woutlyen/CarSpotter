@@ -2,7 +2,7 @@
 This project was an assignment for our studies as Industrial Engineer in Electronics & ICT, in the second year of our bachelor at GroepT, KULeuven.
 The purpose was to learn to manage a project and to create a fully working android application including API's we could find on the internet, without strict guidance from the TA's.
 
-![](/asserts/Home.jpg) | ![](/asserts/Cars.jpg) | ![](/asserts/Car_Info.jpg) | ![](/asserts/Events.jpg) | ![](/asserts/Add_Wiki.jpg) 
+![](/assets/Home.jpg) | ![](/assets/Cars.jpg) | ![](/assets/Car_Info.jpg) | ![](/assets/Events.jpg) | ![](/assets/Add_Wiki.jpg) 
 :--:|:--: |:--: |:--: |:--:
 Home | Cars | Car Info | Events | Add Wiki
 
